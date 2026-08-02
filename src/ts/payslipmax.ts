@@ -6,6 +6,7 @@ import { PayslipMaxViewModel } from '../viewmodels/PayslipMaxViewModel';
 import { StringResources } from '../store/StringResources';
 import { HeaderComponent } from '../views/HeaderComponent';
 import { FooterComponent } from '../views/FooterComponent';
+import { initThemeEngine } from '../services/ThemeInitializer';
 
 export function renderPayslipMaxPage(): void {
   const viewModel = new PayslipMaxViewModel();
@@ -45,6 +46,8 @@ export function renderPayslipMaxPage(): void {
     </main>
     ${FooterComponent.render()}
   `;
+
+  initThemeEngine();
 }
 
 if (typeof window !== 'undefined') {

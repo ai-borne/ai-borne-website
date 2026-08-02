@@ -6,6 +6,7 @@ import { ILegalPolicy } from '../models/LegalPolicy';
 import { LegalPolicyStore } from '../store/LegalPolicyStore';
 import { HeaderComponent } from '../views/HeaderComponent';
 import { FooterComponent } from '../views/FooterComponent';
+import { initThemeEngine } from '../services/ThemeInitializer';
 
 export function renderLegalPage(policyType: 'privacy' | 'terms' | 'deletion'): void {
   const policy = getPolicyData(policyType);
@@ -41,6 +42,8 @@ export function renderLegalPage(policyType: 'privacy' | 'terms' | 'deletion'): v
     </main>
     ${FooterComponent.render()}
   `;
+
+  initThemeEngine();
 }
 
 function getPolicyData(policyType: 'privacy' | 'terms' | 'deletion'): ILegalPolicy {

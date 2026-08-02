@@ -6,6 +6,7 @@ import { HomeViewModel } from '../viewmodels/HomeViewModel';
 import { StringResources } from '../store/StringResources';
 import { HeaderComponent } from '../views/HeaderComponent';
 import { FooterComponent } from '../views/FooterComponent';
+import { initThemeEngine } from '../services/ThemeInitializer';
 
 export function renderHomePage(): void {
   const viewModel = new HomeViewModel();
@@ -71,6 +72,8 @@ export function renderHomePage(): void {
     </main>
     ${FooterComponent.render()}
   `;
+
+  initThemeEngine();
 }
 
 if (typeof window !== 'undefined') {

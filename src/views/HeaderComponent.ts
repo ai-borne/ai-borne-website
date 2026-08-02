@@ -21,13 +21,16 @@ export class HeaderComponent {
             </svg>
             <span style="font-weight: 800; letter-spacing: 0.05em; font-size: 1.25rem;">AI-<span class="logo-accent">BORNE</span></span>
           </a>
-          <nav>
+          <nav style="display: flex; align-items: center; gap: 1rem;">
             <ul class="nav-links">
               <li><a href="/" class="nav-link ${activeRoute === 'home' ? 'active' : ''}">${strings.nav.home}</a></li>
               <li><a href="/apps/payslipmax.html" class="nav-link ${activeRoute === 'apps' ? 'active' : ''}">${strings.nav.apps}</a></li>
               <li><a href="/blog/index.html" class="nav-link ${activeRoute === 'blog' ? 'active' : ''}">${strings.nav.insights}</a></li>
               <li><a href="/support.html" class="nav-link ${activeRoute === 'support' ? 'active' : ''}">${strings.nav.support}</a></li>
             </ul>
+            <button id="theme-toggle" class="btn" style="padding: 0.4rem 0.75rem; background: var(--color-bg-surface); border: 1px solid var(--color-border-glass); color: var(--color-text-primary);" aria-label="Toggle dark/light mode">
+              <span id="theme-toggle-icon">🌙</span>
+            </button>
           </nav>
         </div>
       </header>

@@ -5,6 +5,7 @@ import '../styles/utils.css';
 import { BlogViewModel } from '../viewmodels/BlogViewModel';
 import { HeaderComponent } from '../views/HeaderComponent';
 import { FooterComponent } from '../views/FooterComponent';
+import { initThemeEngine } from '../services/ThemeInitializer';
 
 export function renderBlogPage(): void {
   const viewModel = new BlogViewModel();
@@ -43,6 +44,8 @@ export function renderBlogPage(): void {
     </main>
     ${FooterComponent.render()}
   `;
+
+  initThemeEngine();
 }
 
 if (typeof window !== 'undefined') {

@@ -8,6 +8,7 @@ import { SiteDataStore } from '../store/SiteDataStore';
 import { StringResources } from '../store/StringResources';
 import { HeaderComponent } from '../views/HeaderComponent';
 import { FooterComponent } from '../views/FooterComponent';
+import { initThemeEngine } from '../services/ThemeInitializer';
 
 export function renderSupportPage(): void {
   const contactService = new MockContactService();
@@ -61,6 +62,7 @@ export function renderSupportPage(): void {
   `;
 
   bindSupportFormEvents(viewModel);
+  initThemeEngine();
 }
 
 function bindSupportFormEvents(viewModel: SupportViewModel): void {
