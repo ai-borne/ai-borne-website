@@ -1,5 +1,8 @@
+import { StringResources } from '../store/StringResources';
+
 export class FooterComponent {
   public static render(): string {
+    const strings = StringResources.getStrings();
     return `
       <footer class="footer">
         <div class="container">
@@ -20,19 +23,19 @@ export class FooterComponent {
                 </svg>
                 <span style="font-weight: 800; letter-spacing: 0.05em;">AI-<span class="logo-accent">BORNE</span></span>
               </a>
-              <p class="text-muted">Engineering Intelligent Apps, Automation & AI Solutions.</p>
+              <p class="text-muted">${strings.footer.tagline}</p>
             </div>
             <div>
-              <h4 class="mb-md">Products</h4>
+              <h4 class="mb-md">${strings.footer.productsTitle}</h4>
               <a href="/apps/payslipmax.html" class="footer-link">PayslipMax</a>
             </div>
             <div>
-              <h4 class="mb-md">Developer & Insights</h4>
+              <h4 class="mb-md">${strings.footer.developerTitle}</h4>
               <a href="/blog/index.html" class="footer-link">Tech Hacks & Insights</a>
               <a href="https://github.com/sunilpawar-git" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub</a>
             </div>
             <div>
-              <h4 class="mb-md">Store Compliance & Legal</h4>
+              <h4 class="mb-md">${strings.footer.legalTitle}</h4>
               <a href="/privacy-policy.html" class="footer-link">Privacy Policy</a>
               <a href="/terms.html" class="footer-link">Terms of Service</a>
               <a href="/support.html" class="footer-link">Support Center</a>
@@ -40,7 +43,7 @@ export class FooterComponent {
             </div>
           </div>
           <div class="text-center text-muted" style="border-top: 1px solid var(--color-border-glass); padding-top: var(--spacing-md);">
-            <p>&copy; ${new Date().getFullYear()} AI-BORNE (ai-borne.in). All rights reserved.</p>
+            <p>&copy; ${new Date().getFullYear()} ${strings.footer.copyright}</p>
           </div>
         </div>
       </footer>
