@@ -21,17 +21,38 @@ export class HeaderComponent {
             </svg>
             <span style="font-weight: 800; letter-spacing: 0.05em; font-size: 1.25rem;">AI-<span class="logo-accent">BORNE</span></span>
           </a>
-          <nav style="display: flex; align-items: center; gap: 1rem;">
+
+          <nav class="desktop-nav">
             <ul class="nav-links">
               <li><a href="/" class="nav-link ${activeRoute === 'home' ? 'active' : ''}">${strings.nav.home}</a></li>
               <li><a href="/apps/payslipmax.html" class="nav-link ${activeRoute === 'apps' ? 'active' : ''}">${strings.nav.apps}</a></li>
               <li><a href="/blog/index.html" class="nav-link ${activeRoute === 'blog' ? 'active' : ''}">${strings.nav.insights}</a></li>
               <li><a href="/support.html" class="nav-link ${activeRoute === 'support' ? 'active' : ''}">${strings.nav.support}</a></li>
             </ul>
-            <button id="theme-toggle" class="btn" style="padding: 0.4rem 0.75rem; background: var(--color-bg-surface); border: 1px solid var(--color-border-glass); color: var(--color-text-primary);" aria-label="Toggle dark/light mode">
+            <button id="theme-toggle" class="btn theme-toggle-btn" aria-label="Toggle dark/light mode">
               <span id="theme-toggle-icon">🌙</span>
             </button>
           </nav>
+
+          <div class="mobile-nav-controls">
+            <button id="theme-toggle-mobile" class="btn theme-toggle-btn" aria-label="Toggle dark/light mode">
+              <span id="theme-toggle-icon-mobile">🌙</span>
+            </button>
+            <button id="mobile-menu-toggle" class="mobile-menu-btn" aria-expanded="false" aria-label="Toggle navigation menu">
+              <span class="hamburger-bar"></span>
+              <span class="hamburger-bar"></span>
+              <span class="hamburger-bar"></span>
+            </button>
+          </div>
+        </div>
+
+        <div id="mobile-nav-drawer" class="mobile-drawer" aria-hidden="true">
+          <ul class="mobile-nav-links">
+            <li><a href="/" class="mobile-nav-link ${activeRoute === 'home' ? 'active' : ''}">${strings.nav.home}</a></li>
+            <li><a href="/apps/payslipmax.html" class="mobile-nav-link ${activeRoute === 'apps' ? 'active' : ''}">${strings.nav.apps}</a></li>
+            <li><a href="/blog/index.html" class="mobile-nav-link ${activeRoute === 'blog' ? 'active' : ''}">${strings.nav.insights}</a></li>
+            <li><a href="/support.html" class="mobile-nav-link ${activeRoute === 'support' ? 'active' : ''}">${strings.nav.support}</a></li>
+          </ul>
         </div>
       </header>
     `;
