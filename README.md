@@ -48,7 +48,7 @@ npm run build
 
 1. Log into **Cloudflare Dashboard** ➔ **Workers & Pages**.
 2. Click **Create Application** ➔ **Pages** ➔ **Connect to Git**.
-3. Select your repository: `ai-borne/actionstation-website`.
+3. Select your repository: `ai-borne/ai-borne-website`.
 4. Build Settings:
    * **Framework Preset**: None (Vite)
    * **Build Command**: `npm run build`
