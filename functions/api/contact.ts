@@ -28,18 +28,32 @@ export async function onRequestPost(context: { request: Request }): Promise<Resp
       );
     }
 
-    // Forward form message to Web3Forms backend dispatch targeting support@ai-borne.in
-    await fetch('https://api.web3forms.com/submit', {
+    // Forward support request to FormSubmit targeting support@ai-borne.in directly
+    const dispatchRes = await fetch('https://formsubmit.co/ajax/support@ai-borne.in', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
       body: JSON.stringify({
-        access_key: '6443d3b7-7cb0-4fdf-bde8-d70aa6f81a7a',
         email: email,
         message: message,
-        subject: `[AI-Borne Support] New Message from ${email}`,
-        from_name: 'AI-Borne Web Support',
+        _subject: `[AI-Borne Web Support] New message from ${email}`,
+        _template: 'table',
       }),
-    }).catch(() => null);
+    });
+
+    const dispatchData = await dispatchRes.json().catch(() => ({}));
+
+    if (!dispatchRes.ok || dispatchData.success === 'false') {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: dispatchData.message || 'Failed to dispatch email. Please email support@ai-borne.in directly.',
+        }),
+        { status: 500, headers }
+      );
+    }
 
     return new Response(
       JSON.stringify({
@@ -50,8 +64,8 @@ export async function onRequestPost(context: { request: Request }): Promise<Resp
     );
   } catch (err) {
     return new Response(
-      JSON.stringify({ success: false, error: 'Malformed request payload.' }),
-      { status: 400, headers }
+      JSON.stringify({ success: false, error: 'Failed to connect to email gateway. Please email support@ai-borne.in directly.' }),
+      { status: 500, headers }
     );
   }
 }
