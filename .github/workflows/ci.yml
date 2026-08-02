@@ -45,7 +45,7 @@ jobs:
   deploy-cloudflare:
     name: Deploy to Cloudflare Pages
     needs: validate-and-build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && secrets.CLOUDFLARE_API_TOKEN != ''
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
 
     steps:
