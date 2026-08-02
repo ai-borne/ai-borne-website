@@ -12,7 +12,7 @@ export interface ISiteConfig {
 
 export class SiteDataStore {
   private static readonly config: ISiteConfig = {
-    studioName: 'Action Station',
+    studioName: 'AI-Borne',
     domain: 'ai-borne.in',
     tagline: 'Engineering Intelligent Apps, Automation & AI Solutions',
     mission: 'Empowering users with privacy-first, on-device intelligent tools and seamless automations.',
@@ -61,7 +61,7 @@ export class SiteDataStore {
       summary: 'How we engineered zero-cloud, on-device financial document parsing for instant execution.',
       category: 'App Engineering',
       publishedDate: '2026-08-01',
-      author: 'Action Station Team',
+      author: 'AI-Borne Team',
       readTimeMinutes: 5,
       contentMarkdown: 'Privacy in mobile financial applications is paramount. By parsing documents locally, user data never touches external servers.',
     },
@@ -71,7 +71,7 @@ export class SiteDataStore {
       summary: 'Practical architectural patterns for sharing core business logic across iOS and Android.',
       category: 'Automation',
       publishedDate: '2026-07-28',
-      author: 'Action Station Team',
+      author: 'AI-Borne Team',
       readTimeMinutes: 7,
       contentMarkdown: 'Kotlin Multiplatform allows sharing business logic across iOS, Android, and Desktop seamlessly.',
     },

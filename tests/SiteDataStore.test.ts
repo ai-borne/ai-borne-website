@@ -5,7 +5,7 @@ import { LegalPolicyStore } from '../src/store/LegalPolicyStore';
 describe('SiteDataStore & LegalPolicyStore (SSOT)', () => {
   it('returns valid studio configuration', () => {
     const config = SiteDataStore.getConfig();
-    expect(config.studioName).toBe('Action Station');
+    expect(config.studioName).toBe('AI-Borne');
     expect(config.domain).toBe('ai-borne.in');
     expect(config.supportEmail).toBe('support@ai-borne.in');
   });

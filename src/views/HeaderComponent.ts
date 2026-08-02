@@ -4,7 +4,7 @@ export class HeaderComponent {
       <header class="header">
         <div class="container header-nav">
           <a href="/" class="logo">
-            Action<span class="logo-accent">Station</span>
+            AI-<span class="logo-accent">Borne</span>
           </a>
           <nav>
             <ul class="nav-links">

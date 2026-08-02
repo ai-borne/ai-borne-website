@@ -6,7 +6,7 @@ export class FooterComponent {
           <div class="footer-grid">
             <div>
               <a href="/" class="logo mb-md">
-                Action<span class="logo-accent">Station</span>
+                AI-<span class="logo-accent">Borne</span>
               </a>
               <p class="text-muted">Engineering Intelligent Apps, Automation & AI Solutions.</p>
             </div>
@@ -28,7 +28,7 @@ export class FooterComponent {
             </div>
           </div>
           <div class="text-center text-muted" style="border-top: 1px solid var(--color-border-glass); padding-top: var(--spacing-md);">
-            <p>&copy; ${new Date().getFullYear()} Action Station (actionstation.in). All rights reserved.</p>
+            <p>&copy; ${new Date().getFullYear()} AI-Borne (ai-borne.in). All rights reserved.</p>
           </div>
         </div>
       </footer>
