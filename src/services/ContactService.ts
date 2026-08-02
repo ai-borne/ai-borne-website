@@ -1,18 +1,26 @@
 import { FormValidator } from './FormValidator';
 
+export interface IContactResult {
+  success: boolean;
+  errorMessage?: string;
+}
+
 export interface IContactService {
-  sendMessage(email: string, message: string): Promise<boolean>;
+  sendMessage(email: string, message: string): Promise<IContactResult>;
 }
 
 export class MockContactService implements IContactService {
-  public async sendMessage(email: string, message: string): Promise<boolean> {
+  public async sendMessage(email: string, message: string): Promise<IContactResult> {
     const emailValid = FormValidator.validateEmail(email);
+    if (!emailValid.valid) {
+      return { success: false, errorMessage: emailValid.message };
+    }
     const messageValid = FormValidator.validateMessage(message);
-    if (!emailValid.valid || !messageValid.valid) {
-      return false;
+    if (!messageValid.valid) {
+      return { success: false, errorMessage: messageValid.message };
     }
     return new Promise((resolve) => {
-      setTimeout(() => resolve(true), 300);
+      setTimeout(() => resolve({ success: true }), 300);
     });
   }
 }
@@ -24,11 +32,14 @@ export class HttpContactService implements IContactService {
     this.endpoint = endpoint;
   }
 
-  public async sendMessage(email: string, message: string): Promise<boolean> {
+  public async sendMessage(email: string, message: string): Promise<IContactResult> {
     const emailValid = FormValidator.validateEmail(email);
+    if (!emailValid.valid) {
+      return { success: false, errorMessage: emailValid.message };
+    }
     const messageValid = FormValidator.validateMessage(message);
-    if (!emailValid.valid || !messageValid.valid) {
-      return false;
+    if (!messageValid.valid) {
+      return { success: false, errorMessage: messageValid.message };
     }
 
     try {
@@ -38,14 +49,24 @@ export class HttpContactService implements IContactService {
         body: JSON.stringify({ email, message }),
       });
 
+      const data = await response.json().catch(() => ({}));
+
       if (!response.ok) {
-        return false;
+        return {
+          success: false,
+          errorMessage: data.error || 'Failed to submit support message. Please try again.',
+        };
       }
 
-      const data = await response.json();
-      return data.success ?? true;
+      return {
+        success: data.success ?? true,
+        errorMessage: data.success ? undefined : data.error || 'Failed to send message.',
+      };
     } catch (error) {
-      return false;
+      return {
+        success: false,
+        errorMessage: 'Network error. Please check your internet connection or email support@ai-borne.in directly.',
+      };
     }
   }
 }

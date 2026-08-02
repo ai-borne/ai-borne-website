@@ -20,7 +20,7 @@ describe('HttpContactService (TDD)', () => {
     vi.stubGlobal('fetch', fetchSpy);
 
     const result = await service.sendMessage('test@ai-borne.in', 'Hello team, need assistance.');
-    expect(result).toBe(true);
+    expect(result.success).toBe(true);
     expect(fetchSpy).toHaveBeenCalledWith('/api/contact', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -28,32 +28,35 @@ describe('HttpContactService (TDD)', () => {
     });
   });
 
-  it('handles client-side validation for invalid email without calling fetch', async () => {
+  it('handles client-side validation for short message without calling fetch', async () => {
     const fetchSpy = vi.fn();
     vi.stubGlobal('fetch', fetchSpy);
 
-    const result = await service.sendMessage('invalid-email', 'Message body text');
-    expect(result).toBe(false);
+    const result = await service.sendMessage('user@domain.com', 'hi.');
+    expect(result.success).toBe(false);
+    expect(result.errorMessage).toBe('Support message must be at least 5 characters long.');
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it('handles HTTP error responses from serverless endpoint', async () => {
+  it('passes through exact server error messages on HTTP 400 response', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({
         ok: false,
-        json: async () => ({ success: false, error: 'Server validation error' }),
+        json: async () => ({ success: false, error: 'Support message must be at least 5 characters long.' }),
       })
     );
 
-    const result = await service.sendMessage('user@domain.com', 'Valid message content');
-    expect(result).toBe(false);
+    const result = await service.sendMessage('user@domain.com', 'Valid length message content');
+    expect(result.success).toBe(false);
+    expect(result.errorMessage).toBe('Support message must be at least 5 characters long.');
   });
 
   it('handles network fetch failures gracefully', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('Network failure')));
 
-    const result = await service.sendMessage('user@domain.com', 'Valid message content');
-    expect(result).toBe(false);
+    const result = await service.sendMessage('user@domain.com', 'Valid length message content');
+    expect(result.success).toBe(false);
+    expect(result.errorMessage).toContain('Network error');
   });
 });

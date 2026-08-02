@@ -19,7 +19,10 @@ export class FormValidator {
   public static validateMessage(message: string): IValidationResult {
     const trimmed = message.trim();
     if (!trimmed) {
-      return { valid: false, message: 'Message body cannot be empty.' };
+      return { valid: false, message: 'Support message cannot be empty.' };
+    }
+    if (trimmed.length < 5) {
+      return { valid: false, message: 'Support message must be at least 5 characters long.' };
     }
     return { valid: true };
   }

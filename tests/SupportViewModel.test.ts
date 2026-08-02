@@ -1,32 +1,35 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { SupportViewModel } from '../src/viewmodels/SupportViewModel';
 import { MockContactService } from '../src/services/ContactService';
 
-describe('SupportViewModel (MVVM)', () => {
-  let viewModel: SupportViewModel;
-  let mockService: MockContactService;
-
-  beforeEach(() => {
-    mockService = new MockContactService();
-    viewModel = new SupportViewModel(mockService);
-  });
-
-  it('initializes with default state', () => {
+describe('SupportViewModel (MVVM & TDD)', () => {
+  it('initializes with default clean state', () => {
+    const viewModel = new SupportViewModel(new MockContactService());
     const state = viewModel.getState();
     expect(state.isSubmitting).toBe(false);
     expect(state.isSuccess).toBe(false);
     expect(state.errorMessage).toBeNull();
   });
 
-  it('rejects invalid email on submit', async () => {
-    await viewModel.submitForm('invalid', 'Valid message content');
+  it('rejects invalid email address before sending', async () => {
+    const viewModel = new SupportViewModel(new MockContactService());
+    await viewModel.submitForm('invalid-email', 'Valid length support query');
     const state = viewModel.getState();
     expect(state.isSuccess).toBe(false);
-    expect(state.errorMessage).toContain('Invalid email');
+    expect(state.errorMessage).toBe('Invalid email address format.');
   });
 
-  it('submits successfully with valid input', async () => {
-    await viewModel.submitForm('user@example.com', 'Help with PayslipMax');
+  it('rejects short support message with explicit error', async () => {
+    const viewModel = new SupportViewModel(new MockContactService());
+    await viewModel.submitForm('user@ai-borne.in', 'hi.');
+    const state = viewModel.getState();
+    expect(state.isSuccess).toBe(false);
+    expect(state.errorMessage).toBe('Support message must be at least 5 characters long.');
+  });
+
+  it('submits valid form successfully', async () => {
+    const viewModel = new SupportViewModel(new MockContactService());
+    await viewModel.submitForm('user@ai-borne.in', 'Hello, I have an issue with PayslipMax.');
     const state = viewModel.getState();
     expect(state.isSuccess).toBe(true);
     expect(state.errorMessage).toBeNull();

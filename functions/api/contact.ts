@@ -16,7 +16,7 @@ export async function onRequestPost(context: { request: Request }): Promise<Resp
 
     if (!email || !isValidEmail(email)) {
       return new Response(
-        JSON.stringify({ success: false, error: 'Invalid email address provided.' }),
+        JSON.stringify({ success: false, error: 'Invalid email address format.' }),
         { status: 400, headers }
       );
     }
@@ -28,13 +28,23 @@ export async function onRequestPost(context: { request: Request }): Promise<Resp
       );
     }
 
-    // Serverless log trace for verified incoming support messages
-    console.log(`[Cloudflare Pages Contact API] New support message from ${email}`);
+    // Forward form message to Web3Forms backend dispatch targeting support@ai-borne.in
+    await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        access_key: '6443d3b7-7cb0-4fdf-bde8-d70aa6f81a7a',
+        email: email,
+        message: message,
+        subject: `[AI-Borne Support] New Message from ${email}`,
+        from_name: 'AI-Borne Web Support',
+      }),
+    }).catch(() => null);
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Support message received successfully. We will respond within 24-48 hours.',
+        message: 'Thank you! Your message has been sent successfully.',
       }),
       { status: 200, headers }
     );

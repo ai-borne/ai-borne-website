@@ -8,8 +8,10 @@ describe('FormValidator (Services Layer)', () => {
     expect(FormValidator.validateEmail('').valid).toBe(false);
   });
 
-  it('validates message body correctly', () => {
-    expect(FormValidator.validateMessage('Help with payslip').valid).toBe(true);
+  it('validates message body length correctly', () => {
+    expect(FormValidator.validateMessage('Hello team, need assistance.').valid).toBe(true);
+    expect(FormValidator.validateMessage('hi.').valid).toBe(false);
+    expect(FormValidator.validateMessage('hi.').message).toBe('Support message must be at least 5 characters long.');
     expect(FormValidator.validateMessage('   ').valid).toBe(false);
   });
 
