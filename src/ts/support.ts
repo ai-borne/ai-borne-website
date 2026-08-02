@@ -3,7 +3,7 @@ import '../styles/layout.css';
 import '../styles/components.css';
 import '../styles/utils.css';
 import { SupportViewModel } from '../viewmodels/SupportViewModel';
-import { MockContactService } from '../services/ContactService';
+import { HttpContactService } from '../services/ContactService';
 import { SiteDataStore } from '../store/SiteDataStore';
 import { StringResources } from '../store/StringResources';
 import { HeaderComponent } from '../views/HeaderComponent';
@@ -11,7 +11,7 @@ import { FooterComponent } from '../views/FooterComponent';
 import { initThemeEngine } from '../services/ThemeInitializer';
 
 export function renderSupportPage(): void {
-  const contactService = new MockContactService();
+  const contactService = new HttpContactService('/api/contact');
   const viewModel = new SupportViewModel(contactService);
   const config = SiteDataStore.getConfig();
   const strings = StringResources.getStrings();

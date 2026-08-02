@@ -37,6 +37,9 @@ export interface IStringDictionary {
     sendButton: string;
     sendingButton: string;
     successMessage: string;
+    invalidEmailError: string;
+    emptyMessageError: string;
+    networkError: string;
   };
   footer: {
     tagline: string;
@@ -87,6 +90,9 @@ export class StringResources {
       sendButton: 'Send Message',
       sendingButton: 'Sending...',
       successMessage: 'Thank you! Your message has been sent successfully.',
+      invalidEmailError: 'Please enter a valid email address.',
+      emptyMessageError: 'Support message details cannot be empty.',
+      networkError: 'Failed to send message. Please try again later or email support@ai-borne.in directly.',
     },
     footer: {
       tagline: 'Engineering Intelligent Apps, Automation & AI Solutions.',
