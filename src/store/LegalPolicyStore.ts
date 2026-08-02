@@ -6,7 +6,7 @@ export class LegalPolicyStore {
       title: 'Privacy Policy',
       lastUpdated: 'August 2, 2026',
       effectiveDate: 'August 2, 2026',
-      contactEmail: 'support@actionstation.in',
+      contactEmail: 'support@ai-borne.in',
       sections: [
         {
           heading: '1. Overview & Commitment to Privacy',
@@ -20,7 +20,7 @@ export class LegalPolicyStore {
           body: [
             'Local Storage: All document metadata, parsed salary figures, and settings are stored strictly in local device storage.',
             'Zero Server Uploads: PDF files and financial documents parsed inside our applications are processed in-memory and on local storage on your device.',
-            'Support Communications: If you email support@actionstation.in, we use your message solely to assist with your inquiry.',
+            'Support Communications: If you email support@ai-borne.in, we use your message solely to assist with your inquiry.',
           ],
         },
         {
@@ -39,7 +39,7 @@ export class LegalPolicyStore {
         {
           heading: '5. Contact Information',
           body: [
-            'For any privacy questions or data deletion requests, contact us at support@actionstation.in.',
+            'For any privacy questions or data deletion requests, contact us at support@ai-borne.in.',
           ],
         },
       ],
@@ -51,7 +51,7 @@ export class LegalPolicyStore {
       title: 'Terms of Service',
       lastUpdated: 'August 2, 2026',
       effectiveDate: 'August 2, 2026',
-      contactEmail: 'support@actionstation.in',
+      contactEmail: 'support@ai-borne.in',
       sections: [
         {
           heading: '1. Agreement to Terms',
@@ -80,7 +80,7 @@ export class LegalPolicyStore {
       title: 'Data & Account Deletion Request',
       lastUpdated: 'August 2, 2026',
       effectiveDate: 'August 2, 2026',
-      contactEmail: 'support@actionstation.in',
+      contactEmail: 'support@ai-borne.in',
       sections: [
         {
           heading: '1. Local Device Data Deletion',
@@ -92,7 +92,7 @@ export class LegalPolicyStore {
         {
           heading: '2. Requesting Support Communication Deletion',
           body: [
-            'To request deletion of any support email correspondence, send an email to support@actionstation.in with the subject "Data Deletion Request".',
+            'To request deletion of any support email correspondence, send an email to support@ai-borne.in with the subject "Data Deletion Request".',
             'We process all valid deletion requests within 30 days.',
           ],
         },

@@ -1,12 +1,4 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "actionstation-website",
-  "compatibility_date": "2026-08-02",
-  "observability": {
-    "enabled": true
-  },
-  "assets": {
-    "directory": "./dist",
-    "binding": "ASSETS"
-  }
+  "pages_build_output_dir": "./dist"
 }

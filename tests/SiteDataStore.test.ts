@@ -6,8 +6,8 @@ describe('SiteDataStore & LegalPolicyStore (SSOT)', () => {
   it('returns valid studio configuration', () => {
     const config = SiteDataStore.getConfig();
     expect(config.studioName).toBe('Action Station');
-    expect(config.domain).toBe('actionstation.in');
-    expect(config.supportEmail).toBe('support@actionstation.in');
+    expect(config.domain).toBe('ai-borne.in');
+    expect(config.supportEmail).toBe('support@ai-borne.in');
   });
 
   it('returns registered apps metadata', () => {
@@ -29,11 +29,11 @@ describe('SiteDataStore & LegalPolicyStore (SSOT)', () => {
   it('returns compliant legal policies with support email', () => {
     const privacy = LegalPolicyStore.getPrivacyPolicy();
     expect(privacy.title).toBe('Privacy Policy');
-    expect(privacy.contactEmail).toBe('support@actionstation.in');
+    expect(privacy.contactEmail).toBe('support@ai-borne.in');
     expect(privacy.sections.length).toBeGreaterThan(0);
 
     const deletion = LegalPolicyStore.getDataDeletionInstructions();
     expect(deletion.title).toContain('Data & Account Deletion');
-    expect(deletion.contactEmail).toBe('support@actionstation.in');
+    expect(deletion.contactEmail).toBe('support@ai-borne.in');
   });
 });

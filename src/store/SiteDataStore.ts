@@ -13,10 +13,10 @@ export interface ISiteConfig {
 export class SiteDataStore {
   private static readonly config: ISiteConfig = {
     studioName: 'Action Station',
-    domain: 'actionstation.in',
+    domain: 'ai-borne.in',
     tagline: 'Engineering Intelligent Apps, Automation & AI Solutions',
     mission: 'Empowering users with privacy-first, on-device intelligent tools and seamless automations.',
-    supportEmail: 'support@actionstation.in',
+    supportEmail: 'support@ai-borne.in',
     githubUrl: 'https://github.com/sunilpawar-git',
   };
 
