@@ -102,7 +102,7 @@ export async function onRequestPost(context: { request: Request; env: Env }): Pr
               </div>
               <h2 style="font-size: 18px; color: #1e293b; margin-top: 0;">Thank you for reaching out!</h2>
               <p style="font-size: 15px; color: #334155; line-height: 1.6;">
-                We have received your support inquiry regarding <strong>PayslipMax</strong> / studio feedback. Our team typically responds within <strong>24–48 hours</strong>.
+                We have received your support inquiry. The <strong>AI-Borne</strong> team typically responds within <strong>24–48 hours</strong>.
               </p>
               <div style="background-color: #f8fafc; border-left: 4px solid #6366f1; padding: 16px; margin: 20px 0; border-radius: 6px;">
                 <p style="font-size: 12px; color: #64748b; margin: 0 0 8px 0; font-weight: 600; text-transform: uppercase;">Your Message Copy:</p>
