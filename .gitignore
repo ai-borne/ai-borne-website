@@ -3,3 +3,9 @@ dist
 .DS_Store
 *.log
 coverage
+
+# Environment & Secret files
+.env
+.env.*
+.dev.vars
+.wrangler

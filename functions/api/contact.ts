@@ -3,7 +3,11 @@ interface ContactRequestBody {
   message?: string;
 }
 
-export async function onRequestPost(context: { request: Request }): Promise<Response> {
+interface Env {
+  RESEND_API_KEY?: string;
+}
+
+export async function onRequestPost(context: { request: Request; env: Env }): Promise<Response> {
   const headers = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
@@ -28,45 +32,50 @@ export async function onRequestPost(context: { request: Request }): Promise<Resp
       );
     }
 
-    const incomingOrigin = context.request.headers.get('Origin') || context.request.headers.get('origin') || 'https://ai-borne.in';
-    const incomingReferer = context.request.headers.get('Referer') || context.request.headers.get('referer') || `${incomingOrigin}/support.html`;
+    const apiKey = context.env?.RESEND_API_KEY;
 
-    // Forward support request to FormSubmit targeting support@ai-borne.in directly
-    const dispatchRes = await fetch('https://formsubmit.co/ajax/support@ai-borne.in', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Referer': incomingReferer,
-        'Origin': incomingOrigin,
-      },
-      body: JSON.stringify({
-        email: email,
-        message: message,
-        _subject: `[AI-Borne Web Support] New message from ${email}`,
-        _template: 'table',
-      }),
-    });
-
-    const dispatchData: any = await dispatchRes.json().catch(() => ({}));
-
-    if (!dispatchRes.ok || dispatchData.success === 'false' || dispatchData.success === false) {
-      const rawError = dispatchData.message || '';
-      const isRateLimited =
-        dispatchRes.status === 429 ||
-        rawError.toLowerCase().includes('rate limit') ||
-        rawError.toLowerCase().includes('activation') ||
-        rawError.toLowerCase().includes('web server');
-
-      const userErrorMsg = isRateLimited
-        ? 'Automated email service is currently rate-limited or pending activation. Please email support@ai-borne.in directly.'
-        : rawError || 'Failed to dispatch email. Please email support@ai-borne.in directly.';
-
+    if (!apiKey) {
       return new Response(
         JSON.stringify({
           success: false,
-          error: userErrorMsg,
-          isRateLimited,
+          error: 'Email gateway configuration missing. Please email support@ai-borne.in directly.',
+        }),
+        { status: 500, headers }
+      );
+    }
+
+    // Call Resend API to deliver support message directly to Google Workspace inbox
+    const resendRes = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        from: 'AI-Borne Support <onboarding@resend.dev>',
+        to: ['founder@ai-borne.in'],
+        reply_to: email,
+        subject: `[AI-Borne Web Support] New message from ${email}`,
+        html: `
+          <div style="font-family: system-ui, sans-serif; max-width: 600px; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+            <h2 style="color: #0f172a; margin-top: 0;">New Support Inquiry</h2>
+            <p style="font-size: 14px; color: #475569;"><strong>From:</strong> ${escapeHtml(email)}</p>
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 16px 0;" />
+            <p style="font-size: 15px; color: #1e293b; white-space: pre-wrap;">${escapeHtml(message)}</p>
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 16px 0;" />
+            <small style="color: #94a3b8;">Sent automatically via AI-Borne Studio Web Center</small>
+          </div>
+        `,
+      }),
+    });
+
+    const resendData: any = await resendRes.json().catch(() => ({}));
+
+    if (!resendRes.ok) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: resendData.message || 'Failed to deliver support email. Please email support@ai-borne.in directly.',
         }),
         { status: 500, headers }
       );
@@ -84,7 +93,6 @@ export async function onRequestPost(context: { request: Request }): Promise<Resp
       JSON.stringify({
         success: false,
         error: 'Failed to connect to email gateway. Please email support@ai-borne.in directly.',
-        isRateLimited: true,
       }),
       { status: 500, headers }
     );
@@ -94,4 +102,13 @@ export async function onRequestPost(context: { request: Request }): Promise<Resp
 function isValidEmail(email: string): boolean {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return re.test(email);
+}
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
