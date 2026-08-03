@@ -6,20 +6,21 @@ export class HeaderComponent {
     return `
       <header class="header">
         <div class="container header-nav">
-          <a href="/" class="logo" style="display: flex; align-items: center; gap: 0.6rem;">
-            <svg width="30" height="30" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="AI-BORNE Logo">
-              <path d="M16 3C9.37 3 4 7.48 4 13C4 13.8 4.7 14.5 5.5 14.5C6.3 14.5 7 13.8 7 13C7 9.13 11.03 6 16 6C20.97 6 25 9.13 25 13C25 13.8 25.7 14.5 26.5 14.5C27.3 14.5 28 13.8 28 13C28 7.48 22.63 3 16 3Z" fill="url(#airborne-grad)"/>
-              <path d="M7 13L14 21M25 13L18 21M16 6V18" stroke="#06b6d4" stroke-width="2" stroke-linecap="round"/>
-              <path d="M10 24L16 28L22 24" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="16" cy="21" r="3" fill="#06b6d4"/>
+          <a href="/" class="logo" style="display: flex; align-items: center; gap: 0.65rem; text-decoration: none;">
+            <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="ai-borne Logo">
               <defs>
-                <linearGradient id="airborne-grad" x1="4" y1="3" x2="28" y2="14.5" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#06b6d4"/>
-                  <stop offset="1" stop-color="#6366f1"/>
+                <linearGradient id="aiborne-hdr-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#0066FF" />
+                  <stop offset="100%" stop-color="#0038B8" />
                 </linearGradient>
               </defs>
+              <path d="M 20 4 C 29 4 35 9 35 15 C 35 18 29 23 20 25 C 11 23 5 18 5 15 C 5 9 11 4 20 4 Z" stroke="url(#aiborne-hdr-grad)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="20" y1="4" x2="20" y2="25" stroke="url(#aiborne-hdr-grad)" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="20" y1="25" x2="5" y2="15" stroke="url(#aiborne-hdr-grad)" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="20" y1="25" x2="35" y2="15" stroke="url(#aiborne-hdr-grad)" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M 12 29.5 L 20 35 L 28 29.5" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <span style="font-weight: 800; letter-spacing: 0.05em; font-size: 1.25rem;">AI-<span class="logo-accent">BORNE</span></span>
+            <span style="font-weight: 700; font-size: 1.35rem; letter-spacing: -0.02em; color: var(--color-text-primary);">ai-borne</span>
           </a>
 
           <nav class="desktop-nav">
