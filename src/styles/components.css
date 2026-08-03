@@ -25,8 +25,20 @@
   min-height: 44px;
 }
 
-.logo-accent {
-  color: var(--color-accent-cyan);
+.logo-img-light {
+  display: none;
+}
+
+.logo-img-dark {
+  display: block;
+}
+
+[data-theme="light"] .logo-img-light {
+  display: block;
+}
+
+[data-theme="light"] .logo-img-dark {
+  display: none;
 }
 
 .desktop-nav {
