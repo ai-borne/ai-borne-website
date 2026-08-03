@@ -91,7 +91,20 @@ function bindSupportFormEvents(viewModel: SupportViewModel): void {
       alertEl.innerHTML = `<div class="alert-success">${strings.support.successMessage}</div>`;
       form.reset();
     } else if (state.errorMessage) {
-      alertEl.innerHTML = `<div class="alert-error">${state.errorMessage}</div>`;
+      const email = state.submittedEmail || emailInput.value;
+      const message = state.submittedMessage || messageInput.value;
+      const subjectParam = encodeURIComponent(`[AI-Borne Web Support] Inquiry from ${email}`);
+      const bodyParam = encodeURIComponent(`From: ${email}\n\nMessage:\n${message}`);
+      const mailtoUrl = `mailto:support@ai-borne.in?subject=${subjectParam}&body=${bodyParam}`;
+
+      alertEl.innerHTML = `
+        <div class="alert-error" style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <div>${state.errorMessage}</div>
+          <a href="${mailtoUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; justify-content: center; background: var(--color-bg-card, #1e293b); color: var(--color-accent-cyan, #38bdf8); border: 1px solid var(--color-accent-cyan, #38bdf8); padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.875rem; font-weight: 600; text-decoration: none; transition: all 0.2s ease;">
+            📧 Open Email App (Send to support@ai-borne.in)
+          </a>
+        </div>
+      `;
     }
   });
 }

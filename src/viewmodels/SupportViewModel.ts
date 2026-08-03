@@ -5,6 +5,9 @@ export interface ISupportState {
   isSubmitting: boolean;
   isSuccess: boolean;
   errorMessage: string | null;
+  isRateLimited?: boolean;
+  submittedEmail?: string;
+  submittedMessage?: string;
 }
 
 export class SupportViewModel {
@@ -44,6 +47,9 @@ export class SupportViewModel {
         isSubmitting: false,
         isSuccess: false,
         errorMessage: result.errorMessage || 'Failed to send message. Please try again.',
+        isRateLimited: result.isRateLimited ?? false,
+        submittedEmail: email.trim(),
+        submittedMessage: sanitizedMsg,
       };
     }
   }

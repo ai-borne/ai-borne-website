@@ -34,4 +34,21 @@ describe('SupportViewModel (MVVM & TDD)', () => {
     expect(state.isSuccess).toBe(true);
     expect(state.errorMessage).toBeNull();
   });
+
+  it('stores submitted email and message in state on service failure', async () => {
+    const failingService = {
+      sendMessage: async () => ({
+        success: false,
+        errorMessage: 'Rate limit exceeded.',
+        isRateLimited: true,
+      }),
+    };
+    const viewModel = new SupportViewModel(failingService);
+    await viewModel.submitForm('user@ai-borne.in', 'Hello, I have an issue with PayslipMax.');
+    const state = viewModel.getState();
+    expect(state.isSuccess).toBe(false);
+    expect(state.isRateLimited).toBe(true);
+    expect(state.submittedEmail).toBe('user@ai-borne.in');
+    expect(state.submittedMessage).toBe('Hello, I have an issue with PayslipMax.');
+  });
 });

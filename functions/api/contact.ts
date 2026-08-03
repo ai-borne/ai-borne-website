@@ -28,12 +28,17 @@ export async function onRequestPost(context: { request: Request }): Promise<Resp
       );
     }
 
+    const incomingOrigin = context.request.headers.get('Origin') || context.request.headers.get('origin') || 'https://ai-borne.in';
+    const incomingReferer = context.request.headers.get('Referer') || context.request.headers.get('referer') || `${incomingOrigin}/support.html`;
+
     // Forward support request to FormSubmit targeting support@ai-borne.in directly
     const dispatchRes = await fetch('https://formsubmit.co/ajax/support@ai-borne.in', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'Referer': incomingReferer,
+        'Origin': incomingOrigin,
       },
       body: JSON.stringify({
         email: email,
@@ -43,13 +48,25 @@ export async function onRequestPost(context: { request: Request }): Promise<Resp
       }),
     });
 
-    const dispatchData = await dispatchRes.json().catch(() => ({}));
+    const dispatchData: any = await dispatchRes.json().catch(() => ({}));
 
-    if (!dispatchRes.ok || dispatchData.success === 'false') {
+    if (!dispatchRes.ok || dispatchData.success === 'false' || dispatchData.success === false) {
+      const rawError = dispatchData.message || '';
+      const isRateLimited =
+        dispatchRes.status === 429 ||
+        rawError.toLowerCase().includes('rate limit') ||
+        rawError.toLowerCase().includes('activation') ||
+        rawError.toLowerCase().includes('web server');
+
+      const userErrorMsg = isRateLimited
+        ? 'Automated email service is currently rate-limited or pending activation. Please email support@ai-borne.in directly.'
+        : rawError || 'Failed to dispatch email. Please email support@ai-borne.in directly.';
+
       return new Response(
         JSON.stringify({
           success: false,
-          error: dispatchData.message || 'Failed to dispatch email. Please email support@ai-borne.in directly.',
+          error: userErrorMsg,
+          isRateLimited,
         }),
         { status: 500, headers }
       );
@@ -64,7 +81,11 @@ export async function onRequestPost(context: { request: Request }): Promise<Resp
     );
   } catch (err) {
     return new Response(
-      JSON.stringify({ success: false, error: 'Failed to connect to email gateway. Please email support@ai-borne.in directly.' }),
+      JSON.stringify({
+        success: false,
+        error: 'Failed to connect to email gateway. Please email support@ai-borne.in directly.',
+        isRateLimited: true,
+      }),
       { status: 500, headers }
     );
   }
