@@ -19,6 +19,10 @@ export function renderSupportPage(): void {
   const appEl = document.getElementById('app');
   if (!appEl) return;
 
+  const currentOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://ai-borne.in';
+  const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/support.html';
+  const nextRedirectUrl = `${currentOrigin}${currentPath}?sent=true`;
+
   appEl.innerHTML = `
     ${HeaderComponent.render('support')}
     <main class="main-content">
@@ -43,14 +47,17 @@ export function renderSupportPage(): void {
           <div class="card">
             <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">${strings.support.formTitle}</h2>
             <div id="form-alert"></div>
-            <form id="support-form">
+            <form id="support-form" action="https://formsubmit.co/support@ai-borne.in" method="POST">
+              <input type="hidden" name="_next" id="form-next-url" value="${nextRedirectUrl}" />
+              <input type="hidden" name="_subject" value="[AI-Borne Web Support] New Message" />
+              <input type="hidden" name="_template" value="table" />
               <div class="form-group">
                 <label class="form-label" for="email">${strings.support.emailLabel}</label>
-                <input class="form-input" type="email" id="email" placeholder="${strings.support.emailPlaceholder}" required />
+                <input class="form-input" type="email" id="email" name="email" placeholder="${strings.support.emailPlaceholder}" required />
               </div>
               <div class="form-group">
                 <label class="form-label" for="message">${strings.support.messageLabel}</label>
-                <textarea class="form-textarea" id="message" rows="4" placeholder="${strings.support.messagePlaceholder}" required></textarea>
+                <textarea class="form-textarea" id="message" name="message" rows="4" placeholder="${strings.support.messagePlaceholder}" required></textarea>
               </div>
               <button type="submit" class="btn btn-primary" id="submit-btn">${strings.support.sendButton}</button>
             </form>
@@ -61,8 +68,22 @@ export function renderSupportPage(): void {
     ${FooterComponent.render()}
   `;
 
+  checkUrlSuccessState(strings.support.successMessage);
   bindSupportFormEvents(viewModel);
   initThemeEngine();
+}
+
+function checkUrlSuccessState(successMessage: string): void {
+  if (typeof window === 'undefined') return;
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('sent') === 'true' || urlParams.get('success') === 'true') {
+    const alertEl = document.getElementById('form-alert');
+    if (alertEl) {
+      alertEl.innerHTML = `<div class="alert-success">${successMessage}</div>`;
+    }
+    const cleanUrl = window.location.pathname;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
 }
 
 function bindSupportFormEvents(viewModel: SupportViewModel): void {
@@ -90,21 +111,26 @@ function bindSupportFormEvents(viewModel: SupportViewModel): void {
     if (state.isSuccess) {
       alertEl.innerHTML = `<div class="alert-success">${strings.support.successMessage}</div>`;
       form.reset();
-    } else if (state.errorMessage) {
-      const email = state.submittedEmail || emailInput.value;
-      const message = state.submittedMessage || messageInput.value;
-      const subjectParam = encodeURIComponent(`[AI-Borne Web Support] Inquiry from ${email}`);
-      const bodyParam = encodeURIComponent(`From: ${email}\n\nMessage:\n${message}`);
-      const mailtoUrl = `mailto:support@ai-borne.in?subject=${subjectParam}&body=${bodyParam}`;
+    } else {
+      // If AJAX fails or is rate-limited by reCAPTCHA requirement, fallback to native FormSubmit HTML POST
+      if (typeof form.submit === 'function') {
+        form.submit();
+      } else {
+        const email = state.submittedEmail || emailInput.value;
+        const message = state.submittedMessage || messageInput.value;
+        const subjectParam = encodeURIComponent(`[AI-Borne Web Support] Inquiry from ${email}`);
+        const bodyParam = encodeURIComponent(`From: ${email}\n\nMessage:\n${message}`);
+        const mailtoUrl = `mailto:support@ai-borne.in?subject=${subjectParam}&body=${bodyParam}`;
 
-      alertEl.innerHTML = `
-        <div class="alert-error" style="display: flex; flex-direction: column; gap: 0.75rem;">
-          <div>${state.errorMessage}</div>
-          <a href="${mailtoUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; justify-content: center; background: var(--color-bg-card, #1e293b); color: var(--color-accent-cyan, #38bdf8); border: 1px solid var(--color-accent-cyan, #38bdf8); padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.875rem; font-weight: 600; text-decoration: none; transition: all 0.2s ease;">
-            📧 Open Email App (Send to support@ai-borne.in)
-          </a>
-        </div>
-      `;
+        alertEl.innerHTML = `
+          <div class="alert-error" style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div>${state.errorMessage || 'Support message submission failed.'}</div>
+            <a href="${mailtoUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; justify-content: center; background: var(--color-bg-card, #1e293b); color: var(--color-accent-cyan, #38bdf8); border: 1px solid var(--color-accent-cyan, #38bdf8); padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.875rem; font-weight: 600; text-decoration: none; transition: all 0.2s ease;">
+              📧 Open Email App (Send to support@ai-borne.in)
+            </a>
+          </div>
+        `;
+      }
     }
   });
 }
