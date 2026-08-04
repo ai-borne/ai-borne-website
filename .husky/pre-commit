@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "🔍 Running pre-commit security, build & test checks..."
+npm run pre-commit

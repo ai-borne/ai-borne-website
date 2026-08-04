@@ -35,6 +35,9 @@ describe('Security Headers Configuration (_headers)', () => {
     expect(headerMap.get('x-content-type-options')).toBe('nosniff');
     expect(headerMap.get('referrer-policy')).toBe('strict-origin-when-cross-origin');
     expect(headerMap.get('strict-transport-security')).toContain('max-age=31536000');
+    expect(headerMap.get('x-permitted-cross-domain-policies')).toBe('none');
+    expect(headerMap.get('cross-origin-opener-policy')).toBe('same-origin-allow-popups');
+    expect(headerMap.get('cross-origin-resource-policy')).toBe('same-origin');
 
     // Check Permissions-Policy
     const permissionsPolicy = headerMap.get('permissions-policy') || '';

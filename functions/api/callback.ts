@@ -3,10 +3,11 @@ interface Env {
   GITHUB_CLIENT_SECRET: string;
 }
 
-export const onRequestGet: PagesFunction<Env> = async (context) => {
+export async function onRequestGet(context: { request: Request; env: Env }): Promise<Response> {
   const { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } = context.env;
   const url = new URL(context.request.url);
   const code = url.searchParams.get('code');
+  const state = url.searchParams.get('state');
 
   if (!code) {
     return new Response('Missing authorization code from GitHub', { status: 400 });
@@ -14,6 +15,15 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
     return new Response('GITHUB_CLIENT_ID or GITHUB_CLIENT_SECRET is missing from Cloudflare environment.', { status: 500 });
+  }
+
+  // OAuth CSRF state verification
+  const cookieHeader = context.request.headers.get('Cookie') || '';
+  const cookieMatch = cookieHeader.match(/oauth_state=([^;]+)/);
+  const cookieState = cookieMatch ? cookieMatch[1] : null;
+
+  if (!state || !cookieState || state !== cookieState) {
+    return new Response('Invalid or missing OAuth state token (CSRF check failed).', { status: 403 });
   }
 
   try {
@@ -43,6 +53,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       provider: 'github',
     });
 
+    const targetOrigin = url.origin;
+
     const scriptHtml = `
       <!DOCTYPE html>
       <html>
@@ -59,19 +71,20 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
                 );
               }
               window.addEventListener("message", receiveMessage, false);
-              window.opener.postMessage("authorizing:github", "*");
+              window.opener.postMessage("authorizing:github", "${targetOrigin}");
             })();
           </script>
         </body>
       </html>
     `;
 
-    return new Response(scriptHtml, {
-      headers: {
-        'Content-Type': 'text/html;charset=UTF-8',
-      },
-    });
+    const headers = new Headers();
+    headers.set('Content-Type', 'text/html;charset=UTF-8');
+    headers.set('Set-Cookie', 'oauth_state=; HttpOnly; Secure; SameSite=Lax; Path=/api; Max-Age=0');
+
+    return new Response(scriptHtml, { headers });
   } catch (err: any) {
     return new Response(`Server Error: ${err.message}`, { status: 500 });
   }
 };
+

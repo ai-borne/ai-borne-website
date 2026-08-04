@@ -66,4 +66,14 @@ describe('Security Architecture & Codebase Audit Guardrails', () => {
       }
     }
   });
+
+  it('guardrail: verifies existence and configuration of .github/dependabot.yml', () => {
+    const dependabotPath = path.resolve(rootDir, '.github/dependabot.yml');
+    expect(fs.existsSync(dependabotPath)).toBe(true);
+
+    const content = fs.readFileSync(dependabotPath, 'utf-8');
+    expect(content).toContain('package-ecosystem: "npm"');
+    expect(content).toContain('package-ecosystem: "github-actions"');
+  });
 });
+
