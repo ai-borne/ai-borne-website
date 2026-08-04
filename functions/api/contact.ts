@@ -1,20 +1,69 @@
 interface ContactRequestBody {
   email?: string;
   message?: string;
+  turnstileToken?: string;
 }
 
 interface Env {
   RESEND_API_KEY?: string;
+  CF_TURNSTILE_SECRET_KEY?: string;
 }
 
-export async function onRequestPost(context: { request: Request; env: Env }): Promise<Response> {
-  const headers = {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-  };
+const MAX_PAYLOAD_BYTES = 10 * 1024; // 10 KB limit
+const ALLOWED_ORIGINS = [
+  'https://ai-borne.in',
+  'https://www.ai-borne.in',
+];
+
+export async function onRequestOptions(context: { request: Request }): Promise<Response> {
+  const origin = getAllowedOrigin(context.request);
+  return new Response(null, {
+    status: 204,
+    headers: getResponseHeaders(origin),
+  });
+}
+
+export async function onRequestPost(context: { request: Request; env: Env; waitUntil?: (promise: Promise<any>) => void }): Promise<Response> {
+  const { request, env } = context;
+  const origin = getAllowedOrigin(request);
+  const headers = getResponseHeaders(origin);
+
+  // Method check
+  if (request.method !== 'POST') {
+    return new Response(
+      JSON.stringify({ success: false, error: 'Method Not Allowed' }),
+      { status: 405, headers }
+    );
+  }
+
+  // Content-Type validation
+  const contentType = request.headers.get('Content-Type') || '';
+  if (!contentType.toLowerCase().includes('application/json')) {
+    return new Response(
+      JSON.stringify({ success: false, error: 'Unsupported Content-Type. Must be application/json.' }),
+      { status: 415, headers }
+    );
+  }
+
+  // Payload size validation
+  const contentLengthHeader = request.headers.get('Content-Length');
+  if (contentLengthHeader && parseInt(contentLengthHeader, 10) > MAX_PAYLOAD_BYTES) {
+    return new Response(
+      JSON.stringify({ success: false, error: 'Payload exceeds maximum allowed limit (10KB).' }),
+      { status: 413, headers }
+    );
+  }
 
   try {
-    const body: ContactRequestBody = await context.request.json();
+    const rawText = await request.text();
+    if (new TextEncoder().encode(rawText).length > MAX_PAYLOAD_BYTES) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Payload exceeds maximum allowed limit (10KB).' }),
+        { status: 413, headers }
+      );
+    }
+
+    const body: ContactRequestBody = JSON.parse(rawText);
     const email = body.email?.trim() || '';
     const message = body.message?.trim() || '';
 
@@ -32,8 +81,21 @@ export async function onRequestPost(context: { request: Request; env: Env }): Pr
       );
     }
 
-    const apiKey = context.env?.RESEND_API_KEY;
+    if (env?.CF_TURNSTILE_SECRET_KEY) {
+      const isBotCleared = await verifyTurnstileToken(
+        env.CF_TURNSTILE_SECRET_KEY,
+        body.turnstileToken || '',
+        request.headers.get('CF-Connecting-IP') || ''
+      );
+      if (!isBotCleared) {
+        return new Response(
+          JSON.stringify({ success: false, error: 'Bot verification failed. Please try again.' }),
+          { status: 403, headers }
+        );
+      }
+    }
 
+    const apiKey = env?.RESEND_API_KEY;
     if (!apiKey) {
       return new Response(
         JSON.stringify({
@@ -139,9 +201,55 @@ export async function onRequestPost(context: { request: Request; env: Env }): Pr
   }
 }
 
+function getAllowedOrigin(request: Request): string | null {
+  const reqOrigin = request.headers.get('Origin') || '';
+  if (!reqOrigin) return null;
+
+  if (ALLOWED_ORIGINS.includes(reqOrigin.toLowerCase())) {
+    return reqOrigin;
+  }
+
+  // Allow localhost origins for dev environment
+  if (/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(reqOrigin.toLowerCase())) {
+    return reqOrigin;
+  }
+
+  return null;
+}
+
+function getResponseHeaders(origin: string | null): Record<string, string> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'X-Content-Type-Options': 'nosniff',
+  };
+
+  if (origin) {
+    headers['Access-Control-Allow-Origin'] = origin;
+  }
+
+  return headers;
+}
+
 function isValidEmail(email: string): boolean {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return re.test(email);
+}
+
+async function verifyTurnstileToken(secret: string, token: string, remoteIp: string): Promise<boolean> {
+  if (!token) return false;
+  try {
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret, response: token, remoteip: remoteIp }),
+    });
+    const outcome: any = await res.json().catch(() => ({}));
+    return !!outcome.success;
+  } catch {
+    return false;
+  }
 }
 
 function escapeHtml(str: string): string {

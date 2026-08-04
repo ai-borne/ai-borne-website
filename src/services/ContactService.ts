@@ -7,11 +7,11 @@ export interface IContactResult {
 }
 
 export interface IContactService {
-  sendMessage(email: string, message: string): Promise<IContactResult>;
+  sendMessage(email: string, message: string, turnstileToken?: string): Promise<IContactResult>;
 }
 
 export class MockContactService implements IContactService {
-  public async sendMessage(email: string, message: string): Promise<IContactResult> {
+  public async sendMessage(email: string, message: string, _turnstileToken?: string): Promise<IContactResult> {
     const emailValid = FormValidator.validateEmail(email);
     if (!emailValid.valid) {
       return { success: false, errorMessage: emailValid.message };
@@ -33,7 +33,7 @@ export class HttpContactService implements IContactService {
     this.endpoint = endpoint;
   }
 
-  public async sendMessage(email: string, message: string): Promise<IContactResult> {
+  public async sendMessage(email: string, message: string, turnstileToken?: string): Promise<IContactResult> {
     const emailValid = FormValidator.validateEmail(email);
     if (!emailValid.valid) {
       return { success: false, errorMessage: emailValid.message };
@@ -47,7 +47,7 @@ export class HttpContactService implements IContactService {
       const response = await fetch(this.endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, message }),
+        body: JSON.stringify({ email, message, turnstileToken }),
       });
 
       const data = await response.json().catch(() => ({}));

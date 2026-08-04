@@ -59,4 +59,24 @@ describe('HttpContactService (TDD)', () => {
     expect(result.success).toBe(false);
     expect(result.errorMessage).toContain('Network connection issue');
   });
+
+  it('includes optional turnstileToken in payload when provided', async () => {
+    const fetchSpy = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true }),
+    });
+    vi.stubGlobal('fetch', fetchSpy);
+
+    const result = await service.sendMessage('test@ai-borne.in', 'Hello team, need assistance.', 'turnstile_token_123');
+    expect(result.success).toBe(true);
+    expect(fetchSpy).toHaveBeenCalledWith('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: 'test@ai-borne.in',
+        message: 'Hello team, need assistance.',
+        turnstileToken: 'turnstile_token_123',
+      }),
+    });
+  });
 });
