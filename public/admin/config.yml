@@ -1,7 +1,9 @@
 backend:
   name: github
-  repo: sunilpawar-git/ai-borne_website
+  repo: ai-borne/ai-borne-website
   branch: main
+  base_url: https://ai-borne.in
+  auth_endpoint: /api/auth
 
 media_folder: "public/uploads"
 public_folder: "/uploads"
