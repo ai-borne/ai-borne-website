@@ -18,7 +18,26 @@ export interface IStringDictionary {
     viewProductDetails: string;
     minRead: string;
   };
+  appsIndex: {
+    title: string;
+    subtitle: string;
+  };
   payslipmax: {
+    badge: string;
+    privacyBannerLabel: string;
+    keyFeaturesTitle: string;
+  };
+  ssbmax: {
+    badge: string;
+    privacyBannerLabel: string;
+    keyFeaturesTitle: string;
+  };
+  yogaOfEating: {
+    badge: string;
+    privacyBannerLabel: string;
+    keyFeaturesTitle: string;
+  };
+  actionStation: {
     badge: string;
     privacyBannerLabel: string;
     keyFeaturesTitle: string;
@@ -64,18 +83,37 @@ export class StringResources {
       badge: 'Indie Software Studio',
       tagline: 'Engineering Intelligent Apps, Automation & AI Solutions',
       mission: 'Empowering users with privacy-first, on-device intelligent tools and seamless automations.',
-      ctaExplore: 'Explore PayslipMax',
+      ctaExplore: 'Explore App Suite',
     },
     home: {
       featuredAppsTitle: 'Featured Applications',
-      featuredAppsSubtitle: 'Built with modern Kotlin Multiplatform & privacy-first architecture',
+      featuredAppsSubtitle: 'Built with modern Kotlin Multiplatform, SwiftUI, React & privacy-first AI architecture',
       insightsTitle: 'Latest Insights & Hacks',
       viewProductDetails: 'View Product Details →',
       minRead: 'min read',
     },
+    appsIndex: {
+      title: 'Our App Ecosystem',
+      subtitle: 'Discover our privacy-first tools, AI automations, and intelligent platforms',
+    },
     payslipmax: {
       badge: 'Finance & Productivity',
       privacyBannerLabel: 'Privacy Guarantee:',
+      keyFeaturesTitle: 'Key Capabilities & Features',
+    },
+    ssbmax: {
+      badge: 'Defense Prep & AI',
+      privacyBannerLabel: 'Security Guarantee:',
+      keyFeaturesTitle: 'Key Capabilities & Features',
+    },
+    yogaOfEating: {
+      badge: 'Health & Mindfulness',
+      privacyBannerLabel: 'Privacy Guarantee:',
+      keyFeaturesTitle: 'Key Capabilities & Features',
+    },
+    actionStation: {
+      badge: 'Productivity & Knowledge',
+      privacyBannerLabel: 'Architecture Highlight:',
       keyFeaturesTitle: 'Key Capabilities & Features',
     },
     support: {

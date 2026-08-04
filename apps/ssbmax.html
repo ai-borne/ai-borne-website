@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script>
+      (function() {
+        var s = localStorage.getItem('aiborne_theme_preference');
+        var l = s === 'light' || (s !== 'dark' && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
+        if (l) document.documentElement.setAttribute('data-theme', 'light');
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SSBMax — AI-Powered SSB Test Automation & Preparation | AI-Borne</title>
+    <meta name="description" content="Master Services Selection Board (SSB) tests with SSBMax: AI mock interviews, Officer Like Qualities (OLQ) evaluation, and comprehensive test suite practice." />
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/ts/ssbmax.ts"></script>
+  </body>
+</html>

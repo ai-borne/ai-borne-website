@@ -26,7 +26,7 @@ export function renderHomePage(): void {
         <h1 class="hero-title">${config.tagline}</h1>
         <p class="hero-tagline">${config.mission}</p>
         <div>
-          <a href="/apps/payslipmax.html" class="btn btn-primary">${strings.hero.ctaExplore}</a>
+          <a href="/apps/index.html" class="btn btn-primary">${strings.hero.ctaExplore}</a>
         </div>
       </section>
 
@@ -44,7 +44,7 @@ export function renderHomePage(): void {
               <div style="margin-bottom: 1rem;">
                 <span style="color: #4ade80; font-size: 0.875rem;">✔ ${app.privacyGuarantee}</span>
               </div>
-              <a href="/apps/payslipmax.html" class="btn btn-primary">${strings.home.viewProductDetails}</a>
+              <a href="/apps/${app.id}.html" class="btn btn-primary">${strings.home.viewProductDetails}</a>
             </div>
           `
             )

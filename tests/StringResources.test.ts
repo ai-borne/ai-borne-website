@@ -13,7 +13,7 @@ describe('StringResources (SSOT)', () => {
   it('returns valid hero and cta string resources', () => {
     const strings = StringResources.getStrings();
     expect(strings.hero.badge).toBe('Indie Software Studio');
-    expect(strings.hero.ctaExplore).toBe('Explore PayslipMax');
+    expect(strings.hero.ctaExplore).toBe('Explore App Suite');
     expect(strings.hero.tagline).toContain('AI Solutions');
   });
 

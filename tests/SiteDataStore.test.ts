@@ -12,10 +12,23 @@ describe('SiteDataStore & LegalPolicyStore (SSOT)', () => {
 
   it('returns registered apps metadata', () => {
     const apps = SiteDataStore.getApps();
-    expect(apps.length).toBeGreaterThan(0);
+    expect(apps.length).toBe(4);
+    
     const payslipMax = SiteDataStore.getAppById('payslipmax');
     expect(payslipMax).toBeDefined();
     expect(payslipMax?.name).toBe('PayslipMax');
+
+    const ssbMax = SiteDataStore.getAppById('ssbmax');
+    expect(ssbMax).toBeDefined();
+    expect(ssbMax?.name).toBe('SSBMax');
+
+    const yogaOfEating = SiteDataStore.getAppById('yoga-of-eating');
+    expect(yogaOfEating).toBeDefined();
+    expect(yogaOfEating?.name).toBe('Yoga of Eating');
+
+    const actionStation = SiteDataStore.getAppById('action-station');
+    expect(actionStation).toBeDefined();
+    expect(actionStation?.name).toBe('ActionStation');
   });
 
   it('returns published blog posts', () => {

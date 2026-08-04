@@ -14,7 +14,7 @@ export class HeaderComponent {
           <nav class="desktop-nav">
             <ul class="nav-links">
               <li><a href="/" class="nav-link ${activeRoute === 'home' ? 'active' : ''}">${strings.nav.home}</a></li>
-              <li><a href="/apps/payslipmax.html" class="nav-link ${activeRoute === 'apps' ? 'active' : ''}">${strings.nav.apps}</a></li>
+              <li><a href="/apps/index.html" class="nav-link ${activeRoute === 'apps' ? 'active' : ''}">${strings.nav.apps}</a></li>
               <li><a href="/blog/index.html" class="nav-link ${activeRoute === 'blog' ? 'active' : ''}">${strings.nav.insights}</a></li>
               <li><a href="/support.html" class="nav-link ${activeRoute === 'support' ? 'active' : ''}">${strings.nav.support}</a></li>
             </ul>
@@ -38,7 +38,7 @@ export class HeaderComponent {
         <div id="mobile-nav-drawer" class="mobile-drawer" aria-hidden="true">
           <ul class="mobile-nav-links">
             <li><a href="/" class="mobile-nav-link ${activeRoute === 'home' ? 'active' : ''}">${strings.nav.home}</a></li>
-            <li><a href="/apps/payslipmax.html" class="mobile-nav-link ${activeRoute === 'apps' ? 'active' : ''}">${strings.nav.apps}</a></li>
+            <li><a href="/apps/index.html" class="mobile-nav-link ${activeRoute === 'apps' ? 'active' : ''}">${strings.nav.apps}</a></li>
             <li><a href="/blog/index.html" class="mobile-nav-link ${activeRoute === 'blog' ? 'active' : ''}">${strings.nav.insights}</a></li>
             <li><a href="/support.html" class="mobile-nav-link ${activeRoute === 'support' ? 'active' : ''}">${strings.nav.support}</a></li>
           </ul>

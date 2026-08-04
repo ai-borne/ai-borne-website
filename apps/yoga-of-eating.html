@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script>
+      (function() {
+        var s = localStorage.getItem('aiborne_theme_preference');
+        var l = s === 'light' || (s !== 'dark' && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
+        if (l) document.documentElement.setAttribute('data-theme', 'light');
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Yoga of Eating — Mindful Eating Journal & AI Companion | AI-Borne</title>
+    <meta name="description" content="Cultivate mindful eating habits with Yoga of Eating: AI-driven meal scoring, reactive smiley companion, and HealthKit sleep synthesis." />
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/ts/yogaofeating.ts"></script>
+  </body>
+</html>

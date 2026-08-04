@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script>
+      (function() {
+        var s = localStorage.getItem('aiborne_theme_preference');
+        var l = s === 'light' || (s !== 'dark' && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
+        if (l) document.documentElement.setAttribute('data-theme', 'light');
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>App Suite & Products — AI-Borne Studio</title>
+    <meta name="description" content="Discover our ecosystem of privacy-first apps, AI tools, and intelligent productivity solutions." />
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/ts/appsindex.ts"></script>
+  </body>
+</html>

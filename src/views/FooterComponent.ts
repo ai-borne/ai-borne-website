@@ -17,6 +17,9 @@ export class FooterComponent {
             <div>
               <h4 class="mb-md">${strings.footer.productsTitle}</h4>
               <a href="/apps/payslipmax.html" class="footer-link">PayslipMax</a>
+              <a href="/apps/ssbmax.html" class="footer-link">SSBMax</a>
+              <a href="/apps/yoga-of-eating.html" class="footer-link">Yoga of Eating</a>
+              <a href="/apps/action-station.html" class="footer-link">ActionStation</a>
             </div>
             <div>
               <h4 class="mb-md">${strings.footer.developerTitle}</h4>
