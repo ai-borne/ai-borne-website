@@ -7,8 +7,12 @@
   X-Permitted-Cross-Domain-Policies: none
   Cross-Origin-Opener-Policy: same-origin-allow-popups
   Cross-Origin-Resource-Policy: same-origin
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://identity.netlify.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.resend.com https://identity.netlify.com; frame-ancestors 'none'; object-src 'none';
+  Content-Security-Policy: default-src 'self'; worker-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://identity.netlify.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.resend.com https://identity.netlify.com; frame-ancestors 'none'; object-src 'none';
 
 /admin/*
   X-Robots-Tag: noindex, nofollow, noarchive
   Cache-Control: no-store, no-cache, must-revalidate
+
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+

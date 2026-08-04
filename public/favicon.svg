@@ -1,0 +1,20 @@
+<svg width="512" height="512" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="aiborne-icon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0066FF" />
+      <stop offset="100%" stop-color="#0038B8" />
+    </linearGradient>
+    <style>
+      .chev { stroke: #0B1340; }
+      @media (prefers-color-scheme: dark) {
+        .chev { stroke: #FFFFFF; }
+      }
+    </style>
+  </defs>
+  <!-- Canopy Ring -->
+  <path d="M 14 38 C 14 12, 86 12, 86 38 C 86 54, 50 66, 50 66 C 50 66, 14 54, 14 38 Z" 
+        stroke="url(#aiborne-icon-grad)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+  <!-- Bottom Chevron -->
+  <path class="chev" d="M 30 76 L 50 88 L 70 76" 
+        stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

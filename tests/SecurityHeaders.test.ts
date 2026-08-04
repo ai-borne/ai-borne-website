@@ -48,6 +48,7 @@ describe('Security Headers Configuration (_headers)', () => {
     // Check Content-Security-Policy
     const csp = headerMap.get('content-security-policy') || '';
     expect(csp).toContain("default-src 'self'");
+    expect(csp).toContain("worker-src 'self'");
     expect(csp).toContain("frame-ancestors 'none'");
     expect(csp).toContain("object-src 'none'");
   });
@@ -57,6 +58,13 @@ describe('Security Headers Configuration (_headers)', () => {
     expect(content).toContain('/admin/*');
     expect(content).toContain('X-Robots-Tag: noindex, nofollow, noarchive');
     expect(content).toContain('Cache-Control: no-store, no-cache, must-revalidate');
+  });
+
+  it('contains no-cache headers for service worker /sw.js route', () => {
+    const content = fs.readFileSync(headersFilePath, 'utf-8');
+    expect(content).toContain('/sw.js');
+    const swSection = content.substring(content.indexOf('/sw.js'));
+    expect(swSection).toContain('Cache-Control: no-cache, no-store, must-revalidate');
   });
 
   it('verifies presence and content of public/.well-known/security.txt', () => {

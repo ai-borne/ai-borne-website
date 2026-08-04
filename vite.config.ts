@@ -7,7 +7,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'inline',
-      includeAssets: ['favicon.ico', 'icon.svg', 'assets/*'],
+      includeAssets: ['favicon.ico', 'favicon.svg', 'icon.svg', 'assets/*'],
       manifest: {
         name: 'AI-Borne',
         short_name: 'AI-Borne',

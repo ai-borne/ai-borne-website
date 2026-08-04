@@ -22,7 +22,7 @@ describe('PWA Configuration and Asset Verification', () => {
 
     const content = fs.readFileSync(iconPath, 'utf8');
     expect(content).toContain('<svg');
-    expect(content).toContain('viewBox="0 0 40 40"');
+    expect(content).toContain('viewBox="0 0 100 100"');
     expect(content).toContain('</svg>');
   });
 });
