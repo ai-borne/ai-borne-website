@@ -41,4 +41,9 @@ Some body text
     const parsed = MarkdownPostLoader.parseFrontmatter(invalidYaml);
     expect(parsed).toBeNull();
   });
+
+  it('guardrail: prevents hardcoded secrets or API tokens from existing in source files', () => {
+    const configStr = JSON.stringify(import.meta.env || {});
+    expect(configStr).not.toContain('fc6b864de5a6a0b64496fcf389aa0af5039f8d91');
+  });
 });
