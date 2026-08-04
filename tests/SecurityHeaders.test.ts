@@ -48,4 +48,20 @@ describe('Security Headers Configuration (_headers)', () => {
     expect(csp).toContain("frame-ancestors 'none'");
     expect(csp).toContain("object-src 'none'");
   });
+
+  it('contains zero-trust anti-indexing headers for /admin/* route', () => {
+    const content = fs.readFileSync(headersFilePath, 'utf-8');
+    expect(content).toContain('/admin/*');
+    expect(content).toContain('X-Robots-Tag: noindex, nofollow, noarchive');
+    expect(content).toContain('Cache-Control: no-store, no-cache, must-revalidate');
+  });
+
+  it('verifies presence and content of public/.well-known/security.txt', () => {
+    const secTxtPath = path.resolve(__dirname, '../public/.well-known/security.txt');
+    expect(fs.existsSync(secTxtPath)).toBe(true);
+
+    const content = fs.readFileSync(secTxtPath, 'utf-8');
+    expect(content).toContain('Contact: mailto:support@ai-borne.in');
+    expect(content).toContain('Canonical: https://ai-borne.in/.well-known/security.txt');
+  });
 });

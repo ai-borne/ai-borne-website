@@ -51,4 +51,17 @@ describe('SupportViewModel (MVVM & TDD)', () => {
     expect(state.submittedEmail).toBe('user@ai-borne.in');
     expect(state.submittedMessage).toBe('Hello, I have an issue with PayslipMax.');
   });
+
+  it('passes optional turnstileToken to contact service on submitForm', async () => {
+    let capturedToken: string | undefined;
+    const mockService = {
+      sendMessage: async (_email: string, _msg: string, token?: string) => {
+        capturedToken = token;
+        return { success: true };
+      },
+    };
+    const viewModel = new SupportViewModel(mockService);
+    await viewModel.submitForm('user@ai-borne.in', 'Hello team, assistance required.', 'ts_token_abc123');
+    expect(capturedToken).toBe('ts_token_abc123');
+  });
 });

@@ -81,7 +81,10 @@ function bindSupportFormEvents(viewModel: SupportViewModel): void {
     submitBtn.disabled = true;
     submitBtn.innerText = strings.support.sendingButton;
 
-    await viewModel.submitForm(emailInput.value, messageInput.value);
+    const turnstileInput = document.querySelector('[name="cf-turnstile-response"]') as HTMLInputElement | null;
+    const turnstileToken = turnstileInput?.value || undefined;
+
+    await viewModel.submitForm(emailInput.value, messageInput.value, turnstileToken);
     const state = viewModel.getState();
 
     submitBtn.disabled = false;

@@ -23,7 +23,7 @@ export class SupportViewModel {
     return { ...this.state };
   }
 
-  public async submitForm(email: string, message: string): Promise<void> {
+  public async submitForm(email: string, message: string, turnstileToken?: string): Promise<void> {
     const emailValidation = FormValidator.validateEmail(email);
     if (!emailValidation.valid) {
       this.state = { isSubmitting: false, isSuccess: false, errorMessage: emailValidation.message || 'Invalid email address.' };
@@ -38,7 +38,7 @@ export class SupportViewModel {
 
     this.state = { isSubmitting: true, isSuccess: false, errorMessage: null };
     const sanitizedMsg = FormValidator.sanitizeInput(message);
-    const result = await this.contactService.sendMessage(email.trim(), sanitizedMsg);
+    const result = await this.contactService.sendMessage(email.trim(), sanitizedMsg, turnstileToken);
 
     if (result.success) {
       this.state = { isSubmitting: false, isSuccess: true, errorMessage: null };

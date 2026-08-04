@@ -40,6 +40,8 @@ export interface IStringDictionary {
     invalidEmailError: string;
     emptyMessageError: string;
     networkError: string;
+    botVerificationFailed: string;
+    botVerificationPending: string;
   };
   footer: {
     tagline: string;
@@ -93,6 +95,8 @@ export class StringResources {
       invalidEmailError: 'Please enter a valid email address.',
       emptyMessageError: 'Support message details cannot be empty.',
       networkError: 'Failed to send message. Please try again later or email support@ai-borne.in directly.',
+      botVerificationFailed: 'Security check failed. Please refresh the page and try again.',
+      botVerificationPending: 'Completing security verification...',
     },
     footer: {
       tagline: 'Engineering Intelligent Apps, Automation & AI Solutions.',
