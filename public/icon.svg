@@ -1,0 +1,16 @@
+<svg width="512" height="512" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="aiborne-brand-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0066FF" />
+      <stop offset="100%" stop-color="#0038B8" />
+    </linearGradient>
+  </defs>
+  <rect width="40" height="40" rx="8" fill="#0B1340" />
+  <g transform="translate(0, 0)">
+    <path d="M 20 4 C 29 4 35 9 35 15 C 35 18 29 23 20 25 C 11 23 5 18 5 15 C 5 9 11 4 20 4 Z" stroke="url(#aiborne-brand-grad)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="20" y1="4" x2="20" y2="25" stroke="url(#aiborne-brand-grad)" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="20" y1="25" x2="5" y2="15" stroke="url(#aiborne-brand-grad)" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="20" y1="25" x2="35" y2="15" stroke="url(#aiborne-brand-grad)" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 12 29.5 L 20 35 L 28 29.5" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

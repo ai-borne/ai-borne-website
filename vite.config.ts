@@ -1,8 +1,43 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
-  plugins: [],
+  plugins: [
+    VitePWA({
+      registerType: 'autoUpdate',
+      injectRegister: 'inline',
+      includeAssets: ['favicon.ico', 'icon.svg', 'assets/*'],
+      manifest: {
+        name: 'AI-Borne',
+        short_name: 'AI-Borne',
+        description: 'Engineering Intelligent Apps & Automation',
+        theme_color: '#0B1340',
+        background_color: '#0B1340',
+        display: 'standalone',
+        orientation: 'portrait',
+        scope: '/',
+        start_url: '/',
+        icons: [
+          {
+            src: '/icon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any'
+          },
+          {
+            src: '/icon.svg',
+            sizes: '512x512',
+            type: 'image/svg+xml',
+            purpose: 'maskable'
+          }
+        ]
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json}']
+      }
+    })
+  ],
   build: {
     rollupOptions: {
       input: {
