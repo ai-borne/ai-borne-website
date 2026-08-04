@@ -1,0 +1,23 @@
+backend:
+  name: github
+  repo: sunilpawar-git/ai-borne_website
+  branch: main
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "blog"
+    label: "Blog & Insights"
+    folder: "content/blog"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Slug / URL Identifier", name: "slug", widget: "string", hint: "e.g. my-new-tech-article" }
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Summary", name: "summary", widget: "string" }
+      - { label: "Category", name: "category", widget: "select", options: ["App Engineering", "Automation", "AI", "Tax Tech"], default: "App Engineering" }
+      - { label: "Published Date", name: "publishedDate", widget: "datetime", format: "YYYY-MM-DD", dateFormat: "YYYY-MM-DD", timeFormat: false }
+      - { label: "Author", name: "author", widget: "string", default: "AI-Borne Team" }
+      - { label: "Read Time (Minutes)", name: "readTimeMinutes", widget: "number", value_type: "int", default: 5 }
+      - { label: "Article Content", name: "body", widget: "markdown" }

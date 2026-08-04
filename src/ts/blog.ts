@@ -29,11 +29,13 @@ export function renderBlogPage(): void {
               (post) => `
             <article class="card">
               <span class="badge mb-sm">${post.category}</span>
-              <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">${post.title}</h2>
+              <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">
+                <a href="/blog/post.html?slug=${post.slug}" style="color: inherit; text-decoration: none;">${post.title}</a>
+              </h2>
               <p class="text-muted mb-md">${post.summary}</p>
               <div style="display: flex; justify-content: space-between; align-items: center;" class="text-muted">
                 <small>By ${post.author} &bull; ${post.publishedDate}</small>
-                <small>${post.readTimeMinutes} min read</small>
+                <small>${post.readTimeMinutes} min read &bull; <a href="/blog/post.html?slug=${post.slug}" style="color: var(--color-primary); font-weight: 600;">Read &rarr;</a></small>
               </div>
             </article>
           `

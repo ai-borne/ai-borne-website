@@ -1,5 +1,6 @@
 import { IAppMetadata } from '../models/AppMetadata';
 import { IBlogPost } from '../models/BlogPost';
+import { MarkdownPostLoader } from '../services/MarkdownPostLoader';
 
 export interface ISiteConfig {
   studioName: string;
@@ -54,7 +55,7 @@ export class SiteDataStore {
     },
   ];
 
-  private static readonly posts: IBlogPost[] = [
+  private static readonly fallbackPosts: IBlogPost[] = [
     {
       slug: 'privacy-first-local-pdf-parsing',
       title: 'Building Privacy-First PDF Parsing on Mobile Devices',
@@ -90,10 +91,18 @@ export class SiteDataStore {
   }
 
   public static getPosts(): IBlogPost[] {
-    return [...this.posts];
+    try {
+      const loaded = MarkdownPostLoader.loadPosts();
+      if (loaded.length > 0) {
+        return loaded;
+      }
+    } catch {
+      // Fallback if import.meta.glob is unavailable (e.g. non-Vite test environments)
+    }
+    return [...this.fallbackPosts];
   }
 
   public static getPostBySlug(slug: string): IBlogPost | undefined {
-    return this.posts.find((post) => post.slug === slug);
+    return this.getPosts().find((post) => post.slug === slug);
   }
 }
