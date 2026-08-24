@@ -4,42 +4,44 @@ export class LegalPolicyStore {
   public static getPrivacyPolicy(): ILegalPolicy {
     return {
       title: 'Privacy Policy',
-      lastUpdated: 'August 2, 2026',
-      effectiveDate: 'August 2, 2026',
+      lastUpdated: 'August 24, 2026',
+      effectiveDate: 'August 24, 2026',
       contactEmail: 'support@ai-borne.in',
       sections: [
         {
           heading: '1. Overview & Commitment to Privacy',
           body: [
-            'Action Station ("we", "our", or "us") is dedicated to protecting user privacy.',
-            'Our flagship apps, including PayslipMax, process document data locally on your device. We do not transmit, collect, or sell your personal financial documents.',
+            'AI-Borne ("we", "our", or "us") is committed to protecting user privacy.',
+            'Our flagship applications, including PayslipMax, operate on a privacy-first, on-device execution model. We do not sell, rent, or monetize your personal or financial data.',
           ],
         },
         {
-          heading: '2. Information We Collect',
+          heading: '2. Information Processing & Zero Server Uploads',
           body: [
-            'Local Storage: All document metadata, parsed salary figures, and settings are stored strictly in local device storage.',
-            'Zero Server Uploads: PDF files and financial documents parsed inside our applications are processed in-memory and on local storage on your device.',
-            'Support Communications: If you email support@ai-borne.in, we use your message solely to assist with your inquiry.',
+            '100% On-Device Processing: PDF documents, salary structures, earnings, deductions, and tax computations processed by PayslipMax are handled exclusively locally on your device.',
+            'Zero Server Uploads: We do not upload or store your financial documents or payslips on external servers or cloud databases.',
+            'Local Storage: App preferences, parsed history, and session settings are stored securely within your device\'s local application sandbox.',
           ],
         },
         {
-          heading: '3. Analytics and Crash Reporting',
+          heading: '3. Third-Party Services & Analytics',
           body: [
-            'We do not track user identities or collect sensitive personal data through telemetry.',
-            'Aggregated diagnostic metrics (if enabled) are strictly non-identifiable and used to maintain app stability.',
+            'In-App Subscriptions (RevenueCat): In-app purchases and subscription entitlements are securely validated using RevenueCat and official App Store / Google Play billing APIs. Financial document data is never shared with RevenueCat.',
+            'Crash & Diagnostic Telemetry: Anonymous, non-personally identifiable diagnostic logs may be collected solely to resolve app crashes and ensure stability.',
           ],
         },
         {
-          heading: '4. Third-Party Access',
+          heading: '4. Data Retention & Device Permissions',
           body: [
-            'We do not sell, trade, or share user data with any third parties or advertisers.',
+            'Device Permissions: PayslipMax requires document/file access solely to open and parse PDF payslips selected by you.',
+            'Retention: Local data persists only while the app is installed or until you clear application storage.',
           ],
         },
         {
-          heading: '5. Contact Information',
+          heading: '5. User Rights & Contact Information',
           body: [
-            'For any privacy questions or data deletion requests, contact us at support@ai-borne.in.',
+            'You retain full ownership of your data at all times.',
+            'For privacy inquiries or support requests, contact us at support@ai-borne.in.',
           ],
         },
       ],
@@ -49,26 +51,42 @@ export class LegalPolicyStore {
   public static getTermsOfService(): ILegalPolicy {
     return {
       title: 'Terms of Service',
-      lastUpdated: 'August 2, 2026',
-      effectiveDate: 'August 2, 2026',
+      lastUpdated: 'August 24, 2026',
+      effectiveDate: 'August 24, 2026',
       contactEmail: 'support@ai-borne.in',
       sections: [
         {
           heading: '1. Agreement to Terms',
           body: [
-            'By downloading, accessing, or using applications built by Action Station, you agree to be bound by these Terms.',
+            'By downloading, installing, or using AI-Borne applications, including PayslipMax, you agree to be bound by these Terms of Service and End User License Agreement (EULA).',
           ],
         },
         {
-          heading: '2. Permitted Use',
+          heading: '2. Permitted Use & Intellectual Property',
           body: [
-            'Our apps are provided for personal and professional productivity. You agree not to reverse engineer or tamper with app binary files.',
+            'AI-Borne grants you a personal, non-exclusive, non-transferable license to use PayslipMax for personal and business productivity in accordance with standard store terms.',
+            'You agree not to reverse engineer, decompile, or tamper with application binaries.',
           ],
         },
         {
-          heading: '3. Disclaimer of Warranties',
+          heading: '3. In-App Subscriptions, Billing & Cancellation',
           body: [
-            'Applications are provided "as is" without warranty of any kind. Users remain responsible for verifying parsed financial metrics against original documents.',
+            'Subscriptions: Certain premium features may require a monthly, annual, or lifetime subscription.',
+            'Auto-Renewal: Subscriptions automatically renew unless canceled at least 24 hours before the end of the current billing cycle.',
+            'Management & Cancellations: You can manage or cancel your subscription at any time through your Apple ID Subscriptions or Google Play Account settings.',
+          ],
+        },
+        {
+          heading: '4. Disclaimer of Financial & Legal Advice',
+          body: [
+            'PayslipMax is an automated productivity tool designed to parse and organize payslip information.',
+            'Parsed figures and calculations are provided for informational purposes only and do not constitute official financial, legal, or tax advice. Users should verify calculations against official records.',
+          ],
+        },
+        {
+          heading: '5. Limitation of Liability',
+          body: [
+            'AI-Borne provides applications "as is" without warranty of any kind. In no event shall AI-Borne be liable for any indirect or consequential damages resulting from app usage.',
           ],
         },
       ],
@@ -78,22 +96,22 @@ export class LegalPolicyStore {
   public static getDataDeletionInstructions(): ILegalPolicy {
     return {
       title: 'Data & Account Deletion Request',
-      lastUpdated: 'August 2, 2026',
-      effectiveDate: 'August 2, 2026',
+      lastUpdated: 'August 24, 2026',
+      effectiveDate: 'August 24, 2026',
       contactEmail: 'support@ai-borne.in',
       sections: [
         {
           heading: '1. Local Device Data Deletion',
           body: [
-            'Action Station applications store data locally on your device.',
-            'To immediately delete all local data, clear the app data/cache in your device Settings or uninstall the app from your device.',
+            'AI-Borne applications like PayslipMax process and store documents locally on your device.',
+            'To instantly and permanently erase all local payslip data and history, simply clear the application data/cache in your device Settings or uninstall the app.',
           ],
         },
         {
-          heading: '2. Requesting Support Communication Deletion',
+          heading: '2. Support Correspondence Deletion',
           body: [
-            'To request deletion of any support email correspondence, send an email to support@ai-borne.in with the subject "Data Deletion Request".',
-            'We process all valid deletion requests within 30 days.',
+            'To request deletion of any support email correspondence or feedback logs, send an email to support@ai-borne.in with the subject "Data Deletion Request".',
+            'We confirm and process all deletion requests within 30 days of receipt.',
           ],
         },
       ],
