@@ -75,5 +75,17 @@ describe('Security Architecture & Codebase Audit Guardrails', () => {
     expect(content).toContain('package-ecosystem: "npm"');
     expect(content).toContain('package-ecosystem: "github-actions"');
   });
+
+  it('guardrail: verifies existence and clean URL rewrite mappings in public/_redirects', () => {
+    const redirectsPath = path.resolve(rootDir, 'public/_redirects');
+    expect(fs.existsSync(redirectsPath)).toBe(true);
+
+    const content = fs.readFileSync(redirectsPath, 'utf-8');
+    expect(content).toContain('/privacy-policy');
+    expect(content).toContain('/terms');
+    expect(content).toContain('/data-deletion');
+    expect(content).toContain('/apps/payslipmax');
+  });
 });
+
 
