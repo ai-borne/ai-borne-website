@@ -26,6 +26,14 @@ export interface IStringDictionary {
     badge: string;
     privacyBannerLabel: string;
     keyFeaturesTitle: string;
+    complianceTitle: string;
+    privacyCardTitle: string;
+    privacyCardDesc: string;
+    termsCardTitle: string;
+    termsCardDesc: string;
+    deletionCardTitle: string;
+    deletionCardDesc: string;
+    readPolicyLink: string;
   };
   ssbmax: {
     badge: string;
@@ -100,6 +108,14 @@ export class StringResources {
       badge: 'Finance & Productivity',
       privacyBannerLabel: 'Privacy Guarantee:',
       keyFeaturesTitle: 'Key Capabilities & Features',
+      complianceTitle: 'Store Compliance & Legal',
+      privacyCardTitle: 'Privacy Policy',
+      privacyCardDesc: '100% on-device parsing. Zero cloud uploads of your personal documents or sensitive salary information.',
+      termsCardTitle: 'Terms of Service',
+      termsCardDesc: 'Standard App Store & Play Store terms, End User License Agreement (EULA), and transparent subscription management.',
+      deletionCardTitle: 'Data Deletion & Retention',
+      deletionCardDesc: 'Instant local data wiping on device cache clear, with dedicated 30-day support communication deletion SLA.',
+      readPolicyLink: 'View Document →',
     },
     ssbmax: {
       badge: 'Defense Prep & AI',

@@ -13,11 +13,16 @@ describe('App Suite ViewModels', () => {
     expect(apps.map((a) => a.id)).toEqual(['payslipmax', 'ssbmax', 'yoga-of-eating', 'action-station']);
   });
 
-  it('PayslipMaxViewModel retrieves correct app metadata', () => {
+  it('PayslipMaxViewModel retrieves correct app metadata and compliance cards', () => {
     const vm = new PayslipMaxViewModel();
     const app = vm.getAppDetails();
     expect(app.id).toBe('payslipmax');
     expect(app.name).toBe('PayslipMax');
+
+    const complianceCards = vm.getComplianceCards();
+    expect(complianceCards.length).toBe(3);
+    expect(complianceCards.map((c) => c.id)).toEqual(['privacy-policy', 'terms-of-service', 'data-deletion']);
+    expect(complianceCards.find((c) => c.id === 'privacy-policy')?.url).toBe('/privacy-policy.html');
   });
 
   it('SSBMaxViewModel retrieves correct app metadata', () => {

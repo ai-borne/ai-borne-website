@@ -17,6 +17,14 @@ describe('StringResources (SSOT)', () => {
     expect(strings.hero.tagline).toContain('AI Solutions');
   });
 
+  it('returns valid PayslipMax store compliance string resources', () => {
+    const strings = StringResources.getStrings();
+    expect(strings.payslipmax.complianceTitle).toBe('Store Compliance & Legal');
+    expect(strings.payslipmax.privacyCardTitle).toBe('Privacy Policy');
+    expect(strings.payslipmax.termsCardTitle).toBe('Terms of Service');
+    expect(strings.payslipmax.deletionCardTitle).toBe('Data Deletion & Retention');
+  });
+
   it('returns valid support center and footer resources', () => {
     const strings = StringResources.getStrings();
     expect(strings.support.title).toBe('Developer Support Center');

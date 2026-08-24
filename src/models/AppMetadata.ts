@@ -5,6 +5,14 @@ export interface IAppFeature {
   icon: string;
 }
 
+export interface IComplianceCard {
+  id: string;
+  title: string;
+  description: string;
+  url: string;
+  badge?: string;
+}
+
 export interface IAppMetadata {
   id: string;
   name: string;
