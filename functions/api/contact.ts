@@ -100,7 +100,7 @@ export async function onRequestPost(context: { request: Request; env: Env; waitU
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Email gateway configuration missing. Please email support@ai-borne.in directly.',
+          error: 'Email gateway configuration missing. Please email founder@ai-borne.in directly.',
         }),
         { status: 500, headers }
       );
@@ -114,8 +114,8 @@ export async function onRequestPost(context: { request: Request; env: Env; waitU
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        from: 'AI-Borne Support <support@ai-borne.in>',
-        to: ['support@ai-borne.in'],
+        from: 'AI-Borne <founder@ai-borne.in>',
+        to: ['founder@ai-borne.in'],
         reply_to: email,
         subject: `[AI-Borne Web Support] New message from ${email}`,
         html: `
@@ -137,7 +137,7 @@ export async function onRequestPost(context: { request: Request; env: Env; waitU
       return new Response(
         JSON.stringify({
           success: false,
-          error: resendData.message || 'Failed to deliver support email. Please email support@ai-borne.in directly.',
+          error: resendData.message || 'Failed to deliver support email. Please email founder@ai-borne.in directly.',
         }),
         { status: 500, headers }
       );
@@ -152,9 +152,9 @@ export async function onRequestPost(context: { request: Request; env: Env; waitU
           'Authorization': `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          from: 'AI-Borne Support <support@ai-borne.in>',
+          from: 'AI-Borne <founder@ai-borne.in>',
           to: [email],
-          reply_to: 'support@ai-borne.in',
+          reply_to: 'founder@ai-borne.in',
           subject: '[AI-Borne Support] We received your message',
           html: `
             <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff; color: #0f172a;">
@@ -163,19 +163,19 @@ export async function onRequestPost(context: { request: Request; env: Env; waitU
                 <p style="color: #64748b; font-size: 13px; margin-top: 4px;">Developer Support Center</p>
               </div>
               <h2 style="font-size: 18px; color: #1e293b; margin-top: 0;">Thank you for reaching out!</h2>
-              <p style="font-size: 15px; color: #334155; line-height: 1.6;">
-                We have received your support inquiry. The <strong>AI-Borne</strong> team typically responds within <strong>24–48 hours</strong>.
+              <p style="font-size: 14px; color: #475569; line-height: 1.6;">
+                We have received your support inquiry. Our team reviews all incoming requests promptly, and we typically respond within <strong>24–48 hours</strong>.
               </p>
-              <div style="background-color: #f8fafc; border-left: 4px solid #6366f1; padding: 16px; margin: 20px 0; border-radius: 6px;">
-                <p style="font-size: 12px; color: #64748b; margin: 0 0 8px 0; font-weight: 600; text-transform: uppercase;">Your Message Copy:</p>
-                <p style="font-size: 14px; color: #1e293b; margin: 0; white-space: pre-wrap;">${escapeHtml(message)}</p>
+              <div style="margin: 20px 0; padding: 16px; background-color: #f8fafc; border-radius: 8px; border-left: 4px solid #6366f1;">
+                <p style="font-size: 13px; color: #64748b; margin: 0 0 6px 0; font-weight: 600;">Your Message Summary:</p>
+                <p style="font-size: 14px; color: #334155; margin: 0; white-space: pre-wrap;">${escapeHtml(message)}</p>
               </div>
-              <p style="font-size: 14px; color: #475569;">
-                If you have additional details to add, simply reply directly to this email.
+              <p style="font-size: 13px; color: #64748b; line-height: 1.5;">
+                If you have additional details or screenshots to provide, simply reply directly to this email.
               </p>
-              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
-              <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 0;">
-                &copy; 2026 AI-Borne Studio (<a href="https://ai-borne.in" style="color: #6366f1; text-decoration: none;">ai-borne.in</a>). All rights reserved.
+              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+              <p style="font-size: 12px; color: #94a3b8; margin: 0;">
+                &copy; ${new Date().getFullYear()} AI-Borne. All rights reserved. &bull; <a href="https://ai-borne.in" style="color: #6366f1; text-decoration: none;">ai-borne.in</a>
               </p>
             </div>
           `,
@@ -194,7 +194,7 @@ export async function onRequestPost(context: { request: Request; env: Env; waitU
     return new Response(
       JSON.stringify({
         success: false,
-        error: 'Failed to connect to email gateway. Please email support@ai-borne.in directly.',
+        error: 'Failed to connect to email gateway. Please email founder@ai-borne.in directly.',
       }),
       { status: 500, headers }
     );

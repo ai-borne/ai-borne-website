@@ -148,7 +148,7 @@ export class StringResources {
       successMessage: 'Thank you! Your message has been sent successfully.',
       invalidEmailError: 'Please enter a valid email address.',
       emptyMessageError: 'Support message details cannot be empty.',
-      networkError: 'Failed to send message. Please try again later or email support@ai-borne.in directly.',
+      networkError: 'Failed to send message. Please try again later or email founder@ai-borne.in directly.',
       botVerificationFailed: 'Security check failed. Please refresh the page and try again.',
       botVerificationPending: 'Completing security verification...',
     },

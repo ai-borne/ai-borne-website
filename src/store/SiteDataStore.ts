@@ -17,7 +17,7 @@ export class SiteDataStore {
     domain: 'ai-borne.in',
     tagline: 'Engineering Intelligent Apps, Automation & AI Solutions',
     mission: 'Empowering users with privacy-first, on-device intelligent tools and seamless automations.',
-    supportEmail: 'support@ai-borne.in',
+    supportEmail: 'founder@ai-borne.in',
     githubUrl: 'https://github.com/sunilpawar-git',
   };
 

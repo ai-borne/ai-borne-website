@@ -58,12 +58,12 @@ export class HttpContactService implements IContactService {
 
       return {
         success: false,
-        errorMessage: data.error || 'Failed to send support email. Please email support@ai-borne.in directly.',
+        errorMessage: data.error || 'Failed to send support email. Please email founder@ai-borne.in directly.',
       };
     } catch (error) {
       return {
         success: false,
-        errorMessage: 'Network connection issue. Please email support@ai-borne.in directly.',
+        errorMessage: 'Network connection issue. Please email founder@ai-borne.in directly.',
       };
     }
   }

@@ -3,7 +3,7 @@ import { FormValidator } from '../src/services/FormValidator';
 
 describe('FormValidator (Services Layer)', () => {
   it('validates email correctly', () => {
-    expect(FormValidator.validateEmail('support@ai-borne.in').valid).toBe(true);
+    expect(FormValidator.validateEmail('founder@ai-borne.in').valid).toBe(true);
     expect(FormValidator.validateEmail('invalid-email').valid).toBe(false);
     expect(FormValidator.validateEmail('').valid).toBe(false);
   });

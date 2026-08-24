@@ -1,4 +1,4 @@
-Contact: mailto:support@ai-borne.in
+Contact: mailto:founder@ai-borne.in
 Expires: 2027-12-31T23:59:59.000Z
 Preferred-Languages: en
 Canonical: https://ai-borne.in/.well-known/security.txt

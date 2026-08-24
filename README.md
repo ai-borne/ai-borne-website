@@ -70,14 +70,14 @@ npx wrangler pages deploy dist --project-name ai-borne
 
 ---
 
-## Free Custom Email Routing (`support@ai-borne.in`)
+## Free Custom Email Routing (`founder@ai-borne.in`)
 
 1. In Cloudflare Dashboard, select `ai-borne.in` ➔ **Email Routing**.
 2. Enable Email Routing (auto-configure MX records).
 3. Under **Routes**, click **Create Address**:
-   - **Custom Address**: `support@ai-borne.in`
+   - **Custom Address**: `founder@ai-borne.in`
    - **Action**: Send to `your.email@domain.com`
-5. All emails sent to `support@ai-borne.in` will now arrive in your personal inbox for free!
+5. All emails sent to `founder@ai-borne.in` will now arrive in your personal inbox for free!
 
 ---
 
@@ -90,7 +90,7 @@ npx wrangler pages deploy dist --project-name ai-borne
 | **Privacy Policy URL** (Apple & Google) | `https://ai-borne.in/privacy-policy.html` | Live |
 | **Terms of Service URL** | `https://ai-borne.in/terms.html` | Live |
 | **Account & Data Deletion URL** (Google Play) | `https://ai-borne.in/data-deletion.html` | Live |
-| **Support Email** (Google Play) | `support@ai-borne.in` | Live |
+| **Support Email** (Google Play) | `founder@ai-borne.in` | Live |
 
 ---
 

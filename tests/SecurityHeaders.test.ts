@@ -72,7 +72,7 @@ describe('Security Headers Configuration (_headers)', () => {
     expect(fs.existsSync(secTxtPath)).toBe(true);
 
     const content = fs.readFileSync(secTxtPath, 'utf-8');
-    expect(content).toContain('Contact: mailto:support@ai-borne.in');
+    expect(content).toContain('Contact: mailto:founder@ai-borne.in');
     expect(content).toContain('Canonical: https://ai-borne.in/.well-known/security.txt');
   });
 });

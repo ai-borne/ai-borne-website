@@ -6,7 +6,7 @@ export class LegalPolicyStore {
       title: 'Privacy Policy',
       lastUpdated: 'August 24, 2026',
       effectiveDate: 'August 24, 2026',
-      contactEmail: 'support@ai-borne.in',
+      contactEmail: 'founder@ai-borne.in',
       sections: [
         {
           heading: '1. Overview & Commitment to Privacy',
@@ -41,7 +41,7 @@ export class LegalPolicyStore {
           heading: '5. User Rights & Contact Information',
           body: [
             'You retain full ownership of your data at all times.',
-            'For privacy inquiries or support requests, contact us at support@ai-borne.in.',
+            'For privacy inquiries or support requests, contact us directly at founder@ai-borne.in.',
           ],
         },
       ],
@@ -53,7 +53,7 @@ export class LegalPolicyStore {
       title: 'Terms of Service',
       lastUpdated: 'August 24, 2026',
       effectiveDate: 'August 24, 2026',
-      contactEmail: 'support@ai-borne.in',
+      contactEmail: 'founder@ai-borne.in',
       sections: [
         {
           heading: '1. Agreement to Terms',
@@ -98,7 +98,7 @@ export class LegalPolicyStore {
       title: 'Data & Account Deletion Request',
       lastUpdated: 'August 24, 2026',
       effectiveDate: 'August 24, 2026',
-      contactEmail: 'support@ai-borne.in',
+      contactEmail: 'founder@ai-borne.in',
       sections: [
         {
           heading: '1. Local Device Data Deletion',
@@ -110,7 +110,7 @@ export class LegalPolicyStore {
         {
           heading: '2. Support Correspondence Deletion',
           body: [
-            'To request deletion of any support email correspondence or feedback logs, send an email to support@ai-borne.in with the subject "Data Deletion Request".',
+            'To request deletion of any support email correspondence or feedback logs, send an email to founder@ai-borne.in with the subject "Data Deletion Request".',
             'We confirm and process all deletion requests within 30 days of receipt.',
           ],
         },
