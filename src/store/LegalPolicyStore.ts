@@ -12,36 +12,37 @@ export class LegalPolicyStore {
           heading: '1. Overview & Commitment to Privacy',
           body: [
             'AI-Borne ("we", "our", or "us") is committed to protecting user privacy.',
-            'Our flagship applications, including PayslipMax, operate on a privacy-first, on-device execution model. We do not sell, rent, or monetize your personal or financial data.',
+            'PayslipMax is engineered to empower PCDA(O) Pune defence officers with deep financial, tax, and salary insights otherwise unavailable through raw PDF statements—all delivered through a strict 100% offline, on-device architecture.',
+            'We do not sell, rent, track, or monetize your personal or financial data.',
           ],
         },
         {
           heading: '2. Information Processing & Zero Server Uploads',
           body: [
-            '100% On-Device Processing: PDF documents, salary structures, earnings, deductions, and tax computations processed by PayslipMax are handled exclusively locally on your device.',
-            'Zero Server Uploads: We do not upload or store your financial documents or payslips on external servers or cloud databases.',
-            'Local Storage: App preferences, parsed history, and session settings are stored securely within your device\'s local application sandbox.',
+            '100% On-Device Processing: PDF documents, salary structures, basic pay, allowances, deductions, and tax computations processed by PayslipMax are handled exclusively locally on your device.',
+            'Zero Server Uploads: We do not upload or store your financial documents, passwords, or payslips on external servers or cloud databases.',
+            'Local Storage: App preferences, parsed statement history, and session settings are stored securely within your device\'s private, encrypted application sandbox.',
           ],
         },
         {
           heading: '3. Third-Party Services & Analytics',
           body: [
-            'In-App Subscriptions (RevenueCat): In-app purchases and subscription entitlements are securely validated using RevenueCat and official App Store / Google Play billing APIs. Financial document data is never shared with RevenueCat.',
-            'Crash & Diagnostic Telemetry: Anonymous, non-personally identifiable diagnostic logs may be collected solely to resolve app crashes and ensure stability.',
+            'In-App Subscriptions (RevenueCat): In-app purchases and subscription entitlements are securely validated using RevenueCat and official App Store / Google Play billing APIs. Financial document data and payslip contents are never shared with RevenueCat.',
+            'Crash & Diagnostic Telemetry: Anonymous, non-personally identifiable diagnostic logs (such as offline AI model installation progress) may be collected solely to resolve app crashes and ensure stability. Telemetry can be disabled at any time in Settings.',
           ],
         },
         {
           heading: '4. Data Retention & Device Permissions',
           body: [
-            'Device Permissions: PayslipMax requires document/file access solely to open and parse PDF payslips selected by you.',
-            'Retention: Local data persists only while the app is installed or until you clear application storage.',
+            'Device Permissions: PayslipMax requires document/file access solely to open and parse PDF payslips selected directly by you.',
+            'Retention: Local data persists only while the app is installed or until you clear application storage or use "Reset App & Clear Data".',
           ],
         },
         {
           heading: '5. User Rights & Contact Information',
           body: [
-            'You retain full ownership of your data at all times.',
-            'For privacy inquiries or support requests, contact us directly at founder@ai-borne.in.',
+            'You retain full ownership and control of your data at all times.',
+            'For privacy inquiries, data deletion requests, or support, contact us directly at founder@ai-borne.in.',
           ],
         },
       ],
