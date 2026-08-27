@@ -12,7 +12,7 @@ export class LegalPolicyStore {
           heading: '1. Overview & Commitment to Privacy',
           body: [
             'AI-Borne ("we", "our", or "us") is committed to protecting user privacy.',
-            'PayslipMax is engineered to empower PCDA(O) Pune defence officers with deep financial, tax, and salary insights otherwise unavailable through raw PDF statements—all delivered through a strict 100% offline, on-device architecture.',
+            'PayslipMax is engineered to empower PCDA(O) Pune users with deep financial, tax, and salary insights otherwise unavailable through raw PDF statements—all delivered through a strict 100% offline, on-device architecture.',
             'We do not sell, rent, track, or monetize your personal or financial data.',
           ],
         },
