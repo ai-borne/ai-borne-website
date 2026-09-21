@@ -24,4 +24,5 @@ export interface IAppMetadata {
   features: IAppFeature[];
   appStoreUrl?: string;
   playStoreUrl?: string;
+  webUrl?: string;
 }

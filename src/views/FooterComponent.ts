@@ -25,6 +25,7 @@ export class FooterComponent {
                 <li><a href="/apps/ssbmax.html" class="footer-link">SSBMax</a></li>
                 <li><a href="/apps/yoga-of-eating.html" class="footer-link">Yoga of Eating</a></li>
                 <li><a href="/apps/action-station.html" class="footer-link">ActionStation</a></li>
+                <li><a href="/apps/defencewire.html" class="footer-link">DefenceWire.in</a></li>
               </ul>
             </div>
             <div class="footer-col">

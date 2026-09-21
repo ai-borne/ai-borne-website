@@ -146,6 +146,38 @@ export class SiteDataStore {
       appStoreUrl: '#',
       playStoreUrl: '#',
     },
+    {
+      id: 'defencewire',
+      name: 'DefenceWire.in',
+      tagline: 'India’s Institutional Defence & Strategic Intelligence Wire',
+      description: 'Real-time automated news aggregator and intelligence wire covering Indian military technology, strategic geopolitics, capital procurement, and SSB interview intelligence.',
+      version: '1.0.0',
+      category: 'Defense & Strategic Intelligence',
+      privacyGuarantee: 'Edge-Cached Real-Time Intelligence & Verified Institutional Sourcing (PIB, MoD & Sansad).',
+      webUrl: 'https://www.defencewire.in',
+      features: [
+        {
+          id: 'realtime-wire',
+          title: 'Real-Time Defence Aggregator',
+          description: 'Synthesizes multi-source coverage across Indian Army, Navy, Air Force, DRDO, and MoD with live updates.',
+          icon: 'newspaper',
+        },
+        {
+          id: 'strategic-programs',
+          title: 'Strategic Program Dossiers',
+          description: 'Living intelligence dossiers for 43+ strategic programs (Tejas, AMCA, Project 75I) plus tenders and iDEX startups.',
+          icon: 'shield-check',
+        },
+        {
+          id: 'ssb-geopolitics',
+          title: 'SSB & Geopolitical Intelligence',
+          description: 'High-yield analytical briefings, Parliamentary Q&A tracking, and strategic context tailored for defence aspirants and analysts.',
+          icon: 'academic-cap',
+        },
+      ],
+      appStoreUrl: '#',
+      playStoreUrl: '#',
+    },
   ];
 
   private static readonly fallbackPosts: IBlogPost[] = [

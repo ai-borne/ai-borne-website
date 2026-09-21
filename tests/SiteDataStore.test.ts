@@ -12,7 +12,7 @@ describe('SiteDataStore & LegalPolicyStore (SSOT)', () => {
 
   it('returns registered apps metadata', () => {
     const apps = SiteDataStore.getApps();
-    expect(apps.length).toBe(4);
+    expect(apps.length).toBe(5);
     
     const payslipMax = SiteDataStore.getAppById('payslipmax');
     expect(payslipMax).toBeDefined();
@@ -29,6 +29,10 @@ describe('SiteDataStore & LegalPolicyStore (SSOT)', () => {
     const actionStation = SiteDataStore.getAppById('action-station');
     expect(actionStation).toBeDefined();
     expect(actionStation?.name).toBe('ActionStation');
+
+    const defenceWire = SiteDataStore.getAppById('defencewire');
+    expect(defenceWire).toBeDefined();
+    expect(defenceWire?.name).toBe('DefenceWire.in');
   });
 
   it('returns published blog posts', () => {

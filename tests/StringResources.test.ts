@@ -31,4 +31,11 @@ describe('StringResources (SSOT)', () => {
     expect(strings.support.sendButton).toBe('Send Message');
     expect(strings.footer.copyright).toContain('AI-BORNE');
   });
+
+  it('returns valid DefenceWire string resources', () => {
+    const strings = StringResources.getStrings();
+    expect(strings.defencewire.badge).toBe('Defense & Strategic Intelligence');
+    expect(strings.defencewire.keyFeaturesTitle).toContain('Key Capabilities');
+    expect(strings.defencewire.launchButton).toContain('DefenceWire.in');
+  });
 });

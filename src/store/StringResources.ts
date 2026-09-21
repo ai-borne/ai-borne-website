@@ -50,6 +50,12 @@ export interface IStringDictionary {
     privacyBannerLabel: string;
     keyFeaturesTitle: string;
   };
+  defencewire: {
+    badge: string;
+    privacyBannerLabel: string;
+    keyFeaturesTitle: string;
+    launchButton: string;
+  };
   support: {
     title: string;
     tagline: string;
@@ -131,6 +137,12 @@ export class StringResources {
       badge: 'Productivity & Knowledge',
       privacyBannerLabel: 'Architecture Highlight:',
       keyFeaturesTitle: 'Key Capabilities & Features',
+    },
+    defencewire: {
+      badge: 'Defense & Strategic Intelligence',
+      privacyBannerLabel: 'Intelligence Guarantee:',
+      keyFeaturesTitle: 'Key Capabilities & Strategic Features',
+      launchButton: 'Launch DefenceWire.in →',
     },
     support: {
       title: 'Developer Support Center',

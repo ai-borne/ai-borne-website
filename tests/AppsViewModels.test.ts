@@ -4,13 +4,14 @@ import { SSBMaxViewModel } from '../src/viewmodels/SSBMaxViewModel';
 import { YogaOfEatingViewModel } from '../src/viewmodels/YogaOfEatingViewModel';
 import { ActionStationViewModel } from '../src/viewmodels/ActionStationViewModel';
 import { PayslipMaxViewModel } from '../src/viewmodels/PayslipMaxViewModel';
+import { DefenceWireViewModel } from '../src/viewmodels/DefenceWireViewModel';
 
 describe('App Suite ViewModels', () => {
-  it('AppsIndexViewModel retrieves all 4 apps', () => {
+  it('AppsIndexViewModel retrieves all 5 apps', () => {
     const vm = new AppsIndexViewModel();
     const apps = vm.getAllApps();
-    expect(apps.length).toBe(4);
-    expect(apps.map((a) => a.id)).toEqual(['payslipmax', 'ssbmax', 'yoga-of-eating', 'action-station']);
+    expect(apps.length).toBe(5);
+    expect(apps.map((a) => a.id)).toEqual(['payslipmax', 'ssbmax', 'yoga-of-eating', 'action-station', 'defencewire']);
   });
 
   it('PayslipMaxViewModel retrieves correct app metadata and compliance cards', () => {
@@ -47,5 +48,15 @@ describe('App Suite ViewModels', () => {
     expect(app.id).toBe('action-station');
     expect(app.name).toBe('ActionStation');
     expect(app.features.length).toBe(3);
+  });
+
+  it('DefenceWireViewModel retrieves correct app metadata', () => {
+    const vm = new DefenceWireViewModel();
+    const app = vm.getAppDetails();
+    expect(app.id).toBe('defencewire');
+    expect(app.name).toBe('DefenceWire.in');
+    expect(app.category).toBe('Defense & Strategic Intelligence');
+    expect(app.features.length).toBe(3);
+    expect(app.webUrl).toBe('https://www.defencewire.in');
   });
 });
