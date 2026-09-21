@@ -178,6 +178,38 @@ export class SiteDataStore {
       appStoreUrl: '#',
       playStoreUrl: '#',
     },
+    {
+      id: 'securemax',
+      name: 'SecureMax',
+      tagline: 'AI-Driven Physical Security Audit & Automated Threat Intelligence Crawler',
+      description: 'Enterprise and HNI physical security assessment platform grounded in CPP Seven Precis methodology, featuring AI-guided audit branching, vulnerability risk radar, and automated threat intelligence crawling.',
+      version: '1.0.0',
+      category: 'Enterprise & Physical Security',
+      privacyGuarantee: 'End-to-End Encrypted Audits Grounded in CPP Seven Precis & ISO 27001 Annex A.11 Standards.',
+      webUrl: 'https://raivanglobal.com',
+      features: [
+        {
+          id: 'audit-flowchart',
+          title: 'AI-Guided Audit Flowchart',
+          description: 'Adaptive questionnaire with Gemini-driven branching grounded in 7 CPP security domains and real-time posture scoring.',
+          icon: 'shield-check',
+        },
+        {
+          id: 'threat-crawler',
+          title: 'Automated Threat Crawler',
+          description: 'Continuous Playwright scraper tracking security incidents, regulatory notices, and threat intelligence.',
+          icon: 'view-boards',
+        },
+        {
+          id: 'risk-radar',
+          title: 'Executive Risk Radar & Roadmap',
+          description: 'Comprehensive vulnerability reports with 7-domain risk radar, severity breakdowns, and prioritized remediation roadmaps.',
+          icon: 'chart-bar',
+        },
+      ],
+      appStoreUrl: '#',
+      playStoreUrl: '#',
+    },
   ];
 
   private static readonly fallbackPosts: IBlogPost[] = [

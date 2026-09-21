@@ -5,13 +5,14 @@ import { YogaOfEatingViewModel } from '../src/viewmodels/YogaOfEatingViewModel';
 import { ActionStationViewModel } from '../src/viewmodels/ActionStationViewModel';
 import { PayslipMaxViewModel } from '../src/viewmodels/PayslipMaxViewModel';
 import { DefenceWireViewModel } from '../src/viewmodels/DefenceWireViewModel';
+import { SecureMaxViewModel } from '../src/viewmodels/SecureMaxViewModel';
 
 describe('App Suite ViewModels', () => {
-  it('AppsIndexViewModel retrieves all 5 apps', () => {
+  it('AppsIndexViewModel retrieves all 6 apps', () => {
     const vm = new AppsIndexViewModel();
     const apps = vm.getAllApps();
-    expect(apps.length).toBe(5);
-    expect(apps.map((a) => a.id)).toEqual(['payslipmax', 'ssbmax', 'yoga-of-eating', 'action-station', 'defencewire']);
+    expect(apps.length).toBe(6);
+    expect(apps.map((a) => a.id)).toEqual(['payslipmax', 'ssbmax', 'yoga-of-eating', 'action-station', 'defencewire', 'securemax']);
   });
 
   it('PayslipMaxViewModel retrieves correct app metadata and compliance cards', () => {
@@ -58,5 +59,15 @@ describe('App Suite ViewModels', () => {
     expect(app.category).toBe('Defense & Strategic Intelligence');
     expect(app.features.length).toBe(3);
     expect(app.webUrl).toBe('https://www.defencewire.in');
+  });
+
+  it('SecureMaxViewModel retrieves correct app metadata', () => {
+    const vm = new SecureMaxViewModel();
+    const app = vm.getAppDetails();
+    expect(app.id).toBe('securemax');
+    expect(app.name).toBe('SecureMax');
+    expect(app.category).toBe('Enterprise & Physical Security');
+    expect(app.features.length).toBe(3);
+    expect(app.webUrl).toBe('https://raivanglobal.com');
   });
 });

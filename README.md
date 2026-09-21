@@ -9,7 +9,7 @@ Features privacy-first product showcase for **PayslipMax**, Developer Insights, 
 ## Technical Architecture & Design Patterns
 
 * **Single Source of Truth (SSOT)**: `SiteDataStore.ts`, `LegalPolicyStore.ts`, and `StringResources.ts` act as central data repositories.
-* **MVVM Architecture**: Clean separation of ViewModels (`HomeViewModel`, `PayslipMaxViewModel`, `DefenceWireViewModel`, `BlogViewModel`, `SupportViewModel`, `ThemeViewModel`) and Views (`HeaderComponent`, `FooterComponent`).
+* **MVVM Architecture**: Clean separation of ViewModels (`HomeViewModel`, `PayslipMaxViewModel`, `DefenceWireViewModel`, `SecureMaxViewModel`, `BlogViewModel`, `SupportViewModel`, `ThemeViewModel`) and Views (`HeaderComponent`, `FooterComponent`).
 * **Test-Driven Development (TDD)**: Comprehensive unit testing suite built with `vitest`.
 * **Zero Hardcoded Strings**: All UI copy resolved via `StringResources.ts` SSOT store.
 * **Dynamic Dark/Light/System Theme Engine**: `ThemeService.ts` and `ThemeViewModel.ts` with `localStorage` persistence and 0-flicker head script.

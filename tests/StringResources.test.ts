@@ -38,4 +38,11 @@ describe('StringResources (SSOT)', () => {
     expect(strings.defencewire.keyFeaturesTitle).toContain('Key Capabilities');
     expect(strings.defencewire.launchButton).toContain('DefenceWire.in');
   });
+
+  it('returns valid SecureMax string resources', () => {
+    const strings = StringResources.getStrings();
+    expect(strings.securemax.badge).toBe('Enterprise & Physical Security');
+    expect(strings.securemax.keyFeaturesTitle).toContain('Key Capabilities');
+    expect(strings.securemax.launchButton).toContain('Security Platform');
+  });
 });

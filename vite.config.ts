@@ -48,6 +48,7 @@ export default defineConfig({
         yogaofeating: resolve(__dirname, 'apps/yoga-of-eating.html'),
         actionstation: resolve(__dirname, 'apps/action-station.html'),
         defencewire: resolve(__dirname, 'apps/defencewire.html'),
+        securemax: resolve(__dirname, 'apps/securemax.html'),
         blog: resolve(__dirname, 'blog/index.html'),
         blogpost: resolve(__dirname, 'blog/post.html'),
         admin: resolve(__dirname, 'admin/index.html'),
