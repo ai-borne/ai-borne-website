@@ -90,11 +90,18 @@ function bindSupportFormEvents(viewModel: SupportViewModel): void {
     submitBtn.disabled = false;
     submitBtn.innerText = strings.support.sendButton;
 
+    alertEl.textContent = '';
     if (state.isSuccess) {
-      alertEl.innerHTML = `<div class="alert-success">${strings.support.successMessage}</div>`;
+      const successDiv = document.createElement('div');
+      successDiv.className = 'alert-success';
+      successDiv.textContent = strings.support.successMessage;
+      alertEl.appendChild(successDiv);
       form.reset();
     } else if (state.errorMessage) {
-      alertEl.innerHTML = `<div class="alert-error">${state.errorMessage}</div>`;
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'alert-error';
+      errorDiv.textContent = state.errorMessage;
+      alertEl.appendChild(errorDiv);
     }
   });
 }

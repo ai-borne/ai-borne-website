@@ -48,10 +48,11 @@ export async function onRequestGet(context: { request: Request; env: Env }): Pro
       return new Response(`OAuth Token Exchange Error: ${data.error_description || 'Invalid authorization code'}`, { status: 401 });
     }
 
-    const postMessageContent = JSON.stringify({
+    // Safely encode token and provider to prevent HTML script tag breakout
+    const safePostMessageContent = JSON.stringify({
       token,
       provider: 'github',
-    });
+    }).replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
 
     const targetOrigin = url.origin;
 
@@ -63,15 +64,38 @@ export async function onRequestGet(context: { request: Request; env: Env }): Pro
           <p>Authorizing with Decap CMS...</p>
           <script>
             (function() {
+              var allowedOrigins = [
+                'https://ai-borne.in',
+                'https://www.ai-borne.in'
+              ];
+
+              function isOriginAllowed(origin) {
+                if (!origin) return false;
+                if (allowedOrigins.indexOf(origin) !== -1) return true;
+                if (/^http:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?$/.test(origin)) return true;
+                return false;
+              }
+
               function receiveMessage(e) {
-                console.log("receiveMessage", e);
+                if (!isOriginAllowed(e.origin)) {
+                  console.warn("Unauthorized origin rejected:", e.origin);
+                  return;
+                }
+                if (!window.opener || window.opener.closed) {
+                  console.warn("Opener window not available or closed");
+                  return;
+                }
                 window.opener.postMessage(
-                  'authorization:github:success:${postMessageContent}',
+                  'authorization:github:success:${safePostMessageContent}',
                   e.origin
                 );
               }
+
               window.addEventListener("message", receiveMessage, false);
-              window.opener.postMessage("authorizing:github", "${targetOrigin}");
+
+              if (window.opener && !window.opener.closed) {
+                window.opener.postMessage("authorizing:github", "${targetOrigin}");
+              }
             })();
           </script>
         </body>
@@ -80,11 +104,13 @@ export async function onRequestGet(context: { request: Request; env: Env }): Pro
 
     const headers = new Headers();
     headers.set('Content-Type', 'text/html;charset=UTF-8');
+    headers.set('X-Frame-Options', 'DENY');
+    headers.set('X-Content-Type-Options', 'nosniff');
+    headers.set('Content-Security-Policy', "default-src 'none'; script-src 'unsafe-inline'");
     headers.set('Set-Cookie', 'oauth_state=; HttpOnly; Secure; SameSite=Lax; Path=/api; Max-Age=0');
 
     return new Response(scriptHtml, { headers });
   } catch (err: any) {
     return new Response(`Server Error: ${err.message}`, { status: 500 });
   }
-};
-
+}

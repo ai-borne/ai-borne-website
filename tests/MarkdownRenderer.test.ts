@@ -48,4 +48,55 @@ const x = 1;
     const hexColorRegex = /style="[^"]*#(?:[0-9a-fA-F]{3}){1,2}[^"]*"/;
     expect(hexColorRegex.test(html)).toBe(false);
   });
+
+  it('neutralizes dangerous script, iframe, and form tags to prevent XSS', () => {
+    const maliciousInput = `
+# Blog Post
+<script>alert('xss')</script>
+<iframe src="https://evil.com"></iframe>
+<form action="https://evil.com/steal"><input type="text"/></form>
+<object data="data:text/html;base64,..."></object>
+<embed src="evil.swf"/>
+Normal content continues here.
+    `;
+    const sanitized = MarkdownRenderer.render(maliciousInput);
+
+    expect(sanitized).not.toContain('<script');
+    expect(sanitized).not.toContain('alert(\'xss\')');
+    expect(sanitized).not.toContain('<iframe');
+    expect(sanitized).not.toContain('<form');
+    expect(sanitized).not.toContain('<object');
+    expect(sanitized).not.toContain('<embed');
+    expect(sanitized).toContain('Normal content continues here.');
+  });
+
+  it('strips inline event handlers from HTML tags', () => {
+    const input = '<img src="valid.png" onerror="alert(1)" onload="evil()" />\n<p onclick="steal()">Text</p>';
+    const output = MarkdownRenderer.render(input);
+
+    expect(output).not.toContain('onerror=');
+    expect(output).not.toContain('onload=');
+    expect(output).not.toContain('onclick=');
+    expect(output).toContain('src="valid.png"');
+    expect(output).toContain('Text');
+  });
+
+  it('neutralizes dangerous javascript: URI links into safe href="#"', () => {
+    const maliciousLink = '[Click me](javascript:alert("pwned"))';
+    const output = MarkdownRenderer.render(maliciousLink);
+
+    expect(output).not.toContain('href="javascript:');
+    expect(output).toContain('href="#"');
+    expect(output).toContain('Click me');
+  });
+
+  it('preserves code snippets containing script tags without executing or stripping them from code blocks', () => {
+    const codeSnippet = '```html\n<script>console.log("safe example");</script>\n```';
+    const output = MarkdownRenderer.render(codeSnippet);
+
+    // Should be wrapped with code-block class
+    expect(output).toContain('class="code-block"');
+    // The tags inside the code block must be escaped entities, not stripped
+    expect(output).toContain('&lt;script&gt;console.log(&quot;safe example&quot;);&lt;/script&gt;');
+  });
 });

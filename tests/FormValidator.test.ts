@@ -6,6 +6,11 @@ describe('FormValidator (Services Layer)', () => {
     expect(FormValidator.validateEmail('founder@ai-borne.in').valid).toBe(true);
     expect(FormValidator.validateEmail('invalid-email').valid).toBe(false);
     expect(FormValidator.validateEmail('').valid).toBe(false);
+
+    // Boundary check
+    const longEmail = 'a'.repeat(95) + '@example.com';
+    expect(FormValidator.validateEmail(longEmail).valid).toBe(false);
+    expect(FormValidator.validateEmail(longEmail).message).toContain('exceeds maximum length of 100 characters');
   });
 
   it('validates message body length correctly', () => {
@@ -13,6 +18,11 @@ describe('FormValidator (Services Layer)', () => {
     expect(FormValidator.validateMessage('hi.').valid).toBe(false);
     expect(FormValidator.validateMessage('hi.').message).toBe('Support message must be at least 5 characters long.');
     expect(FormValidator.validateMessage('   ').valid).toBe(false);
+
+    // Boundary check
+    const longMsg = 'a'.repeat(3001);
+    expect(FormValidator.validateMessage(longMsg).valid).toBe(false);
+    expect(FormValidator.validateMessage(longMsg).message).toContain('exceeds maximum length of 3000 characters');
   });
 
   it('sanitizes input text against XSS injections', () => {

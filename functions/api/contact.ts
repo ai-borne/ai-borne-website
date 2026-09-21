@@ -1,3 +1,9 @@
+import {
+  contactRateLimiter,
+  validateContactInput,
+  isAutoResponderSafe,
+} from './utils/contactSecurity';
+
 interface ContactRequestBody {
   email?: string;
   message?: string;
@@ -45,6 +51,22 @@ export async function onRequestPost(context: { request: Request; env: Env; waitU
     );
   }
 
+  // Rate Limiting (5 requests per 5 minutes per IP)
+  const clientIp = request.headers.get('CF-Connecting-IP') || request.headers.get('x-forwarded-for') || '127.0.0.1';
+  const rateLimit = contactRateLimiter.isAllowed(clientIp);
+  if (!rateLimit.allowed) {
+    return new Response(
+      JSON.stringify({ success: false, error: 'Too many requests. Please try again later.' }),
+      {
+        status: 429,
+        headers: {
+          ...headers,
+          'Retry-After': Math.ceil(rateLimit.resetMs / 1000).toString(),
+        },
+      }
+    );
+  }
+
   // Payload size validation
   const contentLengthHeader = request.headers.get('Content-Length');
   if (contentLengthHeader && parseInt(contentLengthHeader, 10) > MAX_PAYLOAD_BYTES) {
@@ -64,22 +86,17 @@ export async function onRequestPost(context: { request: Request; env: Env; waitU
     }
 
     const body: ContactRequestBody = JSON.parse(rawText);
-    const email = body.email?.trim() || '';
-    const message = body.message?.trim() || '';
+    const validation = validateContactInput(body.email, body.message);
 
-    if (!email || !isValidEmail(email)) {
+    if (!validation.valid) {
       return new Response(
-        JSON.stringify({ success: false, error: 'Invalid email address format.' }),
+        JSON.stringify({ success: false, error: validation.error }),
         { status: 400, headers }
       );
     }
 
-    if (!message || message.length < 5) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Support message must be at least 5 characters long.' }),
-        { status: 400, headers }
-      );
-    }
+    const email = validation.sanitizedEmail!;
+    const message = validation.sanitizedMessage!;
 
     if (env?.CF_TURNSTILE_SECRET_KEY) {
       const isBotCleared = await verifyTurnstileToken(
@@ -106,7 +123,7 @@ export async function onRequestPost(context: { request: Request; env: Env; waitU
       );
     }
 
-    // Call Resend API to deliver support message directly to Google Workspace inbox
+    // Deliver support message directly to Google Workspace inbox
     const resendRes = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -143,45 +160,47 @@ export async function onRequestPost(context: { request: Request; env: Env; waitU
       );
     }
 
-    // Asynchronously dispatch auto-confirmation email to customer (non-blocking)
-    context.waitUntil?.(
-      fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          from: 'AI-Borne <founder@ai-borne.in>',
-          to: [email],
-          reply_to: 'founder@ai-borne.in',
-          subject: '[AI-Borne Support] We received your message',
-          html: `
-            <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff; color: #0f172a;">
-              <div style="margin-bottom: 20px;">
-                <h1 style="color: #6366f1; font-size: 24px; font-weight: 800; margin: 0;">AI-BORNE</h1>
-                <p style="color: #64748b; font-size: 13px; margin-top: 4px;">Developer Support Center</p>
+    // Asynchronously dispatch auto-confirmation email to customer with loop safeguards
+    if (isAutoResponderSafe(email)) {
+      context.waitUntil?.(
+        fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            from: 'AI-Borne <founder@ai-borne.in>',
+            to: [email],
+            reply_to: 'founder@ai-borne.in',
+            subject: '[AI-Borne Support] We received your message',
+            html: `
+              <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff; color: #0f172a;">
+                <div style="margin-bottom: 20px;">
+                  <h1 style="color: #6366f1; font-size: 24px; font-weight: 800; margin: 0;">AI-BORNE</h1>
+                  <p style="color: #64748b; font-size: 13px; margin-top: 4px;">Developer Support Center</p>
+                </div>
+                <h2 style="font-size: 18px; color: #1e293b; margin-top: 0;">Thank you for reaching out!</h2>
+                <p style="font-size: 14px; color: #475569; line-height: 1.6;">
+                  We have received your support inquiry. Our team reviews all incoming requests promptly, and we typically respond within <strong>24–48 hours</strong>.
+                </p>
+                <div style="margin: 20px 0; padding: 16px; background-color: #f8fafc; border-radius: 8px; border-left: 4px solid #6366f1;">
+                  <p style="font-size: 13px; color: #64748b; margin: 0 0 6px 0; font-weight: 600;">Your Message Summary:</p>
+                  <p style="font-size: 14px; color: #334155; margin: 0; white-space: pre-wrap;">${escapeHtml(message)}</p>
+                </div>
+                <p style="font-size: 13px; color: #64748b; line-height: 1.5;">
+                  If you have additional details or screenshots to provide, simply reply directly to this email.
+                </p>
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+                <p style="font-size: 12px; color: #94a3b8; margin: 0;">
+                  &copy; ${new Date().getFullYear()} AI-Borne. All rights reserved. &bull; <a href="https://ai-borne.in" style="color: #6366f1; text-decoration: none;">ai-borne.in</a>
+                </p>
               </div>
-              <h2 style="font-size: 18px; color: #1e293b; margin-top: 0;">Thank you for reaching out!</h2>
-              <p style="font-size: 14px; color: #475569; line-height: 1.6;">
-                We have received your support inquiry. Our team reviews all incoming requests promptly, and we typically respond within <strong>24–48 hours</strong>.
-              </p>
-              <div style="margin: 20px 0; padding: 16px; background-color: #f8fafc; border-radius: 8px; border-left: 4px solid #6366f1;">
-                <p style="font-size: 13px; color: #64748b; margin: 0 0 6px 0; font-weight: 600;">Your Message Summary:</p>
-                <p style="font-size: 14px; color: #334155; margin: 0; white-space: pre-wrap;">${escapeHtml(message)}</p>
-              </div>
-              <p style="font-size: 13px; color: #64748b; line-height: 1.5;">
-                If you have additional details or screenshots to provide, simply reply directly to this email.
-              </p>
-              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
-              <p style="font-size: 12px; color: #94a3b8; margin: 0;">
-                &copy; ${new Date().getFullYear()} AI-Borne. All rights reserved. &bull; <a href="https://ai-borne.in" style="color: #6366f1; text-decoration: none;">ai-borne.in</a>
-              </p>
-            </div>
-          `,
-        }),
-      }).catch(() => {})
-    );
+            `,
+          }),
+        }).catch(() => {})
+      );
+    }
 
     return new Response(
       JSON.stringify({
@@ -230,11 +249,6 @@ function getResponseHeaders(origin: string | null): Record<string, string> {
   }
 
   return headers;
-}
-
-function isValidEmail(email: string): boolean {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return re.test(email);
 }
 
 async function verifyTurnstileToken(secret: string, token: string, remoteIp: string): Promise<boolean> {
