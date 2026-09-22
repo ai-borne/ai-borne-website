@@ -6,6 +6,9 @@ category: Automation
 publishedDate: 2026-07-28
 author: AI-Borne Team
 readTimeMinutes: 7
+metricBadge: 🔄 85% Logic Shared
+difficulty: Intermediate
+tags: [KMP, Compose Multiplatform, Architecture]
 ---
 
 Kotlin Multiplatform (KMP) allows sharing core business logic, view models, and domain models across iOS, Android, and Desktop seamlessly while keeping native UI elements pristine.

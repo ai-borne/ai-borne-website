@@ -45,4 +45,26 @@ describe('StringResources (SSOT)', () => {
     expect(strings.securemax.keyFeaturesTitle).toContain('Key Capabilities');
     expect(strings.securemax.launchButton).toContain('Security Platform');
   });
+
+  it('returns valid blog knowledge base and home insights string resources', () => {
+    const strings = StringResources.getStrings();
+    expect(strings.home.exploreAllInsights).toContain('Explore All Insights');
+    expect(strings.home.readArticle).toBe('Read Article →');
+    expect(strings.home.viewAllInsightsLink).toContain('View all');
+
+    expect(strings.blog.title).toBe('Insights & Engineering Playbooks');
+    expect(strings.blog.searchPlaceholder).toContain('Search playbooks');
+    expect(strings.blog.filterAll).toBe('All Categories');
+    expect(strings.blog.filterAppEngineering).toBe('App Engineering');
+    expect(strings.blog.filterAutomation).toBe('Automation');
+    expect(strings.blog.filterAi).toBe('AI');
+    expect(strings.blog.filterTaxTech).toBe('Tax Tech');
+    expect(strings.blog.readArticle).toBe('Read Article →');
+    expect(strings.blog.exploreAllPlaybooks).toContain('Explore All Insights');
+    expect(strings.blog.keyTakeawaysTitle).toBe('Key Engineering Takeaways');
+    expect(strings.blog.relatedPlaybooksTitle).toBe('Related Engineering Playbooks');
+    expect(strings.blog.emptyTitle).toContain('No engineering playbooks found');
+    expect(strings.blog.backToAllArticles).toContain('Back to All Articles');
+  });
 });
+

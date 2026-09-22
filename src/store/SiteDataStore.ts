@@ -222,6 +222,9 @@ export class SiteDataStore {
       author: 'AI-Borne Team',
       readTimeMinutes: 5,
       contentMarkdown: 'Privacy in mobile financial applications is paramount. By parsing documents locally, user data never touches external servers.',
+      metricBadge: '⚡ 120ms Execution',
+      difficulty: 'Advanced',
+      tags: ['PDF Parsing', 'On-Device', 'Privacy', 'PayslipMax'],
     },
     {
       slug: 'kotlin-multiplatform-automation-patterns',
@@ -232,6 +235,9 @@ export class SiteDataStore {
       author: 'AI-Borne Team',
       readTimeMinutes: 7,
       contentMarkdown: 'Kotlin Multiplatform allows sharing business logic across iOS, Android, and Desktop seamlessly.',
+      metricBadge: '🔄 85% Logic Shared',
+      difficulty: 'Intermediate',
+      tags: ['KMP', 'Compose Multiplatform', 'Architecture'],
     },
   ];
 

@@ -50,6 +50,15 @@ export class MarkdownPostLoader {
 
     if (!metadata.slug || !metadata.title) return null;
 
+    let tags: string[] | undefined = undefined;
+    if (metadata.tags) {
+      tags = metadata.tags
+        .replace(/^\[|\]$/g, '')
+        .split(',')
+        .map((t) => t.trim().replace(/^['"]|['"]$/g, ''))
+        .filter(Boolean);
+    }
+
     return {
       slug: metadata.slug,
       title: metadata.title,
@@ -59,6 +68,9 @@ export class MarkdownPostLoader {
       author: metadata.author || 'AI-Borne Team',
       readTimeMinutes: metadata.readTimeMinutes ? parseInt(metadata.readTimeMinutes, 10) : 5,
       contentMarkdown,
+      metricBadge: metadata.metricBadge,
+      difficulty: metadata.difficulty as 'Intermediate' | 'Advanced' | undefined,
+      tags,
     };
   }
 }

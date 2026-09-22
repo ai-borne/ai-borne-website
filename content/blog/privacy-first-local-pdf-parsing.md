@@ -6,6 +6,9 @@ category: App Engineering
 publishedDate: 2026-08-01
 author: AI-Borne Team
 readTimeMinutes: 5
+metricBadge: ⚡ 120ms Execution
+difficulty: Advanced
+tags: [PDF Parsing, On-Device, Privacy, PayslipMax]
 ---
 
 Privacy in mobile financial applications is paramount. When users upload sensitive documents like salary payslips, tax statements, and banking records, transferring raw files to external cloud servers introduces security risks, latency, and compliance overhead.

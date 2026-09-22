@@ -17,6 +17,27 @@ export interface IStringDictionary {
     insightsTitle: string;
     viewProductDetails: string;
     minRead: string;
+    exploreAllInsights: string;
+    readArticle: string;
+    viewAllInsightsLink: string;
+  };
+  blog: {
+    title: string;
+    subtitle: string;
+    searchPlaceholder: string;
+    filterAll: string;
+    filterAppEngineering: string;
+    filterAutomation: string;
+    filterAi: string;
+    filterTaxTech: string;
+    readArticle: string;
+    exploreAllPlaybooks: string;
+    keyTakeawaysTitle: string;
+    relatedPlaybooksTitle: string;
+    emptyTitle: string;
+    emptyDescription: string;
+    backToAllArticles: string;
+    showingCount: string;
   };
   appsIndex: {
     title: string;
@@ -111,6 +132,27 @@ export class StringResources {
       insightsTitle: 'Latest Insights & Hacks',
       viewProductDetails: 'View Product Details →',
       minRead: 'min read',
+      exploreAllInsights: 'Explore All Insights & Engineering Playbooks →',
+      readArticle: 'Read Article →',
+      viewAllInsightsLink: 'View all →',
+    },
+    blog: {
+      title: 'Insights & Engineering Playbooks',
+      subtitle: 'Deep-dives into on-device parsing, multiplatform state machines, autonomous systems, and zero-trust engineering.',
+      searchPlaceholder: 'Search playbooks by keyword, architecture, or tag...',
+      filterAll: 'All Categories',
+      filterAppEngineering: 'App Engineering',
+      filterAutomation: 'Automation',
+      filterAi: 'AI',
+      filterTaxTech: 'Tax Tech',
+      readArticle: 'Read Article →',
+      exploreAllPlaybooks: 'Explore All Insights & Engineering Playbooks →',
+      keyTakeawaysTitle: 'Key Engineering Takeaways',
+      relatedPlaybooksTitle: 'Related Engineering Playbooks',
+      emptyTitle: 'No engineering playbooks found',
+      emptyDescription: 'Try adjusting your search query or switching category filters.',
+      backToAllArticles: '← Back to All Articles',
+      showingCount: 'Showing engineering playbooks',
     },
     appsIndex: {
       title: 'Our App Ecosystem',
