@@ -1,0 +1,56 @@
+name: AI-Borne Daily Engineering Insight Engine
+
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-and-publish:
+    name: Generate & Publish Daily Engineering Playbook
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Execute Autonomous Daily Insight Engine
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: npx tsx scripts/generate-daily-insight.ts
+
+      - name: Verify TypeScript Type Check
+        run: npx tsc --noEmit
+
+      - name: Verify Vitest Unit Test Suite
+        run: npx vitest run
+
+      - name: Verify Static Production Build
+        run: npm run build
+
+      - name: Commit and Push Daily Playbook to Main
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "AI-Borne Publishing Engine"
+          if [ -n "$(git status --porcelain)" ]; then
+            TODAY=$(date +'%Y-%m-%d')
+            git add content/blog/ public/sitemap.xml public/llms.txt
+            git commit -m "feat(insights): publish daily engineering playbook [${TODAY}]"
+            git push origin main
+          else
+            echo "No new playbook generated; repository is up-to-date."
+          fi
