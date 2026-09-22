@@ -140,7 +140,7 @@ export class StringResources {
       minRead: 'min read',
       exploreAllInsights: 'Explore All Insights & Engineering Playbooks →',
       readArticle: 'Read Article →',
-      viewAllInsightsLink: 'View all →',
+      viewAllInsightsLink: 'View all',
     },
     blog: {
       title: 'Insights & Engineering Playbooks',
