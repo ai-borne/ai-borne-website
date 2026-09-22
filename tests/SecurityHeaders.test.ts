@@ -1,6 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
+import {
+  onRequestPost,
+  onRequestOptions,
+  onRequest,
+  cspReportRateLimiter,
+} from '../functions/api/csp-report';
 
 describe('Security Headers Configuration (_headers)', () => {
   const rootDir = path.resolve(__dirname, '..');
@@ -53,13 +59,22 @@ describe('Security Headers Configuration (_headers)', () => {
     expect(rootHeaders!.get('x-permitted-cross-domain-policies')).toBe('none');
     expect(rootHeaders!.get('cross-origin-opener-policy')).toBe('same-origin-allow-popups');
     expect(rootHeaders!.get('cross-origin-resource-policy')).toBe('same-origin');
+    expect(rootHeaders!.get('cross-origin-embedder-policy')).toBe('credentialless');
+    expect(rootHeaders!.get('reporting-endpoints')).toBe('csp-endpoint="https://ai-borne.in/api/csp-report"');
 
-    // Check Permissions-Policy
+    // Check expanded Permissions-Policy
     const permissionsPolicy = rootHeaders!.get('permissions-policy') || '';
-    expect(permissionsPolicy).toContain('camera=()');
-    expect(permissionsPolicy).toContain('microphone=()');
-    expect(permissionsPolicy).toContain('geolocation=()');
-    expect(permissionsPolicy).toContain('payment=()');
+    const restrictedFeatures = [
+      'accelerometer=()', 'autoplay=()', 'camera=()', 'display-capture=()',
+      'encrypted-media=()', 'fullscreen=(self)', 'geolocation=()', 'gyroscope=()',
+      'hid=()', 'idle-detection=()', 'interest-cohort=()', 'magnetometer=()',
+      'microphone=()', 'midi=()', 'payment=()', 'screen-wake-lock=()',
+      'serial=()', 'sync-xhr=()', 'usb=()', 'xr-spatial-tracking=()',
+    ];
+    expect(restrictedFeatures.length).toBeGreaterThanOrEqual(15);
+    for (const feature of restrictedFeatures) {
+      expect(permissionsPolicy).toContain(feature);
+    }
 
     // Check Content-Security-Policy on root routes
     const csp = rootHeaders!.get('content-security-policy') || '';
@@ -76,10 +91,18 @@ describe('Security Headers Configuration (_headers)', () => {
     expect(csp).toContain("connect-src 'self'");
     expect(csp).not.toContain('https://api.resend.com');
 
-    // Phase 2 Hardening: Cloudflare Turnstile frame-src
+    // Scoped img-src without open wildcard https:
+    expect(csp).toContain("img-src 'self' data: https://*.githubusercontent.com https://challenges.cloudflare.com");
+    expect(csp).not.toMatch(/img-src[^;]*\bhttps:(?!\/\/)/);
+
+    // Reporting directives
+    expect(csp).toContain('report-uri /api/csp-report');
+    expect(csp).toContain('report-to csp-endpoint');
+
+    // Cloudflare Turnstile frame-src
     expect(csp).toContain('frame-src https://challenges.cloudflare.com');
 
-    // Phase 2 Hardening: Injection attack prevention directives
+    // Injection attack prevention directives
     expect(csp).toContain("base-uri 'self'");
     expect(csp).toContain("form-action 'self'");
     expect(csp).toContain('upgrade-insecure-requests');
@@ -129,20 +152,10 @@ describe('Security Headers Configuration (_headers)', () => {
     expect(scriptContent).toContain("setAttribute('data-theme', 'light')");
 
     const htmlFiles = [
-      'index.html',
-      'support.html',
-      'terms.html',
-      'privacy-policy.html',
-      'data-deletion.html',
-      'blog/index.html',
-      'blog/post.html',
-      'apps/index.html',
-      'apps/defencewire.html',
-      'apps/ssbmax.html',
-      'apps/payslipmax.html',
-      'apps/securemax.html',
-      'apps/yoga-of-eating.html',
-      'apps/action-station.html',
+      'index.html', 'support.html', 'terms.html', 'privacy-policy.html',
+      'data-deletion.html', 'blog/index.html', 'blog/post.html', 'apps/index.html',
+      'apps/defencewire.html', 'apps/ssbmax.html', 'apps/payslipmax.html',
+      'apps/securemax.html', 'apps/yoga-of-eating.html', 'apps/action-station.html',
     ];
 
     for (const relPath of htmlFiles) {
@@ -158,3 +171,107 @@ describe('Security Headers Configuration (_headers)', () => {
     }
   });
 });
+
+describe('CSP Report Edge Function (functions/api/csp-report.ts)', () => {
+  beforeEach(() => {
+    cspReportRateLimiter.clear();
+  });
+
+  const createMockContext = (
+    body: any,
+    contentType: string = 'application/csp-report',
+    ip: string = '198.51.100.1',
+    method: string = 'POST'
+  ) => {
+    const rawBody = typeof body === 'string' ? body : JSON.stringify(body);
+    const headers = new Headers({
+      'Content-Type': contentType,
+      'CF-Connecting-IP': ip,
+    });
+    const request = new Request('https://ai-borne.in/api/csp-report', {
+      method,
+      headers,
+      body: method === 'POST' ? rawBody : null,
+    });
+    return { request };
+  };
+
+  it('handles valid CSP report (report-uri format) and returns 204 No Content', async () => {
+    const payload = {
+      'csp-report': {
+        'document-uri': 'https://ai-borne.in/',
+        'violated-directive': 'script-src-elem',
+        'effective-directive': 'script-src-elem',
+        'blocked-uri': 'https://malicious.com/evil.js',
+      },
+    };
+    const ctx = createMockContext(payload, 'application/csp-report');
+    const res = await onRequestPost(ctx);
+    expect(res.status).toBe(204);
+    expect(res.headers.get('Cache-Control')).toContain('no-store');
+    expect(res.headers.get('X-Content-Type-Options')).toBe('nosniff');
+  });
+
+  it('handles modern report-to JSON array format and returns 204 No Content', async () => {
+    const payload = [
+      {
+        type: 'csp-violation',
+        body: {
+          documentURL: 'https://ai-borne.in/',
+          effectiveDirective: 'img-src',
+          blockedURL: 'https://unauthorized.org/pic.png',
+        },
+      },
+    ];
+    const ctx = createMockContext(payload, 'application/reports+json');
+    const res = await onRequestPost(ctx);
+    expect(res.status).toBe(204);
+  });
+
+  it('rejects unsupported Content-Type with 415', async () => {
+    const ctx = createMockContext({ test: true }, 'text/plain');
+    const res = await onRequestPost(ctx);
+    expect(res.status).toBe(415);
+  });
+
+  it('rejects payload exceeding 4KB limit with 413', async () => {
+    const hugePayload = { data: 'x'.repeat(4500) };
+    const ctx = createMockContext(hugePayload, 'application/json');
+    const res = await onRequestPost(ctx);
+    expect(res.status).toBe(413);
+  });
+
+  it('rejects malformed JSON with 400', async () => {
+    const ctx = createMockContext('{ malformed', 'application/json');
+    const res = await onRequestPost(ctx);
+    expect(res.status).toBe(400);
+  });
+
+  it('enforces sliding-window rate limit (20 reports/minute/IP)', async () => {
+    const payload = { 'csp-report': { 'violated-directive': 'script-src' } };
+    const ip = '198.51.100.99';
+
+    for (let i = 0; i < 20; i++) {
+      const res = await onRequestPost(createMockContext(payload, 'application/csp-report', ip));
+      expect(res.status).toBe(204);
+    }
+
+    const blockedRes = await onRequestPost(createMockContext(payload, 'application/csp-report', ip));
+    expect(blockedRes.status).toBe(429);
+    expect(blockedRes.headers.get('Retry-After')).toBeDefined();
+  });
+
+  it('handles OPTIONS preflight with 204 and CORS methods', async () => {
+    const res = await onRequestOptions();
+    expect(res.status).toBe(204);
+    expect(res.headers.get('Access-Control-Allow-Methods')).toContain('POST');
+  });
+
+  it('rejects unsupported HTTP methods with 405', async () => {
+    const request = new Request('https://ai-borne.in/api/csp-report', { method: 'GET' });
+    const res = await onRequest({ request });
+    expect(res.status).toBe(405);
+    expect(res.headers.get('Allow')).toContain('POST');
+  });
+});
+
