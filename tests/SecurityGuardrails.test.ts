@@ -24,9 +24,9 @@ describe('Security Architecture & Codebase Audit Guardrails', () => {
   }
 
   it('guardrail: strictly enforces < 300 LOC limit across all src/ and functions/ files', () => {
-    const srcFiles = getAllFiles(path.join(rootDir, 'src')).filter(f => f.endsWith('.ts') || f.endsWith('.tsx') || f.endsWith('.js'));
-    const fnFiles = getAllFiles(path.join(rootDir, 'functions')).filter(f => f.endsWith('.ts') || f.endsWith('.js'));
-    const allCodeFiles = [...srcFiles, ...fnFiles];
+    const srcCodeFiles = getAllFiles(path.join(rootDir, 'src')).filter(f => f.endsWith('.ts') || f.endsWith('.tsx') || f.endsWith('.js'));
+    const fnCodeFiles = getAllFiles(path.join(rootDir, 'functions')).filter(f => f.endsWith('.ts') || f.endsWith('.js'));
+    const allCodeFiles = [...srcCodeFiles, ...fnCodeFiles];
 
     expect(allCodeFiles.length).toBeGreaterThan(0);
 
@@ -35,7 +35,22 @@ describe('Security Architecture & Codebase Audit Guardrails', () => {
       const lineCount = content.split('\n').length;
       const relativePath = path.relative(rootDir, filePath);
 
-      expect(lineCount, `File ${relativePath} exceeds 300 lines of code limit (${lineCount} lines)`).toBeLessThanOrEqual(300);
+      expect(lineCount, `Code file ${relativePath} exceeds 300 lines of code limit (${lineCount} lines)`).toBeLessThanOrEqual(300);
+    }
+
+    // Guardrail: Any other file in src/ exceeding 300 LOC must document an SRP architectural exception
+    const allSrcFiles = getAllFiles(path.join(rootDir, 'src'));
+    for (const filePath of allSrcFiles) {
+      const content = fs.readFileSync(filePath, 'utf-8');
+      const lineCount = content.split('\n').length;
+      const relativePath = path.relative(rootDir, filePath);
+
+      if (lineCount > 300) {
+        expect(
+          content.includes('ARCHITECTURAL EXCEPTION: Single Responsibility Principle (SRP)'),
+          `File ${relativePath} exceeds 300 LOC limit (${lineCount} lines) without documented SRP exception header`
+        ).toBe(true);
+      }
     }
   });
 
@@ -188,5 +203,87 @@ describe('Security Architecture & Codebase Audit Guardrails', () => {
 
     expect(ciContent).toContain('Verify Secret Detection Guardrails');
     expect(ciContent).toMatch(/npx vitest run tests\/SecurityGuardrails\.test\.ts/);
+  });
+
+  it('guardrail: validates that all API routes in functions/api enforce getSecureApiResponseHeaders', () => {
+    const apiDir = path.join(rootDir, 'functions', 'api');
+    const apiRouteFiles = fs.readdirSync(apiDir)
+      .filter(f => (f.endsWith('.ts') || f.endsWith('.js')) && !f.startsWith('.'))
+      .map(f => path.join(apiDir, f));
+
+    expect(apiRouteFiles.length).toBeGreaterThanOrEqual(4);
+
+    for (const filePath of apiRouteFiles) {
+      const content = fs.readFileSync(filePath, 'utf-8');
+      const relPath = path.relative(rootDir, filePath);
+      expect(
+        content.includes('getSecureApiResponseHeaders'),
+        `API route ${relPath} must import and enforce 'getSecureApiResponseHeaders'`
+      ).toBe(true);
+    }
+  });
+
+  it('guardrail: validates zero unencrypted http:// links across the repository', () => {
+    const scanDirs = [
+      path.join(rootDir, 'src'),
+      path.join(rootDir, 'functions'),
+      path.join(rootDir, 'public'),
+      path.join(rootDir, 'content'),
+    ];
+
+    const allowedHttpLocalPattern = /^http:\/\/(localhost|127\.0\.0\.1)(:\S+)?$/;
+    const allowedXmlSchemas = ['w3.org', 'sitemaps.org'];
+
+    for (const dir of scanDirs) {
+      const files = getAllFiles(dir).filter(f =>
+        f.endsWith('.html') || f.endsWith('.ts') || f.endsWith('.tsx') || f.endsWith('.js') || f.endsWith('.md')
+      );
+
+      for (const filePath of files) {
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const relPath = path.relative(rootDir, filePath);
+        const httpMatches = content.match(/http:\/\/[^\s"'`<>)]+/g) || [];
+
+        for (const url of httpMatches) {
+          if (allowedHttpLocalPattern.test(url)) continue;
+          if (allowedXmlSchemas.some(schema => url.includes(schema))) continue;
+          expect.fail(`Insecure HTTP URL found in ${relPath}: ${url}`);
+        }
+      }
+    }
+  });
+
+  it('guardrail: validates that public/.well-known/security.txt references an existing PGP key file', () => {
+    const securityTxtPath = path.resolve(rootDir, 'public/.well-known/security.txt');
+    expect(fs.existsSync(securityTxtPath), 'public/.well-known/security.txt must exist').toBe(true);
+
+    const content = fs.readFileSync(securityTxtPath, 'utf-8');
+    const encryptionMatch = content.match(/^Encryption:\s*(?:https:\/\/ai-borne\.in)?(\/\.well-known\/[^\s]+)/m);
+    expect(encryptionMatch, 'security.txt must contain an Encryption directive pointing to .well-known').not.toBeNull();
+
+    const keyRelativePath = encryptionMatch![1].replace(/^\//, '');
+    const pgpKeyPath = path.resolve(rootDir, 'public', keyRelativePath);
+    expect(fs.existsSync(pgpKeyPath), `Referenced PGP key file must exist at ${pgpKeyPath}`).toBe(true);
+
+    const pgpContent = fs.readFileSync(pgpKeyPath, 'utf-8');
+    expect(pgpContent).toContain('-----BEGIN PGP PUBLIC KEY BLOCK-----');
+    expect(pgpContent).toContain('-----END PGP PUBLIC KEY BLOCK-----');
+  });
+
+  it('guardrail: validates that CSP reporting endpoint exists and has sliding-window rate limiting configured', () => {
+    const cspReportPath = path.resolve(rootDir, 'functions/api/csp-report.ts');
+    expect(fs.existsSync(cspReportPath), 'functions/api/csp-report.ts must exist').toBe(true);
+
+    const content = fs.readFileSync(cspReportPath, 'utf-8');
+    expect(content).toContain('SlidingWindowRateLimiter');
+    expect(content).toMatch(/cspReportRateLimiter\s*=\s*new\s+SlidingWindowRateLimiter\(\s*60\s*\*\s*1000\s*,\s*20\s*\)/);
+    expect(content).toContain('reportData');
+    expect(content).toContain('204');
+
+    const headersPath = path.resolve(rootDir, 'public/_headers');
+    const headersContent = fs.readFileSync(headersPath, 'utf-8');
+    expect(headersContent).toContain('report-uri /api/csp-report;');
+    expect(headersContent).toContain('report-to csp-endpoint;');
+    expect(headersContent).toContain('Reporting-Endpoints: csp-endpoint="https://ai-borne.in/api/csp-report"');
   });
 });

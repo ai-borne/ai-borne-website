@@ -1,3 +1,9 @@
+/**
+ * ARCHITECTURAL EXCEPTION: Single Responsibility Principle (SRP)
+ * Consolidated UI component stylesheet required for atomic caching and avoiding CSS layout shifts.
+ * Inherits and extends design tokens from tokens.css.
+ */
+
 .header {
   position: sticky;
   top: 0;
