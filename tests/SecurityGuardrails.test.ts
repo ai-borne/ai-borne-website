@@ -135,4 +135,58 @@ describe('Security Architecture & Codebase Audit Guardrails', () => {
     expect(content).not.toContain('__dirname');
     expect(content).toContain('import.meta.dirname');
   });
+
+  it('guardrail: enforces immutable 40-character commit SHAs on all GitHub Actions across workflows', () => {
+    const workflowsDir = path.resolve(rootDir, '.github/workflows');
+    const workflowFiles = fs.readdirSync(workflowsDir).filter(f => f.endsWith('.yml') || f.endsWith('.yaml'));
+    expect(workflowFiles.length).toBeGreaterThan(0);
+
+    const sha40Regex = /^[a-zA-Z0-9_\-./]+@[a-f0-9]{40}$/;
+
+    for (const file of workflowFiles) {
+      const content = fs.readFileSync(path.join(workflowsDir, file), 'utf-8');
+      const lines = content.split('\n');
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('uses:')) {
+          // Extract action reference before comments
+          const actionRef = trimmed.replace(/^uses:\s*/, '').split('#')[0].trim();
+          expect(
+            sha40Regex.test(actionRef),
+            `Action '${actionRef}' in ${file} must be pinned to an immutable 40-character commit SHA (SLSA L2/L3 & OpenSSF)`
+          ).toBe(true);
+        }
+      }
+    }
+  });
+
+  it('guardrail: enforces npm ci over npm install across all GitHub Actions workflows', () => {
+    const workflowsDir = path.resolve(rootDir, '.github/workflows');
+    const workflowFiles = fs.readdirSync(workflowsDir).filter(f => f.endsWith('.yml') || f.endsWith('.yaml'));
+
+    for (const file of workflowFiles) {
+      const content = fs.readFileSync(path.join(workflowsDir, file), 'utf-8');
+      expect(
+        content,
+        `Workflow ${file} must use 'npm ci' instead of 'npm install' for deterministic lockfile fidelity`
+      ).not.toMatch(/run:\s*npm\s+install\b/);
+      expect(content).toContain('npm ci');
+    }
+  });
+
+  it('guardrail: verifies explicit least-privilege permissions in .github/workflows/ci.yml', () => {
+    const ciPath = path.resolve(rootDir, '.github/workflows/ci.yml');
+    const ciContent = fs.readFileSync(ciPath, 'utf-8');
+
+    expect(ciContent).toMatch(/permissions:\s*\n\s*contents:\s*read/);
+  });
+
+  it('guardrail: verifies automated secret detection verification check in .github/workflows/ci.yml', () => {
+    const ciPath = path.resolve(rootDir, '.github/workflows/ci.yml');
+    const ciContent = fs.readFileSync(ciPath, 'utf-8');
+
+    expect(ciContent).toContain('Verify Secret Detection Guardrails');
+    expect(ciContent).toMatch(/npx vitest run tests\/SecurityGuardrails\.test\.ts/);
+  });
 });
