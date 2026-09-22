@@ -115,6 +115,24 @@ describe('Security Architecture & Codebase Audit Guardrails', () => {
       ).toBe(false);
     }
   });
+
+  it('guardrail: verifies package.json dependency overrides and CI audit zero-tolerance', () => {
+    const pkgPath = path.resolve(rootDir, 'package.json');
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+    expect(pkg.overrides).toBeDefined();
+    expect(pkg.overrides['fast-uri']).toBeDefined();
+    expect(pkg.overrides['nanoid']).toBeDefined();
+
+    const ciPath = path.resolve(rootDir, '.github/workflows/ci.yml');
+    const ciContent = fs.readFileSync(ciPath, 'utf-8');
+    expect(ciContent).toContain('npm audit --audit-level=high');
+    expect(ciContent).not.toContain('--omit=dev');
+  });
+
+  it('guardrail: verifies vite.config.ts uses ESM import.meta.dirname without legacy __dirname', () => {
+    const viteConfigPath = path.resolve(rootDir, 'vite.config.ts');
+    const content = fs.readFileSync(viteConfigPath, 'utf-8');
+    expect(content).not.toContain('__dirname');
+    expect(content).toContain('import.meta.dirname');
+  });
 });
-
-
