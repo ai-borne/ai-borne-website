@@ -26,6 +26,9 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Audit Dependencies for High Vulnerabilities
+        run: npm audit --audit-level=high --omit=dev
+
       - name: Run TypeScript Type Check
         run: npx tsc --noEmit
 

@@ -75,6 +75,46 @@ describe('Security Architecture & Codebase Audit Guardrails', () => {
     expect(content).toContain('package-ecosystem: "npm"');
     expect(content).toContain('package-ecosystem: "github-actions"');
   });
+
+  it('guardrail: verifies zero unescaped dynamic error or user-input interpolations in innerHTML across src/ts/', () => {
+    const tsFiles = getAllFiles(path.join(rootDir, 'src', 'ts')).filter(f => f.endsWith('.ts'));
+    expect(tsFiles.length).toBeGreaterThan(0);
+
+    // Forbidden patterns where untrusted/runtime user input or dynamic error message is directly placed in innerHTML
+    const dangerousPatterns = [
+      /innerHTML\s*=\s*.*(?:\$\{[^}]*(?:errorMessage|error|err|value|input|params|searchParams)[^}]*\}).*/i,
+      /alertEl\.innerHTML\s*=/,
+      /formAlert\.innerHTML\s*=/,
+      /\.innerHTML\s*=\s*['"`]<div class="alert-error">\$\{/
+    ];
+
+    for (const filePath of tsFiles) {
+      const content = fs.readFileSync(filePath, 'utf-8');
+      const relativePath = path.relative(rootDir, filePath);
+
+      for (const pattern of dangerousPatterns) {
+        expect(
+          pattern.test(content),
+          `Vulnerable unescaped dynamic innerHTML interpolation detected in ${relativePath}`
+        ).toBe(false);
+      }
+    }
+  });
+
+  it('guardrail: ensures zero client bundle references to server-side email API endpoints (api.resend.com)', () => {
+    const srcFiles = getAllFiles(path.join(rootDir, 'src')).filter(f => f.endsWith('.ts') || f.endsWith('.js'));
+    expect(srcFiles.length).toBeGreaterThan(0);
+
+    for (const filePath of srcFiles) {
+      const content = fs.readFileSync(filePath, 'utf-8');
+      const relativePath = path.relative(rootDir, filePath);
+
+      expect(
+        content.includes('api.resend.com'),
+        `Client source file ${relativePath} must not reference server-side API endpoint 'api.resend.com'. Requests must proxy via /api/contact.`
+      ).toBe(false);
+    }
+  });
 });
 
 
