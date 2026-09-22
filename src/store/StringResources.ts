@@ -38,6 +38,12 @@ export interface IStringDictionary {
     emptyDescription: string;
     backToAllArticles: string;
     showingCount: string;
+    in30SecondsTitle: string;
+    copyCode: string;
+    copiedCode: string;
+    breadcrumbAllInsights: string;
+    articleNotFoundTitle: string;
+    articleNotFoundDesc: string;
   };
   appsIndex: {
     title: string;
@@ -153,6 +159,12 @@ export class StringResources {
       emptyDescription: 'Try adjusting your search query or switching category filters.',
       backToAllArticles: '← Back to All Articles',
       showingCount: 'Showing engineering playbooks',
+      in30SecondsTitle: '⚡ In 30 Seconds',
+      copyCode: 'Copy',
+      copiedCode: 'Copied!',
+      breadcrumbAllInsights: 'All Insights',
+      articleNotFoundTitle: 'Article Not Found',
+      articleNotFoundDesc: 'The article you are looking for does not exist or has been moved.',
     },
     appsIndex: {
       title: 'Our App Ecosystem',

@@ -12,7 +12,8 @@ export function renderHomePage(): void {
   const viewModel = new HomeViewModel();
   const config = viewModel.getConfig();
   const apps = viewModel.getFeaturedApps();
-  const posts = viewModel.getRecentPosts();
+  const posts = viewModel.getFeaturedInsightPosts(4);
+  const totalPostsCount = viewModel.getRecentPosts(100).length;
   const strings = StringResources.getStrings();
 
   const appEl = document.getElementById('app');
@@ -42,7 +43,7 @@ export function renderHomePage(): void {
               <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">${app.name}</h3>
               <p class="text-muted mb-md">${app.description}</p>
               <div style="margin-bottom: 1rem;">
-                <span style="color: #4ade80; font-size: 0.875rem;">✔ ${app.privacyGuarantee}</span>
+                <span style="color: var(--color-accent-green); font-size: 0.875rem;">✔ ${app.privacyGuarantee}</span>
               </div>
               <a href="/apps/${app.id}.html" class="btn btn-primary">${strings.home.viewProductDetails}</a>
             </div>
@@ -53,20 +54,39 @@ export function renderHomePage(): void {
       </section>
 
       <section class="container section">
-        <h2 class="section-title text-center">${strings.home.insightsTitle}</h2>
-        <div class="grid-2">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--spacing-xl); flex-wrap: wrap; gap: var(--spacing-sm);">
+          <div>
+            <h2 class="section-title" style="margin-bottom: 0.25rem;">${strings.home.insightsTitle}</h2>
+            <p class="text-muted" style="font-size: var(--font-size-sm);">${strings.home.featuredAppsSubtitle}</p>
+          </div>
+          <a href="/blog/index.html" class="insights-header-link">${strings.home.viewAllInsightsLink} (${totalPostsCount}) &rarr;</a>
+        </div>
+        <div class="grid-2 mb-xl">
           ${posts
             .map(
               (post) => `
-            <div class="card">
-              <span class="badge mb-sm">${post.category}</span>
-              <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">${post.title}</h3>
-              <p class="text-muted mb-md">${post.summary}</p>
-              <span class="text-muted" style="font-size: 0.875rem;">${post.readTimeMinutes} ${strings.home.minRead}</span>
-            </div>
+            <article class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm); gap: var(--spacing-xs); flex-wrap: wrap;">
+                  <span class="badge">${post.category}</span>
+                  ${post.metricBadge ? `<span class="card-metric-badge">${post.metricBadge}</span>` : ''}
+                </div>
+                <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">
+                  <a href="/blog/post.html?slug=${post.slug}" style="color: inherit; text-decoration: none;">${post.title}</a>
+                </h3>
+                <p class="text-muted mb-md">${post.summary}</p>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-md); border-top: 1px solid var(--color-border-glass); padding-top: var(--spacing-md);" class="text-muted">
+                <span style="font-size: 0.875rem;">${post.readTimeMinutes} ${strings.home.minRead}</span>
+                <a href="/blog/post.html?slug=${post.slug}" style="color: var(--color-accent-cyan); font-weight: 600; text-decoration: none; font-size: 0.875rem;">${strings.home.readArticle}</a>
+              </div>
+            </article>
           `
             )
             .join('')}
+        </div>
+        <div class="text-center">
+          <a href="/blog/index.html" class="btn btn-primary">${strings.home.exploreAllInsights}</a>
         </div>
       </section>
     </main>
