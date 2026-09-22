@@ -24,11 +24,25 @@ describe('SecurityPolicyGenerator (Domain & Email Protection)', () => {
     expect(dmarc).toContain('rua=mailto:founder@ai-borne.in');
   });
 
-  it('generates RFC 9116 security.txt content', () => {
+  it('generates RFC 9116 security.txt content with Encryption, Acknowledgments, and Hiring directives', () => {
     const secTxt = SecurityPolicyGenerator.generateSecurityTxt(config);
     expect(secTxt).toContain('Contact: mailto:founder@ai-borne.in');
     expect(secTxt).toContain('Canonical: https://ai-borne.in/.well-known/security.txt');
+    expect(secTxt).toContain('Encryption: https://ai-borne.in/.well-known/pgp-key.txt');
+    expect(secTxt).toContain('Acknowledgments: https://ai-borne.in/support.html');
+    expect(secTxt).toContain('Hiring: https://ai-borne.in/support.html');
     expect(secTxt).toContain('Expires:');
+
+    const customSecTxt = SecurityPolicyGenerator.generateSecurityTxt({
+      ...config,
+      encryptionUrl: 'https://custom.ai-borne.in/key.asc',
+      acknowledgmentsUrl: 'https://custom.ai-borne.in/thanks',
+      hiringUrl: 'https://custom.ai-borne.in/jobs',
+    }, 2028);
+    expect(customSecTxt).toContain('Encryption: https://custom.ai-borne.in/key.asc');
+    expect(customSecTxt).toContain('Acknowledgments: https://custom.ai-borne.in/thanks');
+    expect(customSecTxt).toContain('Hiring: https://custom.ai-borne.in/jobs');
+    expect(customSecTxt).toContain('Expires: 2028-12-31T23:59:59.000Z');
   });
 
   describe('CAA (Certificate Authority Authorization) Records', () => {
@@ -103,6 +117,26 @@ describe('SecurityPolicyGenerator (Domain & Email Protection)', () => {
     });
   });
 
+  describe('BIMI (Brand Indicators for Message Identification - RFC 8617)', () => {
+    it('generates standard BIMI TXT record with default logo and empty authority', () => {
+      const bimi = SecurityPolicyGenerator.generateBimiRecord();
+      expect(bimi).toBe('v=BIMI1; l=https://ai-borne.in/logo.svg; a=;');
+    });
+
+    it('generates BIMI TXT record with custom logo and verified mark certificate (VMC)', () => {
+      const bimi = SecurityPolicyGenerator.generateBimiRecord(
+        'https://ai-borne.in/assets/logo.svg',
+        'https://ai-borne.in/certificates/vmc.pem'
+      );
+      expect(bimi).toBe('v=BIMI1; l=https://ai-borne.in/assets/logo.svg; a=https://ai-borne.in/certificates/vmc.pem;');
+    });
+
+    it('generates BIMI record when passed an ISecurityPolicyConfig object', () => {
+      const bimi = SecurityPolicyGenerator.generateBimiRecord(config);
+      expect(bimi).toBe('v=BIMI1; l=https://ai-borne.in/logo.svg; a=;');
+    });
+  });
+
   describe('Static .well-known Files Consistency (SSOT)', () => {
     it('verifies public/.well-known/security.txt matches SecurityPolicyGenerator', async () => {
       const fs = await import('fs');
@@ -124,6 +158,31 @@ describe('SecurityPolicyGenerator (Domain & Email Protection)', () => {
       const fileContent = fs.readFileSync(mtaStsPath, 'utf-8').trim();
       const generated = SecurityPolicyGenerator.generateMtaStsPolicy().trim();
       expect(fileContent).toBe(generated);
+    });
+
+    it('verifies public/.well-known/pgp-key.txt exists and is a valid OpenPGP public key block', async () => {
+      const fs = await import('fs');
+      const path = await import('path');
+      const pgpKeyPath = path.resolve(__dirname, '../public/.well-known/pgp-key.txt');
+      expect(fs.existsSync(pgpKeyPath)).toBe(true);
+
+      const content = fs.readFileSync(pgpKeyPath, 'utf-8');
+      expect(content).toContain('-----BEGIN PGP PUBLIC KEY BLOCK-----');
+      expect(content).toContain('-----END PGP PUBLIC KEY BLOCK-----');
+    });
+
+    it('verifies public/payment-security.md exists and covers PCI DSS v4.0 Req 6.4.3 & 11.6.1', async () => {
+      const fs = await import('fs');
+      const path = await import('path');
+      const docPath = path.resolve(__dirname, '../public/payment-security.md');
+      expect(fs.existsSync(docPath)).toBe(true);
+
+      const content = fs.readFileSync(docPath, 'utf-8');
+      expect(content).toContain('Requirement 6.4.3');
+      expect(content).toContain('Requirement 11.6.1');
+      expect(content).toContain('https://checkout.razorpay.com/v1/checkout.js');
+      expect(content).toContain('https://api.razorpay.com');
+      expect(content).toContain('/api/csp-report');
     });
   });
 });

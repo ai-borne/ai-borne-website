@@ -3,6 +3,9 @@ export interface ISecurityPolicyConfig {
   supportEmail: string;
   allowedMailSenders?: string[];
   caaAuthorities?: string[];
+  encryptionUrl?: string;
+  acknowledgmentsUrl?: string;
+  hiringUrl?: string;
 }
 
 export class SecurityPolicyGenerator {
@@ -68,13 +71,30 @@ export class SecurityPolicyGenerator {
   }
 
   public static generateSecurityTxt(config: ISecurityPolicyConfig, expiresYear: number = 2027): string {
+    const encryption = config.encryptionUrl || `https://${config.domain}/.well-known/pgp-key.txt`;
+    const acknowledgments = config.acknowledgmentsUrl || `https://${config.domain}/support.html`;
+    const hiring = config.hiringUrl || `https://${config.domain}/support.html`;
     return [
       `Contact: mailto:${config.supportEmail}`,
       `Expires: ${expiresYear}-12-31T23:59:59.000Z`,
+      `Encryption: ${encryption}`,
+      `Acknowledgments: ${acknowledgments}`,
       `Preferred-Languages: en`,
       `Canonical: https://${config.domain}/.well-known/security.txt`,
       `Policy: https://${config.domain}/terms.html`,
+      `Hiring: ${hiring}`,
     ].join('\n');
+  }
+
+  public static generateBimiRecord(
+    logoOrConfig: string | ISecurityPolicyConfig = 'https://ai-borne.in/logo.svg',
+    authorityUrl: string = ''
+  ): string {
+    const logo = typeof logoOrConfig === 'string'
+      ? logoOrConfig
+      : `https://${logoOrConfig.domain}/logo.svg`;
+    const authorityPart = authorityUrl ? ` a=${authorityUrl};` : ' a=;';
+    return `v=BIMI1; l=${logo};${authorityPart}`;
   }
 }
 
