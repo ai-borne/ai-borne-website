@@ -1,0 +1,174 @@
+# AI-Borne Studio — Full Engineering Knowledge & Architecture Manifest
+
+> AI-Borne Studio (https://ai-borne.in) is an independent software engineering studio founded by Sunil Pawar. The studio specializes in privacy-first on-device mobile applications, Kotlin Multiplatform systems, zero-trust cloud architectures, and deterministic agentic AI development.
+
+---
+
+## 1. Studio Architecture & Engineering Philosophy
+
+### Core Tenets
+1. **On-Device First**: User data sovereignty is an absolute architectural invariant. Private user data (salary slips, health logs, personal knowledge graphs) is processed locally on-device in isolated memory sandboxes with zero cloud transmission.
+2. **Rule 5 — Deterministic Guardrails**: "Use the model only for judgment calls (classification, extraction, summarization, drafting). Do NOT use it for routing, retries, or deterministic transforms. If code can answer, code answers."
+3. **Model-View-ViewModel (MVVM) & Single Source of Truth (SSOT)**: Strict separation of presentation logic from data layers. All UI strings resolve through centralized string dictionaries; all styling resolves through design system CSS variables (`tokens.css`).
+4. **Zero-Trust Supply Chain & CI/CD**: Automated CSP generation, Subresource Integrity (SRI) for external dependencies, zero `unsafe-inline` script executions, pre-commit AST syntax audits, and zero tolerance for high-severity CVEs.
+5. **Hard Limit on Complexity**: Every source file maintains a strict limit of under 300 lines of code (LOC), enforcing clean module decomposition and single responsibility.
+
+---
+
+## 2. Production Applications & Platforms
+
+### PayslipMax
+- **URL**: https://ai-borne.in/apps/payslipmax.html
+- **Tagline**: Smart On-Device Salary & PDF Payslip Parser
+- **Category**: Finance & Productivity
+- **Architecture**: Kotlin Multiplatform (Android & iOS), custom on-device C++ and Kotlin PDF stream lexer.
+- **Key Features**:
+  - Automated PDF tabular parsing without cloud OCR APIs.
+  - Sub-120 millisecond parsing execution directly on the phone.
+  - 100% on-device privacy guarantee with isolated in-memory sandboxes.
+  - Real-time tax withholding, allowance, and deductions analytics.
+
+### SSBMax
+- **URL**: https://ai-borne.in/apps/ssbmax.html
+- **Tagline**: AI-Powered SSB Test Automation & Officer Like Qualities (OLQ) Preparation
+- **Category**: Defense Prep & AI
+- **Architecture**: Compose Multiplatform, multi-agent evaluation pipeline with Gemini API and speech-to-text integration.
+- **Key Features**:
+  - Timed practice test batteries for OIR, PPDT, TAT, WAT, SRT, and GPE.
+  - Simulated Interviewing Officer (IO) mock interviews with speech-to-text analysis.
+  - 15 Officer Like Qualities (OLQ) calibrated psychological scoring with anti-hallucination referee prompts.
+
+### Yoga of Eating
+- **URL**: https://ai-borne.in/apps/yoga-of-eating.html
+- **Tagline**: Mindful Eating Journal & AI-Driven Wellness Companion
+- **Category**: Health & Mindfulness
+- **Architecture**: Native iOS Swift + HealthKit integration with reactive canvas UI.
+- **Key Features**:
+  - Mindful eating reflection and sensory meal logging.
+  - On-device HealthKit sleep and circadian cycle correlation.
+  - Reactive AI emotional companion providing instant holistic wellness feedback.
+
+### ActionStation
+- **URL**: https://ai-borne.in/apps/action-station.html
+- **Tagline**: AI-Powered Infinite Canvas & BASB Knowledge Synthesis Engine
+- **Category**: Productivity & Knowledge
+- **Architecture**: ReactFlow node canvas, TipTap rich-text editor, Firestore atomic batch transactions, Gemini API semantic synthesis.
+- **Key Features**:
+  - Infinite whiteboard graph workspace for non-linear thinking.
+  - Structured Building a Second Brain (BASB) and PARA (Projects, Areas, Resources, Archives) workflows.
+  - Spatial viewport culling and chunked 500-operation atomic database commits.
+
+### DefenceWire.in
+- **URL**: https://ai-borne.in/apps/defencewire.html
+- **Tagline**: India’s Institutional Defence & Strategic Intelligence Wire
+- **Category**: Defense & Strategic Intelligence
+- **Architecture**: Playwright headless scrapers, MinHash deduplication engine, Cloudflare Workers edge caching.
+- **Key Features**:
+  - Sub-50ms Time To First Byte (TTFB) globally via Cloudflare edge network.
+  - Real-time automated aggregation across PIB, Ministry of Defence, and Parliament queries.
+  - 43+ living strategic program dossiers (Tejas Mk1A, AMCA, Project 75I) with live procurement tracking.
+
+### SecureMax
+- **URL**: https://ai-borne.in/apps/securemax.html
+- **Tagline**: AI-Driven Physical Security Audit & Automated Threat Intelligence Crawler
+- **Category**: Enterprise & Physical Security
+- **Architecture**: ASIS CPP Seven Precis rule engine, pgvector semantic search, Playwright threat crawlers.
+- **Key Features**:
+  - Adaptive flowchart audits grounded in 7 CPP security domains and ISO 27001 Annex A.11.
+  - Executive 7-domain risk radar with prioritized remediation roadmaps.
+  - Automated threat intelligence scraping for physical security vulnerability alerts.
+
+---
+
+## 3. Engineering Knowledge Base & Playbooks
+
+### Playbook 1: Building Privacy-First PDF Parsing on Mobile Devices
+- **URL**: https://ai-borne.in/blog/post.html?slug=privacy-first-local-pdf-parsing
+- **Category**: App Engineering | **Performance Metric**: ⚡ 120ms Execution
+- **Summary**: Details the architecture of PayslipMax's on-device PDF lexer. Discards third-party cloud OCR in favor of a zero-cloud C++ and Kotlin parser that directly navigates PDF cross-reference tables and content streams.
+- **Key Takeaways**:
+  - Eliminates cloud OCR recurring costs and data sovereignty legal liabilities.
+  - Achieves 120ms parsing latency on resource-constrained mobile processors.
+  - Employs spatial bounding-box clustering to reliably extract tabular salary grids.
+  - Zero heap retention: extraction buffers are wiped immediately post-parse.
+
+### Playbook 2: Kotlin Multiplatform Architecture for High Performance Apps
+- **URL**: https://ai-borne.in/blog/post.html?slug=kotlin-multiplatform-automation-patterns
+- **Category**: Automation | **Performance Metric**: 🔄 85% Logic Shared
+- **Summary**: Comprehensive architectural blueprint for sharing business logic between Android and iOS without compromise. Uses Compose Multiplatform for Android/Desktop, native SwiftUI for iOS, and unidirectional MVI state machines.
+- **Key Takeaways**:
+  - Shares 85% of codebase (networking, persistence, state reducers, domain validators).
+  - SQLDelight generates type-safe multiplatform SQLite drivers with zero reflection.
+  - Shared business logic runs entirely in JVM unit tests, executing in under 2 seconds.
+  - Avoids dual-team synchronization drift.
+
+### Playbook 3: The 10x Solo Studio: Shipping 6 Production Platforms with Agentic AI & Deterministic Guardrails
+- **URL**: https://ai-borne.in/blog/post.html?slug=solo-developer-agentic-productivity-playbook
+- **Category**: AI | **Performance Metric**: 🚀 6 Apps Shipped
+- **Summary**: Operational methodology enabling a single engineer to design, build, test, and ship 6 production platforms. Contrasts chaotic prompt engineering with deterministic AST guardrails, token budgets, and spec-driven execution.
+- **Key Takeaways**:
+  - Model for judgment, code for determinism (Rule 5).
+  - Strict 4,000 token task budget prevents agentic hallucination loops.
+  - Automated pre-commit hooks and AST audits catch regressions before human review.
+  - Phased, test-driven delivery with 100% automated verification.
+
+### Playbook 4: Zero-Trust CI/CD & Supply Chain Defense: Automated WAF, Strict CSP & Architectural Guardrails
+- **URL**: https://ai-borne.in/blog/post.html?slug=zero-trust-cicd-supply-chain-hardening
+- **Category**: App Engineering | **Performance Metric**: 🛡️ 100% Zero-Trust
+- **Summary**: Production hardening guide for modern web applications. Documents automated CSP generation, Subresource Integrity (SRI) enforcement, pre-commit AST verification hooks, and zero high-severity CVE audits.
+- **Key Takeaways**:
+  - Eliminates `unsafe-inline` scripts entirely via decoupled theme bootstrap scripts.
+  - Enforces cryptographic SHA-384 hashes on all third-party CDN scripts.
+  - Pre-commit AST hooks reject any code containing unescaped dynamic `innerHTML` sinks.
+  - Dependency overrides eradicate deep transitive vulnerabilities (`fast-uri`, `nanoid`).
+
+### Playbook 5: Architecting Real-Time Edge Intelligence: Crawling, Deduplicating & Serving Institutional Feeds at Zero Latency
+- **URL**: https://ai-borne.in/blog/post.html?slug=real-time-edge-intelligence-architecture
+- **Category**: Automation | **Performance Metric**: ⚡ Sub-50ms TTFB
+- **Summary**: Deep-dive into the ingestion engine powering DefenceWire.in. Explores headless browser workers, fuzzy MinHash deduplication of defense communiqués, and globally distributed Cloudflare edge caching.
+- **Key Takeaways**:
+  - Distributed Playwright crawlers bypass Cloudflare challenges with real browser emulation.
+  - MinHash and Jaccard similarity algorithms eliminate duplicate news stories across wire services.
+  - Stale-while-revalidate caching headers achieve sub-50ms TTFB worldwide.
+  - Automatic dossier linking maps articles to 43+ tracked defense programs.
+
+### Playbook 6: Engineering Multi-Agent Evaluation Systems: Calibrating the 15 Officer Like Qualities (OLQ) in SSBMax
+- **URL**: https://ai-borne.in/blog/post.html?slug=multi-agent-ai-scoring-engine-architecture
+- **Category**: AI | **Performance Metric**: 🎯 15 OLQs Evaluated
+- **Summary**: Explains the decoupled multi-agent scoring engine used to assess psychological test batteries and mock interviews for armed forces aspirants.
+- **Key Takeaways**:
+  - Decouples extraction, scoring, and feedback into independent agents.
+  - Uses adversarial referee prompts to neutralize LLM sycophancy and grade inflation.
+  - Speech-to-text transcript processing calculates pause ratios and hesitation indices.
+  - Produces deterministic, calibrated rubrics matching institutional psychologist evaluations.
+
+### Playbook 7: Building Infinite Canvas Workspaces: Integrating ReactFlow, TipTap & Atomic Cloud Transactions in ActionStation
+- **URL**: https://ai-borne.in/blog/post.html?slug=building-infinite-canvas-spatial-workspaces
+- **Category**: App Engineering | **Performance Metric**: 📦 500-Op Batches
+- **Summary**: Architectural deep-dive into ActionStation's whiteboard engine. Covers synchronizing ReactFlow node graphs with embedded TipTap rich-text editors and committing chunked 500-operation Firestore transactions.
+- **Key Takeaways**:
+  - Viewport-based spatial culling keeps 60 FPS rendering across 2,000+ nodes.
+  - Chunked atomic transactions prevent partial workspace corruption during cloud sync.
+  - Custom DOM events route keybindings cleanly between canvas navigation and rich-text editing.
+  - Comprehensive Firestore deny-all security rules isolate user workspaces completely.
+
+### Playbook 8: Enterprise Physical Threat Audits: Implementing ASIS CPP Seven Precis & Vector RAG in SecureMax
+- **URL**: https://ai-borne.in/blog/post.html?slug=enterprise-physical-security-threat-intelligence
+- **Category**: App Engineering | **Performance Metric**: 🔍 7 Security Domains
+- **Summary**: Documents the codification of the ASIS CPP Seven Precis methodology and ISO 27001 Annex A.11 standards into adaptive AI audit flowcharts and vector-assisted vulnerability radars.
+- **Key Takeaways**:
+  - Structured decision trees dynamically branch questions based on asset criticality and site tier.
+  - pgvector semantic RAG grounds recommendations strictly in verified security standards.
+  - Playwright scrapers continuously track local threat incidents and police blotters.
+  - Automatically synthesizes remediation roadmaps grouped by cost, timeline, and risk reduction.
+
+---
+
+## 4. Technical Stack & Standard Endpoints
+
+- **Frontend**: TypeScript, Vite, Vanilla CSS Design System, Web Components / MVVM architecture.
+- **Backend & Cloud**: Cloudflare Workers (`functions/`), Cloudflare Turnstile, Cloudflare Cache API.
+- **Security & Headers**: Strict CSP, HSTS (`max-age=31536000; includeSubDomains; preload`), SRI hashes, Sub-resource integrity.
+- **Sitemap**: https://ai-borne.in/sitemap.xml
+- **Robots**: https://ai-borne.in/robots.txt
+- **Security Policy**: https://ai-borne.in/.well-known/security.txt

@@ -1,0 +1,31 @@
+# AI-Borne Studio
+
+> AI-Borne Studio is an independent software engineering studio founded by Sunil Pawar, focused on building privacy-first on-device applications, Kotlin Multiplatform software, high-throughput intelligence pipelines, and deterministic agentic AI workflows.
+
+## Studio Overview
+- Official Website: https://ai-borne.in
+- Founder & Principal Engineer: Sunil Pawar (https://github.com/sunilpawar-git)
+- Engineering Philosophy: 100% On-Device Processing, Zero-Trust CI/CD, Rule 5 (Model for judgment, code for determinism), Model-View-ViewModel (MVVM), Single Source of Truth (SSOT).
+- Support & Contact: founder@ai-borne.in
+
+## Production Applications & Products
+- [PayslipMax](https://ai-borne.in/apps/payslipmax.html): Smart on-device salary & PDF payslip parser. 100% client-side privacy, zero cloud uploads, native C++/Kotlin parsing executing in under 120ms.
+- [SSBMax](https://ai-borne.in/apps/ssbmax.html): AI-driven Services Selection Board (SSB) test automation & preparation platform. Features multi-agent scoring across 15 Officer Like Qualities (OLQ) and speech-to-text mock interviews.
+- [Yoga of Eating](https://ai-borne.in/apps/yoga-of-eating.html): Mindful eating journal and wellness companion. Combines on-device HealthKit sleep synthesis with a reactive AI emotional companion.
+- [ActionStation](https://ai-borne.in/apps/action-station.html): Infinite visual canvas workspace and BASB / PARA knowledge engine. Integrates ReactFlow node graphs with TipTap block editors and chunked atomic transactions.
+- [DefenceWire.in](https://ai-borne.in/apps/defencewire.html): Real-time institutional defence aggregator and strategic intelligence wire. Sub-50ms TTFB edge caching, 43+ living strategic program dossiers, and verified institutional sourcing.
+- [SecureMax](https://ai-borne.in/apps/securemax.html): Enterprise physical security assessment platform grounded in ASIS CPP Seven Precis and ISO 27001 Annex A.11 standards, featuring adaptive AI audit flowcharts and pgvector RAG.
+
+## Engineering Knowledge Base & Playbooks
+- [Building Privacy-First PDF Parsing on Mobile Devices](https://ai-borne.in/blog/post.html?slug=privacy-first-local-pdf-parsing): On-device C++ and Kotlin lexer architecture parsing complex financial PDFs in 120ms with zero cloud transmission.
+- [Kotlin Multiplatform Architecture for High Performance Apps](https://ai-borne.in/blog/post.html?slug=kotlin-multiplatform-automation-patterns): Sharing 85% core business logic across iOS, Android, and Desktop using unidirectional MVI state machines and SQLDelight.
+- [The 10x Solo Studio: Shipping 6 Production Platforms with Agentic AI & Deterministic Guardrails](https://ai-borne.in/blog/post.html?slug=solo-developer-agentic-productivity-playbook): How 1 engineer ships and maintains 6 production platforms using deterministic guardrails, token budgets, AST verification, and Rule 5.
+- [Zero-Trust CI/CD & Supply Chain Defense: Automated WAF, Strict CSP & Architectural Guardrails](https://ai-borne.in/blog/post.html?slug=zero-trust-cicd-supply-chain-hardening): Automated CSP generation, Subresource Integrity (SRI), pre-commit AST verification hooks, and zero high-severity CVE audits.
+- [Architecting Real-Time Edge Intelligence: Crawling, Deduplicating & Serving Institutional Feeds at Zero Latency](https://ai-borne.in/blog/post.html?slug=real-time-edge-intelligence-architecture): High-throughput automated news aggregation using Playwright headless scrapers, MinHash deduplication, and Cloudflare Workers edge caching.
+- [Engineering Multi-Agent Evaluation Systems: Calibrating the 15 Officer Like Qualities (OLQ) in SSBMax](https://ai-borne.in/blog/post.html?slug=multi-agent-ai-scoring-engine-architecture): Multi-agent evaluation pipelines, speech-to-text transcript analysis, and anti-sycophancy referee prompting for deterministic psychological scoring.
+- [Building Infinite Canvas Workspaces: Integrating ReactFlow, TipTap & Atomic Cloud Transactions in ActionStation](https://ai-borne.in/blog/post.html?slug=building-infinite-canvas-spatial-workspaces): Node-graph rendering, rich-text blocks, Firestore chunked transactions, and spatial viewport culling.
+- [Enterprise Physical Threat Audits: Implementing ASIS CPP Seven Precis & Vector RAG in SecureMax](https://ai-borne.in/blog/post.html?slug=enterprise-physical-security-threat-intelligence): Codifying ASIS CPP Seven Precis domains and ISO 27001 Annex A.11 standards into adaptive AI audit flowcharts and vector search.
+
+## Full Documentation & Sitemaps
+- [Full LLM Knowledge Index](https://ai-borne.in/llms-full.txt): Comprehensive deep-dive documentation with architecture diagrams, code recipes, and full technical specifications.
+- [XML Sitemap](https://ai-borne.in/sitemap.xml): Complete machine-readable URL index.

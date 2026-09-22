@@ -8,6 +8,7 @@ import { HeaderComponent } from '../views/HeaderComponent';
 import { FooterComponent } from '../views/FooterComponent';
 import { initThemeEngine } from '../services/ThemeInitializer';
 import { MarkdownRenderer } from '../services/MarkdownRenderer';
+import { SeoMetadataService } from '../services/SeoMetadataService';
 
 function attachCodeCopyButtons(): void {
   const strings = StringResources.getStrings();
@@ -90,6 +91,8 @@ export function renderBlogPostPage(): void {
     initThemeEngine();
     return;
   }
+
+  SeoMetadataService.applyPostMetadata(post);
 
   const allOtherPosts = SiteDataStore.getPosts().filter((p) => p.slug !== post.slug);
   const relatedPosts = allOtherPosts

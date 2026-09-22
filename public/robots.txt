@@ -1,0 +1,45 @@
+# robots.txt for https://ai-borne.in
+# Allow all standard and AI search crawlers to index public pages and insights
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+
+User-agent: GPTBot
+Allow: /
+Disallow: /admin/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin/
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /admin/
+
+User-agent: Applebot
+Allow: /
+Disallow: /admin/
+
+User-agent: CCBot
+Allow: /
+Disallow: /admin/
+
+# Explicit permissions for LLM and agent discovery endpoints
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+# Official XML Sitemap
+Sitemap: https://ai-borne.in/sitemap.xml
