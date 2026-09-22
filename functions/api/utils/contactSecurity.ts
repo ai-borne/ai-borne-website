@@ -97,3 +97,80 @@ export function isAutoResponderSafe(email: string): boolean {
 
   return true;
 }
+
+/**
+ * Detects whether an input string or object contains forbidden prototype pollution properties.
+ */
+export function hasPrototypePollution(input: unknown): boolean {
+  if (!input) return false;
+
+  if (typeof input === 'string') {
+    return /"(?:__proto__|constructor|prototype)"\s*:/i.test(input);
+  }
+
+  if (typeof input === 'object') {
+    const visited = new Set<unknown>();
+    const stack: unknown[] = [input];
+
+    while (stack.length > 0) {
+      const current = stack.pop();
+      if (!current || typeof current !== 'object' || visited.has(current)) {
+        continue;
+      }
+      visited.add(current);
+
+      if (Array.isArray(current)) {
+        for (const item of current) {
+          if (item && typeof item === 'object') stack.push(item);
+        }
+      } else {
+        const keys = Object.getOwnPropertyNames(current);
+        for (const key of keys) {
+          if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+            return true;
+          }
+          const val = (current as Record<string, unknown>)[key];
+          if (val && typeof val === 'object') {
+            stack.push(val);
+          }
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Recursively strips prototype pollution vectors (__proto__, constructor, prototype) from an object.
+ */
+export function sanitizePrototypePollution<T>(obj: T): T {
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(sanitizePrototypePollution) as unknown as T;
+  }
+
+  const clean: Record<string, any> = Object.create(null);
+  for (const [key, value] of Object.entries(obj)) {
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+      continue;
+    }
+    clean[key] = sanitizePrototypePollution(value);
+  }
+  return clean as T;
+}
+
+/**
+ * Encodes special HTML characters into safe entities to prevent injection in emails.
+ */
+export function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}

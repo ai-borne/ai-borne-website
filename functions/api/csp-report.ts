@@ -1,4 +1,5 @@
 import { SlidingWindowRateLimiter } from '../../src/utils/RateLimiter';
+import { getSecureApiResponseHeaders } from './utils/apiSecurityHeaders';
 
 // 20 reports per minute per IP (60,000 ms sliding window)
 export const cspReportRateLimiter = new SlidingWindowRateLimiter(60 * 1000, 20);
@@ -10,12 +11,10 @@ const ALLOWED_CONTENT_TYPES = [
   'application/reports+json',
 ];
 
-const SECURE_HEADERS: Record<string, string> = {
-  'Cache-Control': 'no-store, no-cache, must-revalidate',
-  'X-Content-Type-Options': 'nosniff',
+const SECURE_HEADERS: Record<string, string> = getSecureApiResponseHeaders(null, {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
-};
+});
 
 export async function onRequestOptions(): Promise<Response> {
   return new Response(null, {

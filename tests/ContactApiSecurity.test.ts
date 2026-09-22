@@ -5,6 +5,8 @@ import {
   stripCrlf,
   validateContactInput,
   isAutoResponderSafe,
+  hasPrototypePollution,
+  sanitizePrototypePollution,
 } from '../functions/api/utils/contactSecurity';
 
 describe('Contact API Security Integration Tests', () => {
@@ -33,7 +35,7 @@ describe('Contact API Security Integration Tests', () => {
     const request = new Request('https://ai-borne.in/api/contact', {
       method,
       headers: new Headers(headers),
-      body: method === 'POST' ? JSON.stringify(body) : null,
+      body: method === 'POST' ? (typeof body === 'string' ? body : JSON.stringify(body)) : null,
     });
 
     return {
@@ -61,6 +63,18 @@ describe('Contact API Security Integration Tests', () => {
     expect(response.headers.get('Access-Control-Allow-Origin')).toBeNull();
   });
 
+  it('enforces enterprise zero-trust security headers on API responses', async () => {
+    const ctx = createMockContext('POST', { email: 'user@example.com', message: 'Hello AI-Borne' }, 'https://ai-borne.in');
+    const response = await onRequestOptions(ctx);
+    expect(response.headers.get('Cache-Control')).toContain('no-store');
+    expect(response.headers.get('Strict-Transport-Security')).toContain('max-age=31536000');
+    expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
+    expect(response.headers.get('X-Frame-Options')).toBe('DENY');
+    expect(response.headers.get('Referrer-Policy')).toBe('no-referrer');
+    expect(response.headers.get('Cross-Origin-Resource-Policy')).toBe('same-origin');
+    expect(response.headers.get('Content-Security-Policy')).toBe("default-src 'none'; frame-ancestors 'none';");
+  });
+
   it('rejects non-json content-type requests with 415 Unsupported Media Type', async () => {
     const ctx = createMockContext('POST', { email: 'user@example.com', message: 'Hello' }, 'https://ai-borne.in', 'text/plain');
     const response = await onRequestPost(ctx);
@@ -84,6 +98,12 @@ describe('Contact API Security Integration Tests', () => {
     expect(response.status).toBe(400);
     const data = await response.json();
     expect(data.error).toBe('Invalid email address format.');
+
+    const emptyCtx = createMockContext('POST', { email: '', message: 'Valid length message' });
+    const emptyRes = await onRequestPost(emptyCtx);
+    expect(emptyRes.status).toBe(400);
+    const emptyData = await emptyRes.json();
+    expect(emptyData.error).toBe('Email address is required.');
   });
 
   it('rejects request when CF_TURNSTILE_SECRET_KEY is configured but token is missing', async () => {
@@ -98,7 +118,6 @@ describe('Contact API Security Integration Tests', () => {
 
   it('enforces 429 Too Many Requests when burst limit (5 req/5 min) is exceeded', async () => {
     const ip = '198.51.100.77';
-    // Mock global fetch for Resend calls
     const originalFetch = global.fetch;
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
@@ -106,14 +125,12 @@ describe('Contact API Security Integration Tests', () => {
     } as Response);
 
     try {
-      // 5 allowed requests
       for (let i = 0; i < 5; i++) {
         const ctx = createMockContext('POST', { email: `user${i}@example.com`, message: 'Test message here' }, 'https://ai-borne.in', 'application/json', undefined, ip);
         const res = await onRequestPost(ctx);
         expect(res.status).toBe(200);
       }
 
-      // 6th request should be blocked with 429
       const blockedCtx = createMockContext('POST', { email: 'burst@example.com', message: 'Test message here' }, 'https://ai-borne.in', 'application/json', undefined, ip);
       const blockedRes = await onRequestPost(blockedCtx);
       expect(blockedRes.status).toBe(429);
@@ -126,8 +143,70 @@ describe('Contact API Security Integration Tests', () => {
     }
   });
 
+  it('rejects prototype pollution payload with 400 Bad Request', async () => {
+    const pollutedPayload = '{"email":"user@example.com","message":"Hello","__proto__":{"polluted":true}}';
+    const ctx = createMockContext('POST', pollutedPayload);
+    const res = await onRequestPost(ctx);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toContain('Prototype pollution attempt rejected');
+  });
+
+  it('sanitizePrototypePollution helper recursively strips pollution keys', () => {
+    const pollutedObj = {
+      email: 'safe@example.com',
+      __proto__: { isAdmin: true },
+      nested: {
+        constructor: { evil: true },
+        prototype: { hijacked: true },
+        ok: 'value',
+      },
+    };
+
+    expect(hasPrototypePollution(pollutedObj)).toBe(true);
+    expect(hasPrototypePollution('{"__proto__": {}}')).toBe(true);
+    expect(hasPrototypePollution({ clean: 'data' })).toBe(false);
+
+    const sanitized = sanitizePrototypePollution(pollutedObj);
+    expect(sanitized.email).toBe('safe@example.com');
+    expect(sanitized.nested.ok).toBe('value');
+    expect(Object.prototype.hasOwnProperty.call(sanitized, '__proto__')).toBe(false);
+    expect((sanitized as any).isAdmin).toBeUndefined();
+    expect((sanitized.nested as any).constructor?.evil).toBeUndefined();
+    expect((sanitized.nested as any).prototype).toBeUndefined();
+  });
+
+  it('masks upstream third-party Resend error details and prevents information leakage', async () => {
+    const originalFetch = global.fetch;
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 403,
+      json: async () => ({ message: 'Restricted API Key key_sec_12345: domain not verified' }),
+    } as Response);
+
+    try {
+      const ctx = createMockContext('POST', { email: 'user@example.com', message: 'Inquiry message' });
+      const res = await onRequestPost(ctx);
+      expect(res.status).toBe(500);
+
+      const body = await res.json();
+      // Leaked internal details must NOT be returned to user
+      expect(body.error).not.toContain('key_sec_12345');
+      expect(body.error).not.toContain('domain not verified');
+      expect(body.error).toBe('Failed to deliver support email. Please email founder@ai-borne.in directly.');
+
+      // But logged securely on the server
+      expect(consoleSpy).toHaveBeenCalled();
+    } finally {
+      global.fetch = originalFetch;
+      consoleSpy.mockRestore();
+    }
+  });
+
   it('rejects oversized email (> 100 chars) with 400 Bad Request', async () => {
-    const longEmail = 'a'.repeat(95) + '@example.com'; // > 100 chars
+    const longEmail = 'a'.repeat(95) + '@example.com';
     const ctx = createMockContext('POST', { email: longEmail, message: 'Valid support inquiry' });
     const response = await onRequestPost(ctx);
     expect(response.status).toBe(400);
@@ -173,8 +252,6 @@ describe('Contact API Security Integration Tests', () => {
     try {
       const ctx = createMockContext('POST', { email: 'founder@ai-borne.in', message: 'Self test loop' });
       await onRequestPost(ctx);
-
-      // waitUntil (which sends the customer auto-confirmation) must NOT be invoked for internal loop addresses
       expect(ctx.waitUntil).not.toHaveBeenCalled();
     } finally {
       global.fetch = originalFetch;

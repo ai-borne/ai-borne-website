@@ -2,7 +2,14 @@ import {
   contactRateLimiter,
   validateContactInput,
   isAutoResponderSafe,
+  hasPrototypePollution,
+  sanitizePrototypePollution,
+  escapeHtml,
 } from './utils/contactSecurity';
+import {
+  getAllowedOrigin,
+  getSecureApiResponseHeaders,
+} from './utils/apiSecurityHeaders';
 
 interface ContactRequestBody {
   email?: string;
@@ -16,23 +23,30 @@ interface Env {
 }
 
 const MAX_PAYLOAD_BYTES = 10 * 1024; // 10 KB limit
-const ALLOWED_ORIGINS = [
-  'https://ai-borne.in',
-  'https://www.ai-borne.in',
-];
 
 export async function onRequestOptions(context: { request: Request }): Promise<Response> {
   const origin = getAllowedOrigin(context.request);
   return new Response(null, {
     status: 204,
-    headers: getResponseHeaders(origin),
+    headers: getSecureApiResponseHeaders(origin, {
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    }),
   });
 }
 
-export async function onRequestPost(context: { request: Request; env: Env; waitUntil?: (promise: Promise<any>) => void }): Promise<Response> {
+export async function onRequestPost(context: {
+  request: Request;
+  env: Env;
+  waitUntil?: (promise: Promise<any>) => void;
+}): Promise<Response> {
   const { request, env } = context;
   const origin = getAllowedOrigin(request);
-  const headers = getResponseHeaders(origin);
+  const headers = getSecureApiResponseHeaders(origin, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  });
 
   // Method check
   if (request.method !== 'POST') {
@@ -67,7 +81,7 @@ export async function onRequestPost(context: { request: Request; env: Env; waitU
     );
   }
 
-  // Payload size validation
+  // Payload size validation via Content-Length header
   const contentLengthHeader = request.headers.get('Content-Length');
   if (contentLengthHeader && parseInt(contentLengthHeader, 10) > MAX_PAYLOAD_BYTES) {
     return new Response(
@@ -85,7 +99,16 @@ export async function onRequestPost(context: { request: Request; env: Env; waitU
       );
     }
 
-    const body: ContactRequestBody = JSON.parse(rawText);
+    // Prototype pollution detection & rejection
+    if (hasPrototypePollution(rawText)) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Malicious payload detected: Prototype pollution attempt rejected.' }),
+        { status: 400, headers }
+      );
+    }
+
+    const rawParsed = JSON.parse(rawText);
+    const body: ContactRequestBody = sanitizePrototypePollution(rawParsed);
     const validation = validateContactInput(body.email, body.message);
 
     if (!validation.valid) {
@@ -151,10 +174,11 @@ export async function onRequestPost(context: { request: Request; env: Env; waitU
     const resendData: any = await resendRes.json().catch(() => ({}));
 
     if (!resendRes.ok) {
+      console.error('[Contact API] Resend email delivery failed:', resendRes.status, resendData?.message);
       return new Response(
         JSON.stringify({
           success: false,
-          error: resendData.message || 'Failed to deliver support email. Please email founder@ai-borne.in directly.',
+          error: 'Failed to deliver support email. Please email founder@ai-borne.in directly.',
         }),
         { status: 500, headers }
       );
@@ -209,7 +233,7 @@ export async function onRequestPost(context: { request: Request; env: Env; waitU
       }),
       { status: 200, headers }
     );
-  } catch (err) {
+  } catch {
     return new Response(
       JSON.stringify({
         success: false,
@@ -218,37 +242,6 @@ export async function onRequestPost(context: { request: Request; env: Env; waitU
       { status: 500, headers }
     );
   }
-}
-
-function getAllowedOrigin(request: Request): string | null {
-  const reqOrigin = request.headers.get('Origin') || '';
-  if (!reqOrigin) return null;
-
-  if (ALLOWED_ORIGINS.includes(reqOrigin.toLowerCase())) {
-    return reqOrigin;
-  }
-
-  // Allow localhost origins for dev environment
-  if (/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(reqOrigin.toLowerCase())) {
-    return reqOrigin;
-  }
-
-  return null;
-}
-
-function getResponseHeaders(origin: string | null): Record<string, string> {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'X-Content-Type-Options': 'nosniff',
-  };
-
-  if (origin) {
-    headers['Access-Control-Allow-Origin'] = origin;
-  }
-
-  return headers;
 }
 
 async function verifyTurnstileToken(secret: string, token: string, remoteIp: string): Promise<boolean> {
@@ -264,13 +257,4 @@ async function verifyTurnstileToken(secret: string, token: string, remoteIp: str
   } catch {
     return false;
   }
-}
-
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
 }
