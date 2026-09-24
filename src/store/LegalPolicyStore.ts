@@ -132,7 +132,7 @@ export class LegalPolicyStore {
           body: [
             'AI-Borne ("we", "our", or "us") publishes several products. Refunds and cancellations are governed by the policy of the product you purchased, because plans, billing periods and refund windows differ between products.',
             'ActionStation: https://www.actionstation.in/refund',
-            'SSBMax: https://www.ssbmax.in (see "Terms of Service & Refunds" in the app footer).',
+            'SSBMax: https://ssbmax.ai (see "Terms of Service & Refunds" in the app footer).',
           ],
         },
         {
