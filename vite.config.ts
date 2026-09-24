@@ -55,6 +55,8 @@ export default defineConfig({
         support: resolve(import.meta.dirname, 'support.html'),
         privacy: resolve(import.meta.dirname, 'privacy-policy.html'),
         terms: resolve(import.meta.dirname, 'terms.html'),
+        refund: resolve(import.meta.dirname, 'refund-policy.html'),
+        contact: resolve(import.meta.dirname, 'contact.html'),
         datadeletion: resolve(import.meta.dirname, 'data-deletion.html'),
       },
     },

@@ -8,5 +8,7 @@ export interface ILegalPolicy {
   lastUpdated: string;
   effectiveDate: string;
   contactEmail: string;
+  contactPhone?: string;
+  contactAddress?: readonly string[];
   sections: ILegalSection[];
 }
