@@ -35,7 +35,8 @@ describe('Refund & Cancellation policy', () => {
   it('points to each paid product\'s own policy instead of inventing terms', () => {
     const content = text(refund);
     expect(content).toContain('https://www.actionstation.in/refund');
-    expect(content).toContain('https://www.ssbmax.in');
+    expect(content).toContain('https://ssbmax.ai');
+    expect(content).not.toContain('ssbmax.in');
   });
 });
 
