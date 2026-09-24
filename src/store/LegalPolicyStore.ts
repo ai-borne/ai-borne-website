@@ -1,4 +1,5 @@
 import { ILegalPolicy } from '../models/LegalPolicy';
+import { CONTACT_DETAILS } from './ContactDetails';
 
 export class LegalPolicyStore {
   public static getPrivacyPolicy(): ILegalPolicy {
@@ -113,6 +114,58 @@ export class LegalPolicyStore {
           body: [
             'To request deletion of any support email correspondence or feedback logs, send an email to founder@ai-borne.in with the subject "Data Deletion Request".',
             'We confirm and process all deletion requests within 30 days of receipt.',
+          ],
+        },
+      ],
+    };
+  }
+
+  public static getRefundPolicy(): ILegalPolicy {
+    return {
+      title: 'Refund & Cancellation Policy',
+      lastUpdated: 'September 24, 2026',
+      effectiveDate: 'September 24, 2026',
+      contactEmail: CONTACT_DETAILS.email,
+      sections: [
+        {
+          heading: '1. Each product has its own policy',
+          body: [
+            'AI-Borne ("we", "our", or "us") publishes several products. Refunds and cancellations are governed by the policy of the product you purchased, because plans, billing periods and refund windows differ between products.',
+            'ActionStation: https://www.actionstation.in/refund',
+            'SSBMax: https://www.ssbmax.in (see "Terms of Service & Refunds" in the app footer).',
+          ],
+        },
+        {
+          heading: '2. Free products',
+          body: [
+            'Products and features offered free of charge involve no payment, so there is nothing to refund or cancel.',
+          ],
+        },
+        {
+          heading: '3. How to ask for a refund or cancellation',
+          body: [
+            `Email ${CONTACT_DETAILS.email} from the address linked to your account, naming the product and, if you have it, your payment ID. We reply within 2 business days.`,
+            'Approved refunds are returned to the original payment method. Your bank usually credits them within 5 to 7 business days.',
+          ],
+        },
+      ],
+    };
+  }
+
+  public static getContactPage(): ILegalPolicy {
+    return {
+      title: 'Contact Us',
+      lastUpdated: 'September 24, 2026',
+      effectiveDate: 'September 24, 2026',
+      contactEmail: CONTACT_DETAILS.email,
+      contactPhone: CONTACT_DETAILS.phoneDisplay,
+      contactAddress: CONTACT_DETAILS.addressLines,
+      sections: [
+        {
+          heading: 'Get in touch',
+          body: [
+            'AI-Borne builds and operates PayslipMax, SSBMax, ActionStation and other apps. Reach us using the details below for support, billing, privacy or refund requests.',
+            'We reply to all requests within 2 business days.',
           ],
         },
       ],

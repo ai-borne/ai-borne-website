@@ -48,6 +48,8 @@ export class FooterComponent {
               <ul class="footer-links-list">
                 <li><a href="/privacy-policy.html" class="footer-link">Privacy Policy</a></li>
                 <li><a href="/terms.html" class="footer-link">Terms of Service</a></li>
+                <li><a href="/refund-policy.html" class="footer-link">Refund & Cancellation</a></li>
+                <li><a href="/contact.html" class="footer-link">Contact Us</a></li>
                 <li><a href="/support.html" class="footer-link">Support Center</a></li>
                 <li><a href="/data-deletion.html" class="footer-link">Data & Account Deletion</a></li>
               </ul>
