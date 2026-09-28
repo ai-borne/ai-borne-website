@@ -1,6 +1,6 @@
 /**
  * Razorpay activation needs, on every site: Privacy, Terms, a standalone Refund & Cancellation
- * page and a Contact page with email, phone and address -- all linked from the footer.
+ * page and a Contact page with an email -- all linked from the footer.
  * The refund page must not invent terms: each product's own policy governs its refunds.
  */
 import { describe, it, expect } from 'vitest';
@@ -15,12 +15,8 @@ const text = (p: { sections: { heading: string; body: string[] }[] }) =>
   p.sections.flatMap((s) => [s.heading, ...s.body]).join(' ');
 
 describe('contact details SSOT', () => {
-  it('holds the owner email, phone and Pune office address', () => {
+  it('holds the owner email', () => {
     expect(CONTACT_DETAILS.email).toBe('founder@ai-borne.in');
-    expect(CONTACT_DETAILS.phoneE164).toBe('+918936995020');
-    expect(CONTACT_DETAILS.phoneDisplay).toBe('+91 89369 95020');
-    expect(CONTACT_DETAILS.addressLines.join(' ')).toContain('Pune');
-    expect(CONTACT_DETAILS.addressLines.join(' ')).toContain('411045');
   });
 });
 
@@ -43,11 +39,9 @@ describe('Refund & Cancellation policy', () => {
 describe('Contact page', () => {
   const contact = LegalPolicyStore.getContactPage();
 
-  it('carries email, phone and address', () => {
+  it('carries email', () => {
     expect(contact.title).toBe('Contact Us');
     expect(contact.contactEmail).toBe(CONTACT_DETAILS.email);
-    expect(contact.contactPhone).toBe(CONTACT_DETAILS.phoneDisplay);
-    expect(contact.contactAddress).toEqual(CONTACT_DETAILS.addressLines);
   });
 });
 

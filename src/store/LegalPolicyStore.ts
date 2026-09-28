@@ -158,8 +158,6 @@ export class LegalPolicyStore {
       lastUpdated: 'September 24, 2026',
       effectiveDate: 'September 24, 2026',
       contactEmail: CONTACT_DETAILS.email,
-      contactPhone: CONTACT_DETAILS.phoneDisplay,
-      contactAddress: CONTACT_DETAILS.addressLines,
       sections: [
         {
           heading: 'Get in touch',

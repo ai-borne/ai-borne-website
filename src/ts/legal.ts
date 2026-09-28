@@ -4,7 +4,6 @@ import '../styles/components.css';
 import '../styles/utils.css';
 import { ILegalPolicy } from '../models/LegalPolicy';
 import { LegalPolicyStore } from '../store/LegalPolicyStore';
-import { CONTACT_DETAILS } from '../store/ContactDetails';
 import { HeaderComponent } from '../views/HeaderComponent';
 import { FooterComponent } from '../views/FooterComponent';
 import { initThemeEngine } from '../services/ThemeInitializer';
@@ -39,7 +38,6 @@ export function renderLegalPage(policyType: PolicyType): void {
 
           <div style="border-top: 1px solid var(--color-border-glass); padding-top: 1.5rem; margin-top: 2rem;">
             <p class="text-muted">Contact Support: <a href="mailto:${policy.contactEmail}"><strong>${policy.contactEmail}</strong></a></p>
-            ${renderExtraContact(policy)}
           </div>
         </div>
       </section>
@@ -48,16 +46,6 @@ export function renderLegalPage(policyType: PolicyType): void {
   `;
 
   initThemeEngine();
-}
-
-function renderExtraContact(policy: ILegalPolicy): string {
-  const phone = policy.contactPhone
-    ? `<p class="text-muted">Phone: <a href="tel:${CONTACT_DETAILS.phoneE164}"><strong>${policy.contactPhone}</strong></a></p>`
-    : '';
-  const address = policy.contactAddress
-    ? `<address class="text-muted" style="font-style: normal;">Office: ${policy.contactAddress.join(', ')}</address>`
-    : '';
-  return phone + address;
 }
 
 function getPolicyData(policyType: PolicyType): ILegalPolicy {
