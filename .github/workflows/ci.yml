@@ -7,6 +7,11 @@ on:
   pull_request:
     branches:
       - main
+  workflow_run:
+    workflows:
+      - AI-Borne Daily Engineering Insight Engine
+    types:
+      - completed
 
 permissions:
   contents: read
@@ -54,7 +59,11 @@ jobs:
   deploy-cloudflare:
     name: Deploy to Cloudflare Pages
     needs: validate-and-build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-latest
 
     steps:
