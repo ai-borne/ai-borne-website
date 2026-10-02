@@ -31,6 +31,15 @@
   min-height: 44px;
 }
 
+.logo-img {
+  height: 36px;
+  width: auto;
+}
+
+.footer .logo-img {
+  height: 32px;
+}
+
 .logo-img-light {
   display: none;
 }
