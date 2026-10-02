@@ -28,7 +28,7 @@
     "wrangler": "^4.146.0"
   },
   "dependencies": {
-    "marked": "^18.0.7"
+    "marked": "^18.0.14"
   },
   "overrides": {
     "fast-uri": "^3.1.8",
