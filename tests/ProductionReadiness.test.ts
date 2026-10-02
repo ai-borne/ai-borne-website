@@ -32,6 +32,7 @@ describe('Phase 6 production-readiness guardrails', () => {
 
   it('keeps the production deployment serialized, artifact-based, and protected by the quality gate', () => {
     const ci = read('.github/workflows/ci.yml');
+    const packageJson = read('package.json');
 
     expect(ci).toContain('needs: validate-and-build');
     expect(ci).toContain("github.event_name == 'push' && github.ref == 'refs/heads/main'");
@@ -41,6 +42,8 @@ describe('Phase 6 production-readiness guardrails', () => {
     expect(ci).toContain('npm run test:production');
     expect(ci).toContain('npx --no-install wrangler pages deploy dist --project-name=ai-borne');
     expect(ci).not.toContain('--commit-dirty=true');
+    expect(packageJson).toContain('"test": "vitest --exclude tests/ProductionReadiness.test.ts"');
+    expect(packageJson).toContain('"test:production": "vitest run tests/ProductionReadiness.test.ts"');
   });
 
   it('rejects secret-bearing environment files and generated sensitive artifacts', () => {
