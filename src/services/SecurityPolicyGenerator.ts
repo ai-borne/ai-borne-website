@@ -81,7 +81,7 @@ export class SecurityPolicyGenerator {
       `Acknowledgments: ${acknowledgments}`,
       `Preferred-Languages: en`,
       `Canonical: https://${config.domain}/.well-known/security.txt`,
-      `Policy: https://${config.domain}/terms.html`,
+      `Policy: https://${config.domain}/security.md`,
       `Hiring: ${hiring}`,
     ].join('\n');
   }
@@ -97,4 +97,3 @@ export class SecurityPolicyGenerator {
     return `v=BIMI1; l=${logo};${authorityPart}`;
   }
 }
-

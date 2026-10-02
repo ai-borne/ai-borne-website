@@ -1,5 +1,6 @@
 import { IBlogPost } from '../models/BlogPost';
 import { SiteDataStore } from '../store/SiteDataStore';
+import { HtmlSafety } from './HtmlSafety';
 
 export interface ISchemaTechArticle {
   '@context': string;
@@ -138,6 +139,7 @@ export class SeoMetadataService {
       scriptEl.setAttribute('type', 'application/ld+json');
       doc.head.appendChild(scriptEl);
     }
-    scriptEl.textContent = JSON.stringify(schema, null, 2);
+    // textContent avoids a DOM HTML sink; escaping keeps serialized JSON safe if copied into HTML.
+    scriptEl.textContent = HtmlSafety.stringifyJsonForScript(schema);
   }
 }

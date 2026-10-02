@@ -40,10 +40,10 @@ export function renderHomePage(): void {
               (app) => `
             <div class="card">
               <span class="badge mb-sm">${app.category}</span>
-              <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">${app.name}</h3>
+              <h3 class="card-title-sm">${app.name}</h3>
               <p class="text-muted mb-md">${app.description}</p>
-              <div style="margin-bottom: 1rem;">
-                <span style="color: var(--color-accent-green); font-size: 0.875rem;">✔ ${app.privacyGuarantee}</span>
+              <div class="mb-md">
+                <span class="text-success">✔ ${app.privacyGuarantee}</span>
               </div>
               <a href="/apps/${app.id}.html" class="btn btn-primary">${strings.home.viewProductDetails}</a>
             </div>
@@ -54,10 +54,10 @@ export function renderHomePage(): void {
       </section>
 
       <section class="container section">
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--spacing-xl); flex-wrap: wrap; gap: var(--spacing-sm);">
+        <div class="section-heading-row">
           <div>
-            <h2 class="section-title" style="margin-bottom: 0.25rem;">${strings.home.insightsTitle}</h2>
-            <p class="text-muted" style="font-size: var(--font-size-sm);">${strings.home.featuredAppsSubtitle}</p>
+            <h2 class="section-title section-title-tight">${strings.home.insightsTitle}</h2>
+            <p class="text-muted metadata-text">${strings.home.featuredAppsSubtitle}</p>
           </div>
           <a href="/blog/index.html" class="insights-header-link">${strings.home.viewAllInsightsLink} (${totalPostsCount}) &rarr;</a>
         </div>
@@ -65,20 +65,20 @@ export function renderHomePage(): void {
           ${posts
             .map(
               (post) => `
-            <article class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <article class="card card-flex">
               <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm); gap: var(--spacing-xs); flex-wrap: wrap;">
+                <div class="card-header-row">
                   <span class="badge">${post.category}</span>
                   ${post.metricBadge ? `<span class="card-metric-badge">${post.metricBadge}</span>` : ''}
                 </div>
-                <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">
-                  <a href="/blog/post.html?slug=${post.slug}" style="color: inherit; text-decoration: none;">${post.title}</a>
+                <h3 class="card-title-sm">
+                  <a href="/blog/post.html?slug=${post.slug}" class="card-link">${post.title}</a>
                 </h3>
                 <p class="text-muted mb-md">${post.summary}</p>
               </div>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-md); border-top: 1px solid var(--color-border-glass); padding-top: var(--spacing-md);" class="text-muted">
-                <span style="font-size: 0.875rem;">${post.readTimeMinutes} ${strings.home.minRead}</span>
-                <a href="/blog/post.html?slug=${post.slug}" style="color: var(--color-accent-cyan); font-weight: 600; text-decoration: none; font-size: 0.875rem;">${strings.home.readArticle}</a>
+              <div class="card-footer-row push-down text-muted">
+                <span class="metadata-text">${post.readTimeMinutes} ${strings.home.minRead}</span>
+                <a href="/blog/post.html?slug=${post.slug}" class="article-link metadata-text">${strings.home.readArticle}</a>
               </div>
             </article>
           `

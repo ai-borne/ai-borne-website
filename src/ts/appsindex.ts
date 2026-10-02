@@ -32,11 +32,11 @@ export function renderAppsIndexPage(): void {
               (app) => `
             <div class="card">
               <span class="badge mb-sm">${app.category}</span>
-              <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem;">${app.name}</h2>
-              <p class="text-muted mb-md" style="font-weight: 500;">${app.tagline}</p>
+              <h2 class="card-title">${app.name}</h2>
+              <p class="text-muted mb-md">${app.tagline}</p>
               <p class="text-muted mb-md">${app.description}</p>
-              <div style="margin-bottom: 1.5rem;">
-                <span style="color: #4ade80; font-size: 0.875rem;">✔ ${app.privacyGuarantee}</span>
+              <div class="mb-lg">
+                <span class="text-success">✔ ${app.privacyGuarantee}</span>
               </div>
               <a href="/apps/${app.id}.html" class="btn btn-primary">${strings.home.viewProductDetails}</a>
             </div>

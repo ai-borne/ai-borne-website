@@ -82,6 +82,7 @@ describe('OAuth API Security & CSRF Hardening', () => {
   });
 
   it('callback endpoint rejects request if state parameter or state cookie is missing (CSRF protection)', async () => {
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const mockContext: any = {
       request: new Request('https://ai-borne.in/api/callback?code=test_code'),
       env: { GITHUB_CLIENT_ID: 'test_client_id', GITHUB_CLIENT_SECRET: 'test_secret' },
@@ -92,6 +93,9 @@ describe('OAuth API Security & CSRF Hardening', () => {
     const text = await response.text();
     expect(text).toContain('CSRF check failed');
     expect(response.headers.get('Cache-Control')).toContain('no-store');
+    expect(consoleSpy).toHaveBeenCalledWith(
+      JSON.stringify({ event: 'auth_failure', outcome: 'rejected', status: 403 })
+    );
   });
 
   it('callback endpoint rejects request if state parameter does not match state cookie', async () => {
@@ -106,6 +110,32 @@ describe('OAuth API Security & CSRF Hardening', () => {
     expect(response.status).toBe(403);
     const text = await response.text();
     expect(text).toContain('CSRF check failed');
+  });
+
+  it('masks OAuth provider and runtime failure details while recording a redacted event', async () => {
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const globalFetch = global.fetch;
+    global.fetch = vi.fn().mockRejectedValue(new Error('oauth token gho_sensitive_token failed'));
+
+    try {
+      const response = await callbackOnRequestGet({
+        request: new Request('https://ai-borne.in/api/callback?code=valid&state=state', {
+          headers: { Cookie: 'oauth_state=state' },
+        }),
+        env: { GITHUB_CLIENT_ID: 'client', GITHUB_CLIENT_SECRET: 'secret' },
+      });
+      const text = await response.text();
+
+      expect(response.status).toBe(500);
+      expect(text).toBe('Server Error');
+      expect(text).not.toContain('gho_sensitive_token');
+      expect(consoleSpy).toHaveBeenCalledWith(
+        JSON.stringify({ event: 'unexpected_server_error', outcome: 'failed', status: 500 })
+      );
+    } finally {
+      global.fetch = globalFetch;
+      consoleSpy.mockRestore();
+    }
   });
 
   it('callback endpoint accepts matching state token, enforces exact SHA-256 CSP hash without unsafe-inline', async () => {
@@ -162,6 +192,8 @@ describe('OAuth API Security & CSRF Hardening', () => {
       expect(html).toContain('https://ai-borne.in');
       expect(html).toContain('https://www.ai-borne.in');
       expect(html).toContain('isOriginAllowed(e.origin)');
+      expect(html).toContain('e.source !== window.opener');
+      expect(html).toContain('window.history.replaceState(null, "", window.location.pathname)');
 
       // Verify token is Unicode-escaped inside the JSON data block to prevent script injection breakout
       expect(html).toContain('\\u003cscript\\u003e');
@@ -177,5 +209,34 @@ describe('OAuth API Security & CSRF Hardening', () => {
     } finally {
       global.fetch = globalFetch;
     }
+  });
+
+  it('rejects duplicate OAuth state inputs so cookie injection cannot select an attacker-controlled value', async () => {
+    const response = await callbackOnRequestGet({
+      request: new Request('https://ai-borne.in/api/callback?code=valid&state=legitimate&state=attacker', {
+        headers: { Cookie: 'oauth_state=legitimate' },
+      }),
+      env: { GITHUB_CLIENT_ID: 'client', GITHUB_CLIENT_SECRET: 'secret' },
+    });
+
+    expect(response.status).toBe(403);
+    expect(await response.text()).not.toContain('attacker');
+    expect(response.headers.get('Referrer-Policy')).toBe('no-referrer');
+    expect(response.headers.get('Cache-Control')).toContain('no-store');
+  });
+
+  it('rejects duplicated state cookies without sending OAuth codes or secrets upstream', async () => {
+    const fetchSpy = vi.spyOn(global, 'fetch');
+    const response = await callbackOnRequestGet({
+      request: new Request('https://ai-borne.in/api/callback?code=private-code&state=legitimate', {
+        headers: { Cookie: 'oauth_state=legitimate; oauth_state=attacker' },
+      }),
+      env: { GITHUB_CLIENT_ID: 'client', GITHUB_CLIENT_SECRET: 'private-secret' },
+    });
+
+    expect(response.status).toBe(403);
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(await response.text()).not.toContain('private-code');
+    fetchSpy.mockRestore();
   });
 });

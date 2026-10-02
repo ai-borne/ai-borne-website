@@ -1,5 +1,7 @@
 import { SlidingWindowRateLimiter } from '../../src/utils/RateLimiter';
 import { getSecureApiResponseHeaders } from './utils/apiSecurityHeaders';
+import { ApiStringResources } from './ApiStringResources';
+import { emitSecurityEvent } from './utils/securityEvents';
 
 interface Env {
   GITHUB_CLIENT_ID: string;
@@ -31,15 +33,23 @@ export const STATIC_DECAP_SCRIPT = `(function() {
       console.warn("Opener window not available or closed");
       return;
     }
+    if (e.source !== window.opener) {
+      console.warn("Window source is not the opener window");
+      return;
+    }
     var dataEl = document.getElementById("decap-auth");
     var payload = dataEl ? dataEl.textContent : "";
     window.opener.postMessage(
       'authorization:github:success:' + payload,
       e.origin
     );
+    if (dataEl) dataEl.textContent = "";
+    window.history.replaceState(null, "", window.location.pathname);
   }
 
   window.addEventListener("message", receiveMessage, false);
+  // The OAuth code and state are one-time inputs; do not retain them in browser history.
+  window.history.replaceState(null, "", window.location.pathname);
 
   if (window.opener && !window.opener.closed) {
     window.opener.postMessage("authorizing:github", window.location.origin);
@@ -62,7 +72,8 @@ export async function onRequestGet(context: { request: Request; env: Env }): Pro
   const rateLimit = callbackRateLimiter.isAllowed(clientIp);
 
   if (!rateLimit.allowed) {
-    return new Response('Too many requests. Please try again later.', {
+    emitSecurityEvent('api_rate_limited', 'blocked', 429);
+    return new Response(ApiStringResources.rateLimited, {
       status: 429,
       headers: getSecureApiResponseHeaders(null, {
         'Retry-After': Math.ceil(rateLimit.resetMs / 1000).toString(),
@@ -76,26 +87,32 @@ export async function onRequestGet(context: { request: Request; env: Env }): Pro
   const state = url.searchParams.get('state');
 
   if (!code) {
-    return new Response('Missing authorization code from GitHub', {
+    emitSecurityEvent('auth_failure', 'rejected', 400);
+    return new Response(ApiStringResources.authorizationCodeMissing, {
       status: 400,
       headers: getSecureApiResponseHeaders(),
     });
   }
 
   if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
-    return new Response('GITHUB_CLIENT_ID or GITHUB_CLIENT_SECRET is missing from Cloudflare environment.', {
+    emitSecurityEvent('auth_failure', 'failed', 500);
+    return new Response(ApiStringResources.authCredentialsMissing, {
       status: 500,
       headers: getSecureApiResponseHeaders(),
     });
   }
 
   // OAuth CSRF state verification
-  const cookieHeader = request.headers.get('Cookie') || '';
-  const cookieMatch = cookieHeader.match(/oauth_state=([^;]+)/);
-  const cookieState = cookieMatch ? cookieMatch[1] : null;
+  const cookieStates = (request.headers.get('Cookie') || '')
+    .split(';')
+    .map((part) => part.trim())
+    .filter((part) => part.startsWith('oauth_state='))
+    .map((part) => part.slice('oauth_state='.length));
+  const cookieState = cookieStates.length === 1 ? cookieStates[0] : null;
 
-  if (!state || !cookieState || state !== cookieState) {
-    return new Response('Invalid or missing OAuth state token (CSRF check failed).', {
+  if (!state || url.searchParams.getAll('state').length !== 1 || !cookieState || state !== cookieState) {
+    emitSecurityEvent('auth_failure', 'rejected', 403);
+    return new Response(ApiStringResources.oauthStateInvalid, {
       status: 403,
       headers: getSecureApiResponseHeaders(),
     });
@@ -120,7 +137,8 @@ export async function onRequestGet(context: { request: Request; env: Env }): Pro
     const token = data.access_token;
 
     if (!token) {
-      return new Response(`OAuth Token Exchange Error: ${data.error_description || 'Invalid authorization code'}`, {
+      emitSecurityEvent('auth_failure', 'rejected', 401);
+      return new Response(`OAuth Token Exchange Error: ${ApiStringResources.oauthCodeInvalid}`, {
         status: 401,
         headers: getSecureApiResponseHeaders(),
       });
@@ -152,8 +170,9 @@ export async function onRequestGet(context: { request: Request; env: Env }): Pro
     headers.set('Set-Cookie', 'oauth_state=; HttpOnly; Secure; SameSite=Lax; Path=/api; Max-Age=0');
 
     return new Response(scriptHtml, { headers });
-  } catch (err: any) {
-    return new Response(`Server Error: ${err.message}`, {
+  } catch {
+    emitSecurityEvent('unexpected_server_error', 'failed', 500);
+    return new Response('Server Error', {
       status: 500,
       headers: getSecureApiResponseHeaders(),
     });

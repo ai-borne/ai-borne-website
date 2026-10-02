@@ -4,6 +4,7 @@ import * as path from 'path';
 import { SeoMetadataService } from '../src/services/SeoMetadataService';
 import { IBlogPost } from '../src/models/BlogPost';
 import { SiteDataStore } from '../src/store/SiteDataStore';
+import { HtmlSafety } from '../src/services/HtmlSafety';
 
 describe('Phase 4: SEO, GEO & AI Search Discovery Guardrails', () => {
   const rootDir = path.resolve(__dirname, '..');
@@ -254,6 +255,20 @@ describe('Phase 4: SEO, GEO & AI Search Discovery Guardrails', () => {
       const parsedSchema = JSON.parse(scriptNode.textContent);
       expect(parsedSchema['@type']).toBe('TechArticle');
       expect(parsedSchema.headline).toBe(samplePost.title);
+    });
+
+    it('serializes malicious metadata without allowing a JSON-LD script breakout', () => {
+      const maliciousPost = {
+        ...samplePost,
+        title: '</script><img src=x onerror=alert(1)>',
+        summary: '" onmouseover="alert(2)',
+      };
+      const schema = SeoMetadataService.generateTechArticleSchema(maliciousPost);
+      const serialized = HtmlSafety.stringifyJsonForScript(schema);
+
+      expect(serialized).not.toContain('</script>');
+      expect(serialized).toContain('\\u003c/script\\u003e');
+      expect(JSON.parse(serialized).headline).toBe(maliciousPost.title);
     });
 
     it('verifies all live posts in SiteDataStore generate valid schema definitions', () => {

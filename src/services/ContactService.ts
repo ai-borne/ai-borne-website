@@ -1,4 +1,5 @@
 import { FormValidator } from './FormValidator';
+import { StringResources } from '../store/StringResources';
 
 export interface IContactResult {
   success: boolean;
@@ -58,12 +59,12 @@ export class HttpContactService implements IContactService {
 
       return {
         success: false,
-        errorMessage: data.error || 'Failed to send support email. Please email founder@ai-borne.in directly.',
+        errorMessage: data.error || StringResources.getStrings().support.emailGatewayError,
       };
     } catch (error) {
       return {
         success: false,
-        errorMessage: 'Network connection issue. Please email founder@ai-borne.in directly.',
+        errorMessage: StringResources.getStrings().support.networkErrorDetailed,
       };
     }
   }

@@ -34,11 +34,17 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
+        // The authenticated CMS must never be retained by the public offline cache.
+        globIgnores: ['admin/**'],
+        // Authentication, CMS, and API routes must always reach the network.
+        navigateFallbackDenylist: [/^\/(?:api|admin)(?:\/|$)/],
       }
     })
   ],
   build: {
+    // Production artifacts must not publish source paths or source content.
+    sourcemap: false,
     rollupOptions: {
       input: {
         main: resolve(import.meta.dirname, 'index.html'),

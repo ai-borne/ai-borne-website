@@ -9,6 +9,7 @@ import { FooterComponent } from '../views/FooterComponent';
 import { initThemeEngine } from '../services/ThemeInitializer';
 import { MarkdownRenderer } from '../services/MarkdownRenderer';
 import { SeoMetadataService } from '../services/SeoMetadataService';
+import { HtmlSafety } from '../services/HtmlSafety';
 
 function attachCodeCopyButtons(): void {
   const strings = StringResources.getStrings();
@@ -72,6 +73,8 @@ export function renderBlogPostPage(): void {
   const currentSlug = currentQuery.get('slug');
   const post = currentSlug ? SiteDataStore.getPostBySlug(currentSlug) : undefined;
   const strings = StringResources.getStrings();
+  const text = HtmlSafety.escapeText;
+  const postUrl = (slug: string) => HtmlSafety.safeInternalUrl(`/blog/post.html?slug=${encodeURIComponent(slug)}`);
 
   const appEl = document.getElementById('app');
   if (!appEl) return;
@@ -80,10 +83,10 @@ export function renderBlogPostPage(): void {
     appEl.innerHTML = `
       ${HeaderComponent.render('blog')}
       <main class="main-content">
-        <section class="container section text-center" style="padding: 4rem 1rem;">
-          <h1 class="hero-title">${strings.blog.articleNotFoundTitle}</h1>
-          <p class="hero-tagline mb-lg">${strings.blog.articleNotFoundDesc}</p>
-          <a href="/blog/index.html" class="btn btn-primary">${strings.blog.backToAllArticles}</a>
+        <section class="container section text-center article-not-found">
+          <h1 class="hero-title">${text(strings.blog.articleNotFoundTitle)}</h1>
+          <p class="hero-tagline mb-lg">${text(strings.blog.articleNotFoundDesc)}</p>
+          <a href="/blog/index.html" class="btn btn-primary">${text(strings.blog.backToAllArticles)}</a>
         </section>
       </main>
       ${FooterComponent.render()}
@@ -107,62 +110,63 @@ export function renderBlogPostPage(): void {
     <div id="reading-progress-bar" class="reading-progress-bar"></div>
     ${HeaderComponent.render('blog')}
     <main class="main-content">
-      <article class="container section" style="max-width: 820px; padding-top: 1.5rem;">
-        <nav class="breadcrumbs" aria-label="Breadcrumbs">
-          <a href="/">${strings.nav.home}</a>
+      <article class="container section article-container">
+        <nav class="breadcrumbs" aria-label="${text(strings.blog.breadcrumbsLabel)}">
+          <a href="/">${text(strings.nav.home)}</a>
           <span class="breadcrumbs-separator">/</span>
-          <a href="/blog/index.html">${strings.blog.breadcrumbAllInsights}</a>
+          <a href="/blog/index.html">${text(strings.blog.breadcrumbAllInsights)}</a>
           <span class="breadcrumbs-separator">/</span>
-          <span class="text-muted">${post.category}</span>
+          <span class="text-muted">${text(post.category)}</span>
         </nav>
 
-        <div style="display: flex; gap: var(--spacing-xs); align-items: center; margin-bottom: var(--spacing-sm); flex-wrap: wrap;">
-          <span class="badge">${post.category}</span>
-          ${post.metricBadge ? `<span class="card-metric-badge">${post.metricBadge}</span>` : ''}
-          ${post.difficulty ? `<span class="badge" style="background: var(--color-bg-surface);">${post.difficulty}</span>` : ''}
+        <div class="article-metadata-row">
+          <span class="badge">${text(post.category)}</span>
+          ${post.metricBadge ? `<span class="card-metric-badge">${text(post.metricBadge)}</span>` : ''}
+          ${post.difficulty ? `<span class="badge badge-surface">${text(post.difficulty)}</span>` : ''}
         </div>
 
-        <h1 style="font-size: 2.5rem; font-weight: 900; line-height: 1.2; margin-bottom: 1rem;">${post.title}</h1>
+        <h1 class="article-heading">${text(post.title)}</h1>
 
-        <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--color-border-glass); padding-bottom: 1rem; flex-wrap: wrap;" class="text-muted">
-          <span>By <strong>${post.author}</strong></span>
+        <div class="article-byline text-muted">
+          <span>${text(strings.blog.byAuthor)} <strong>${text(post.author)}</strong></span>
           <span>&bull;</span>
-          <span>${post.publishedDate}</span>
+          <span>${text(post.publishedDate)}</span>
           <span>&bull;</span>
-          <span>${post.readTimeMinutes} ${strings.home.minRead}</span>
+          <span>${text(post.readTimeMinutes)} ${text(strings.home.minRead)}</span>
         </div>
 
         <div class="article-callout">
           <div class="article-callout-title">
-            <span>${strings.blog.in30SecondsTitle}</span>
+            <span>${text(strings.blog.in30SecondsTitle)}</span>
           </div>
-          <p>${post.summary}</p>
+          <p>${text(post.summary)}</p>
         </div>
 
         <div class="article-body">
+          <!-- Trusted Markdown boundary: MarkdownRenderer sanitizes article HTML and link protocols. -->
           ${MarkdownRenderer.render(post.contentMarkdown)}
         </div>
 
-        <section class="section" style="margin-top: var(--spacing-2xl); border-top: 1px solid var(--color-border-glass); padding-top: var(--spacing-xl);">
-          <h2 style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-lg); font-weight: 800;">${strings.blog.relatedPlaybooksTitle}</h2>
+        <section class="section article-related">
+          <h2 class="related-heading">${text(strings.blog.relatedPlaybooksTitle)}</h2>
           <div class="grid-2">
             ${relatedPosts
               .map(
                 (related) => `
-              <article class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+              <article class="card card-flex">
                 <div>
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-xs); flex-wrap: wrap; gap: var(--spacing-xs);">
-                    <span class="badge">${related.category}</span>
-                    ${related.metricBadge ? `<span class="card-metric-badge">${related.metricBadge}</span>` : ''}
+                  <div class="card-header-row compact-row">
+                    <span class="badge">${text(related.category)}</span>
+                    ${related.metricBadge ? `<span class="card-metric-badge">${text(related.metricBadge)}</span>` : ''}
                   </div>
-                  <h3 style="font-size: var(--font-size-base); margin-bottom: 0.5rem; line-height: 1.3;">
-                    <a href="/blog/post.html?slug=${related.slug}" style="color: inherit; text-decoration: none;">${related.title}</a>
+                  <h3 class="related-card-title">
+                    <a href="${postUrl(related.slug)}" class="card-link">${text(related.title)}</a>
                   </h3>
-                  <p class="text-muted mb-md" style="font-size: var(--font-size-sm);">${related.summary}</p>
+                  <p class="text-muted mb-md metadata-text">${text(related.summary)}</p>
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--color-border-glass); padding-top: var(--spacing-md);" class="text-muted">
-                  <small>${related.readTimeMinutes} ${strings.home.minRead}</small>
-                  <a href="/blog/post.html?slug=${related.slug}" style="color: var(--color-accent-cyan); font-weight: 600; text-decoration: none; font-size: var(--font-size-sm);">${strings.blog.readArticle}</a>
+                <div class="card-footer-row text-muted">
+                  <small>${text(related.readTimeMinutes)} ${text(strings.home.minRead)}</small>
+                  <a href="${postUrl(related.slug)}" class="article-link metadata-text">${text(strings.blog.readArticle)}</a>
                 </div>
               </article>
             `

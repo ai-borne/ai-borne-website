@@ -30,18 +30,18 @@ export function renderSupportPage(): void {
       <section class="container section">
         <div class="grid-2">
           <div class="card">
-            <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">${strings.support.directContactTitle}</h2>
+            <h2 class="card-title-sm">${strings.support.directContactTitle}</h2>
             <p class="text-muted mb-md">${strings.support.directContactDesc}</p>
-            <p style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--color-accent-cyan);">
+            <p class="support-email">
               📧 ${config.supportEmail}
             </p>
-            <div style="background: rgba(99, 102, 241, 0.1); border-left: 4px solid var(--color-accent-primary); padding: 1rem; border-radius: 4px;" class="text-muted">
+            <div class="text-muted support-notice">
               <small><strong>${strings.support.slaNotice}</strong></small>
             </div>
           </div>
 
           <div class="card">
-            <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">${strings.support.formTitle}</h2>
+            <h2 class="card-title-sm">${strings.support.formTitle}</h2>
             <div id="form-alert"></div>
             <form id="support-form">
               <div class="form-group">

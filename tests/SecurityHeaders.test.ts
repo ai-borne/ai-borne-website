@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
 import {
@@ -234,6 +234,25 @@ describe('CSP Report Edge Function (functions/api/csp-report.ts)', () => {
     expect(res.status).toBe(415);
   });
 
+  it('rejects cross-origin CSP reports without parsing or reflecting their payload', async () => {
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const request = new Request('https://ai-borne.in/api/csp-report', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/csp-report',
+        Origin: 'https://evil.example',
+      },
+      body: JSON.stringify({ 'csp-report': { 'blocked-uri': 'https://evil.example/token=secret' } }),
+    });
+    const response = await onRequestPost({ request });
+
+    expect(response.status).toBe(403);
+    expect(await response.text()).toBe('');
+    expect(response.headers.get('Cache-Control')).toContain('no-store');
+    expect(consoleSpy.mock.calls.flat().join('\n')).not.toContain('token=secret');
+    consoleSpy.mockRestore();
+  });
+
   it('rejects payload exceeding 4KB limit with 413', async () => {
     const hugePayload = { data: 'x'.repeat(4500) };
     const ctx = createMockContext(hugePayload, 'application/json');
@@ -274,4 +293,3 @@ describe('CSP Report Edge Function (functions/api/csp-report.ts)', () => {
     expect(res.headers.get('Allow')).toContain('POST');
   });
 });
-

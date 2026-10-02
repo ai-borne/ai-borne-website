@@ -1,9 +1,15 @@
+/**
+ * ARCHITECTURAL EXCEPTION: Single Responsibility Principle (SRP)
+ * This bounded SSOT intentionally holds all public copy so it can be audited as one resource.
+ */
 export interface IStringDictionary {
   nav: {
     home: string;
     apps: string;
     insights: string;
     support: string;
+    themeToggleLabel: string;
+    mobileMenuLabel: string;
   };
   hero: {
     badge: string;
@@ -44,6 +50,10 @@ export interface IStringDictionary {
     breadcrumbAllInsights: string;
     articleNotFoundTitle: string;
     articleNotFoundDesc: string;
+    byAuthor: string;
+    searchLabel: string;
+    categoryFiltersLabel: string;
+    breadcrumbsLabel: string;
   };
   appsIndex: {
     title: string;
@@ -104,10 +114,18 @@ export interface IStringDictionary {
     sendingButton: string;
     successMessage: string;
     invalidEmailError: string;
+    invalidEmailFormatError: string;
     emptyMessageError: string;
     networkError: string;
     botVerificationFailed: string;
     botVerificationPending: string;
+    emailRequiredError: string;
+    emailTooLongError: string;
+    messageTooShortError: string;
+    messageTooLongError: string;
+    emailGatewayError: string;
+    networkErrorDetailed: string;
+    genericMessageError: string;
   };
   footer: {
     tagline: string;
@@ -115,6 +133,27 @@ export interface IStringDictionary {
     developerTitle: string;
     legalTitle: string;
     copyright: string;
+    privacyPill: string;
+    insightsLink: string;
+    githubLink: string;
+    privacyPolicyLink: string;
+    termsLink: string;
+    refundLink: string;
+    contactLink: string;
+    supportLink: string;
+    deletionLink: string;
+    performanceBadge: string;
+    payslipMaxName: string;
+    ssbMaxName: string;
+    yogaOfEatingName: string;
+    actionStationName: string;
+    defenceWireName: string;
+    secureMaxName: string;
+  };
+  legal: {
+    lastUpdated: string;
+    effectiveDate: string;
+    contactSupport: string;
   };
 }
 
@@ -125,6 +164,8 @@ export class StringResources {
       apps: 'Apps',
       insights: 'Insights',
       support: 'Support',
+      themeToggleLabel: 'Toggle dark/light mode',
+      mobileMenuLabel: 'Toggle navigation menu',
     },
     hero: {
       badge: 'Indie Software Studio',
@@ -165,6 +206,10 @@ export class StringResources {
       breadcrumbAllInsights: 'All Insights',
       articleNotFoundTitle: 'Article Not Found',
       articleNotFoundDesc: 'The article you are looking for does not exist or has been moved.',
+      byAuthor: 'By',
+      searchLabel: 'Search engineering playbooks',
+      categoryFiltersLabel: 'Category filters',
+      breadcrumbsLabel: 'Breadcrumbs',
     },
     appsIndex: {
       title: 'Our App Ecosystem',
@@ -225,10 +270,18 @@ export class StringResources {
       sendingButton: 'Sending...',
       successMessage: 'Thank you! Your message has been sent successfully.',
       invalidEmailError: 'Please enter a valid email address.',
+      invalidEmailFormatError: 'Invalid email address format.',
       emptyMessageError: 'Support message details cannot be empty.',
       networkError: 'Failed to send message. Please try again later or email founder@ai-borne.in directly.',
       botVerificationFailed: 'Security check failed. Please refresh the page and try again.',
       botVerificationPending: 'Completing security verification...',
+      emailRequiredError: 'Email address is required.',
+      emailTooLongError: 'Email address exceeds maximum length of 100 characters.',
+      messageTooShortError: 'Support message must be at least 5 characters long.',
+      messageTooLongError: 'Support message exceeds maximum length of 3000 characters.',
+      emailGatewayError: 'Failed to send support email. Please email founder@ai-borne.in directly.',
+      networkErrorDetailed: 'Network connection issue. Please email founder@ai-borne.in directly.',
+      genericMessageError: 'Failed to send message. Please try again.',
     },
     footer: {
       tagline: 'Engineering Intelligent Apps, Automation & AI Solutions.',
@@ -236,6 +289,27 @@ export class StringResources {
       developerTitle: 'Developer & Insights',
       legalTitle: 'Store Compliance & Legal',
       copyright: 'AI-BORNE (ai-borne.in). All rights reserved.',
+      privacyPill: 'Privacy-First & On-Device AI',
+      insightsLink: 'Tech Hacks & Insights',
+      githubLink: 'GitHub',
+      privacyPolicyLink: 'Privacy Policy',
+      termsLink: 'Terms of Service',
+      refundLink: 'Refund & Cancellation',
+      contactLink: 'Contact Us',
+      supportLink: 'Support Center',
+      deletionLink: 'Data & Account Deletion',
+      performanceBadge: 'Built for Performance & Security',
+      payslipMaxName: 'PayslipMax',
+      ssbMaxName: 'SSBMax',
+      yogaOfEatingName: 'Yoga of Eating',
+      actionStationName: 'ActionStation',
+      defenceWireName: 'DefenceWire.in',
+      secureMaxName: 'SecureMax',
+    },
+    legal: {
+      lastUpdated: 'Last Updated',
+      effectiveDate: 'Effective Date',
+      contactSupport: 'Contact Support',
     },
   };
 

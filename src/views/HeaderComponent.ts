@@ -6,9 +6,9 @@ export class HeaderComponent {
     return `
       <header class="header">
         <div class="container header-nav">
-          <a href="/" class="logo" style="display: flex; align-items: center; text-decoration: none;">
-            <img src="/assets/logo-dark.png" alt="ai-borne" class="logo-img logo-img-dark" style="height: 36px; width: auto;" />
-            <img src="/assets/logo-light.png" alt="ai-borne" class="logo-img logo-img-light" style="height: 36px; width: auto;" />
+          <a href="/" class="logo">
+            <img src="/assets/logo-dark.png" alt="${strings.footer.copyright}" class="logo-img logo-img-dark" />
+            <img src="/assets/logo-light.png" alt="${strings.footer.copyright}" class="logo-img logo-img-light" />
           </a>
 
           <nav class="desktop-nav">
@@ -18,16 +18,16 @@ export class HeaderComponent {
               <li><a href="/blog/index.html" class="nav-link ${activeRoute === 'blog' ? 'active' : ''}">${strings.nav.insights}</a></li>
               <li><a href="/support.html" class="nav-link ${activeRoute === 'support' ? 'active' : ''}">${strings.nav.support}</a></li>
             </ul>
-            <button id="theme-toggle" class="btn theme-toggle-btn" aria-label="Toggle dark/light mode">
+            <button id="theme-toggle" class="btn theme-toggle-btn" aria-label="${strings.nav.themeToggleLabel}">
               <span id="theme-toggle-icon">🌙</span>
             </button>
           </nav>
 
           <div class="mobile-nav-controls">
-            <button id="theme-toggle-mobile" class="btn theme-toggle-btn" aria-label="Toggle dark/light mode">
+            <button id="theme-toggle-mobile" class="btn theme-toggle-btn" aria-label="${strings.nav.themeToggleLabel}">
               <span id="theme-toggle-icon-mobile">🌙</span>
             </button>
-            <button id="mobile-menu-toggle" class="mobile-menu-btn" aria-expanded="false" aria-label="Toggle navigation menu">
+            <button id="mobile-menu-toggle" class="mobile-menu-btn" aria-expanded="false" aria-label="${strings.nav.mobileMenuLabel}">
               <span class="hamburger-bar"></span>
               <span class="hamburger-bar"></span>
               <span class="hamburger-bar"></span>

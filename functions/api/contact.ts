@@ -10,6 +10,8 @@ import {
   getAllowedOrigin,
   getSecureApiResponseHeaders,
 } from './utils/apiSecurityHeaders';
+import { ApiStringResources } from './ApiStringResources';
+import { emitSecurityEvent } from './utils/securityEvents';
 
 interface ContactRequestBody {
   email?: string;
@@ -26,6 +28,10 @@ const MAX_PAYLOAD_BYTES = 10 * 1024; // 10 KB limit
 
 export async function onRequestOptions(context: { request: Request }): Promise<Response> {
   const origin = getAllowedOrigin(context.request);
+  if (context.request.headers.get('Origin') && !origin) {
+    emitSecurityEvent('cors_denied', 'blocked', 403);
+    return new Response(null, { status: 403, headers: getSecureApiResponseHeaders() });
+  }
   return new Response(null, {
     status: 204,
     headers: getSecureApiResponseHeaders(origin, {
@@ -48,10 +54,18 @@ export async function onRequestPost(context: {
     'Access-Control-Allow-Headers': 'Content-Type',
   });
 
+  if (request.headers.get('Origin') && !origin) {
+    emitSecurityEvent('cors_denied', 'blocked', 403);
+    return new Response(
+      JSON.stringify({ success: false, error: ApiStringResources.methodNotAllowed }),
+      { status: 403, headers }
+    );
+  }
+
   // Method check
   if (request.method !== 'POST') {
     return new Response(
-      JSON.stringify({ success: false, error: 'Method Not Allowed' }),
+      JSON.stringify({ success: false, error: ApiStringResources.methodNotAllowed }),
       { status: 405, headers }
     );
   }
@@ -60,7 +74,7 @@ export async function onRequestPost(context: {
   const contentType = request.headers.get('Content-Type') || '';
   if (!contentType.toLowerCase().includes('application/json')) {
     return new Response(
-      JSON.stringify({ success: false, error: 'Unsupported Content-Type. Must be application/json.' }),
+      JSON.stringify({ success: false, error: ApiStringResources.unsupportedContentType }),
       { status: 415, headers }
     );
   }
@@ -69,8 +83,9 @@ export async function onRequestPost(context: {
   const clientIp = request.headers.get('CF-Connecting-IP') || request.headers.get('x-forwarded-for') || '127.0.0.1';
   const rateLimit = contactRateLimiter.isAllowed(clientIp);
   if (!rateLimit.allowed) {
+    emitSecurityEvent('api_rate_limited', 'blocked', 429);
     return new Response(
-      JSON.stringify({ success: false, error: 'Too many requests. Please try again later.' }),
+      JSON.stringify({ success: false, error: ApiStringResources.rateLimited }),
       {
         status: 429,
         headers: {
@@ -85,7 +100,7 @@ export async function onRequestPost(context: {
   const contentLengthHeader = request.headers.get('Content-Length');
   if (contentLengthHeader && parseInt(contentLengthHeader, 10) > MAX_PAYLOAD_BYTES) {
     return new Response(
-      JSON.stringify({ success: false, error: 'Payload exceeds maximum allowed limit (10KB).' }),
+      JSON.stringify({ success: false, error: ApiStringResources.payloadTooLarge }),
       { status: 413, headers }
     );
   }
@@ -94,7 +109,7 @@ export async function onRequestPost(context: {
     const rawText = await request.text();
     if (new TextEncoder().encode(rawText).length > MAX_PAYLOAD_BYTES) {
       return new Response(
-        JSON.stringify({ success: false, error: 'Payload exceeds maximum allowed limit (10KB).' }),
+        JSON.stringify({ success: false, error: ApiStringResources.payloadTooLarge }),
         { status: 413, headers }
       );
     }
@@ -102,7 +117,7 @@ export async function onRequestPost(context: {
     // Prototype pollution detection & rejection
     if (hasPrototypePollution(rawText)) {
       return new Response(
-        JSON.stringify({ success: false, error: 'Malicious payload detected: Prototype pollution attempt rejected.' }),
+        JSON.stringify({ success: false, error: ApiStringResources.maliciousPayload }),
         { status: 400, headers }
       );
     }
@@ -128,8 +143,9 @@ export async function onRequestPost(context: {
         request.headers.get('CF-Connecting-IP') || ''
       );
       if (!isBotCleared) {
+        emitSecurityEvent('turnstile_failure', 'rejected', 403);
         return new Response(
-          JSON.stringify({ success: false, error: 'Bot verification failed. Please try again.' }),
+          JSON.stringify({ success: false, error: ApiStringResources.botVerificationFailed }),
           { status: 403, headers }
         );
       }
@@ -140,7 +156,7 @@ export async function onRequestPost(context: {
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Email gateway configuration missing. Please email founder@ai-borne.in directly.',
+          error: ApiStringResources.emailGatewayMissing,
         }),
         { status: 500, headers }
       );
@@ -157,7 +173,7 @@ export async function onRequestPost(context: {
         from: 'AI-Borne <founder@ai-borne.in>',
         to: ['founder@ai-borne.in'],
         reply_to: email,
-        subject: `[AI-Borne Web Support] New message from ${email}`,
+        subject: `${ApiStringResources.contactEmailSubject} ${email}`,
         html: `
           <div style="font-family: system-ui, sans-serif; max-width: 600px; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
             <h2 style="color: #0f172a; margin-top: 0;">New Support Inquiry</h2>
@@ -171,14 +187,12 @@ export async function onRequestPost(context: {
       }),
     });
 
-    const resendData: any = await resendRes.json().catch(() => ({}));
-
     if (!resendRes.ok) {
-      console.error('[Contact API] Resend email delivery failed:', resendRes.status, resendData?.message);
+      emitSecurityEvent('upstream_delivery_failure', 'failed', 502);
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Failed to deliver support email. Please email founder@ai-borne.in directly.',
+          error: ApiStringResources.emailDeliveryFailed,
         }),
         { status: 500, headers }
       );
@@ -197,7 +211,7 @@ export async function onRequestPost(context: {
             from: 'AI-Borne <founder@ai-borne.in>',
             to: [email],
             reply_to: 'founder@ai-borne.in',
-            subject: '[AI-Borne Support] We received your message',
+            subject: ApiStringResources.autoReplySubject,
             html: `
               <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff; color: #0f172a;">
                 <div style="margin-bottom: 20px;">
@@ -229,19 +243,41 @@ export async function onRequestPost(context: {
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Thank you! Your message has been sent successfully.',
+        message: ApiStringResources.supportMessageSent,
       }),
       { status: 200, headers }
     );
   } catch {
+    emitSecurityEvent('unexpected_server_error', 'failed', 500);
     return new Response(
       JSON.stringify({
         success: false,
-        error: 'Failed to connect to email gateway. Please email founder@ai-borne.in directly.',
+        error: ApiStringResources.emailGatewayUnavailable,
       }),
       { status: 500, headers }
     );
   }
+}
+
+export async function onRequest(context: {
+  request: Request;
+  env: Env;
+  waitUntil?: (promise: Promise<any>) => void;
+}): Promise<Response> {
+  if (context.request.method === 'OPTIONS') return onRequestOptions(context);
+  if (context.request.method === 'POST') return onRequestPost(context);
+
+  const origin = getAllowedOrigin(context.request);
+  return new Response(
+    JSON.stringify({ success: false, error: ApiStringResources.methodNotAllowed }),
+    {
+      status: 405,
+      headers: getSecureApiResponseHeaders(origin, {
+        'Content-Type': 'application/json',
+        Allow: 'POST, OPTIONS',
+      }),
+    }
+  );
 }
 
 async function verifyTurnstileToken(secret: string, token: string, remoteIp: string): Promise<boolean> {

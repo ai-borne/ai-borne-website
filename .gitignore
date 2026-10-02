@@ -7,9 +7,14 @@ coverage
 # Environment & Secret files
 .env
 .env.*
+.envrc
+.envrc.*
 .dev.vars
 .wrangler
 *.pem
 *.key
+*.p12
+*.pfx
+*.map
 *.secret
 *token*

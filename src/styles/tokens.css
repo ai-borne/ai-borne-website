@@ -18,6 +18,15 @@
   --color-text-code: #f8fafc;
   --color-border-code: rgba(255, 255, 255, 0.1);
   --color-bg-inline-code: rgba(99, 102, 241, 0.15);
+  --color-bg-accent-subtle: rgba(99, 102, 241, 0.08);
+  --color-border-accent-subtle: rgba(99, 102, 241, 0.2);
+  --color-bg-success-subtle: rgba(34, 197, 94, 0.15);
+  --color-border-success: rgba(34, 197, 94, 0.4);
+  --color-text-success: #4ade80;
+  --color-bg-error-subtle: rgba(239, 68, 68, 0.15);
+  --color-border-error: rgba(239, 68, 68, 0.4);
+  --color-text-error: #f87171;
+  --color-shadow-success: rgba(16, 185, 129, 0.6);
 }
 
 [data-theme="light"] {
@@ -39,6 +48,15 @@
   --color-text-code: #0f172a;
   --color-border-code: rgba(0, 0, 0, 0.1);
   --color-bg-inline-code: rgba(79, 70, 229, 0.1);
+  --color-bg-accent-subtle: rgba(79, 70, 229, 0.08);
+  --color-border-accent-subtle: rgba(79, 70, 229, 0.2);
+  --color-bg-success-subtle: rgba(5, 150, 105, 0.12);
+  --color-border-success: rgba(5, 150, 105, 0.35);
+  --color-text-success: #047857;
+  --color-bg-error-subtle: rgba(220, 38, 38, 0.1);
+  --color-border-error: rgba(220, 38, 38, 0.35);
+  --color-text-error: #b91c1c;
+  --color-shadow-success: rgba(5, 150, 105, 0.5);
 }
 
 :root {
