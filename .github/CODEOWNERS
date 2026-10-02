@@ -1,0 +1,5 @@
+# Repository branch protection should require this owner for changes to deployment and security controls.
+/.github/ @sunil
+/functions/ @sunil
+/public/.well-known/security.txt @sunil
+/SECURITY.md @sunil

@@ -1,5 +1,6 @@
 import { FormValidator } from '../services/FormValidator';
 import { IContactService } from '../services/ContactService';
+import { StringResources } from '../store/StringResources';
 
 export interface ISupportState {
   isSubmitting: boolean;
@@ -26,13 +27,13 @@ export class SupportViewModel {
   public async submitForm(email: string, message: string, turnstileToken?: string): Promise<void> {
     const emailValidation = FormValidator.validateEmail(email);
     if (!emailValidation.valid) {
-      this.state = { isSubmitting: false, isSuccess: false, errorMessage: emailValidation.message || 'Invalid email address.' };
+      this.state = { isSubmitting: false, isSuccess: false, errorMessage: emailValidation.message || StringResources.getStrings().support.invalidEmailError };
       return;
     }
 
     const messageValidation = FormValidator.validateMessage(message);
     if (!messageValidation.valid) {
-      this.state = { isSubmitting: false, isSuccess: false, errorMessage: messageValidation.message || 'Support message is invalid.' };
+      this.state = { isSubmitting: false, isSuccess: false, errorMessage: messageValidation.message || StringResources.getStrings().support.emptyMessageError };
       return;
     }
 
@@ -46,7 +47,7 @@ export class SupportViewModel {
       this.state = {
         isSubmitting: false,
         isSuccess: false,
-        errorMessage: result.errorMessage || 'Failed to send message. Please try again.',
+        errorMessage: result.errorMessage || StringResources.getStrings().support.genericMessageError,
         isRateLimited: result.isRateLimited ?? false,
         submittedEmail: email.trim(),
         submittedMessage: sanitizedMsg,

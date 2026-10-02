@@ -185,4 +185,20 @@ Normal content continues here.
     expect(outputFile).toContain('href="#"');
     expect(outputFile).not.toContain('file:');
   });
+
+  it('blocks protocol-relative links and protects approved new-tab links', () => {
+    const unsafe = MarkdownRenderer.render('[Offsite](//evil.example/path)');
+    expect(unsafe).toContain('href="#"');
+
+    const safe = MarkdownRenderer.render('<a href="https://ai-borne.in" target="_blank">AI-Borne</a>');
+    expect(safe).toContain('href="https://ai-borne.in"');
+    expect(safe).toContain('rel="noopener noreferrer"');
+  });
+
+  it('removes raw Markdown styling and srcset URL injection surfaces', () => {
+    const output = MarkdownRenderer.render('<img src="safe.png" srcset="data:text/html,payload" style="background:url(https://evil.example)">');
+    expect(output).toContain('src="safe.png"');
+    expect(output).not.toContain('srcset=');
+    expect(output).not.toContain('style=');
+  });
 });

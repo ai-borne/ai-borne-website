@@ -25,4 +25,12 @@ describe('PWA Configuration and Asset Verification', () => {
     expect(content).toContain('viewBox="0 0 100 100"');
     expect(content).toContain('</svg>');
   });
+
+  it('excludes API and admin routes from navigation fallback caching', () => {
+    const configPath = path.resolve(__dirname, '../vite.config.ts');
+    const content = fs.readFileSync(configPath, 'utf8');
+
+    expect(content).toContain('navigateFallbackDenylist');
+    expect(content).toMatch(/api\|admin/);
+  });
 });

@@ -7,14 +7,14 @@ export class FormValidator {
   public static validateEmail(email: string): IValidationResult {
     const trimmed = email.trim();
     if (!trimmed) {
-      return { valid: false, message: 'Email address is required.' };
+      return { valid: false, message: StringResources.getStrings().support.emailRequiredError };
     }
     if (trimmed.length > 100) {
-      return { valid: false, message: 'Email address exceeds maximum length of 100 characters.' };
+      return { valid: false, message: StringResources.getStrings().support.emailTooLongError };
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(trimmed)) {
-      return { valid: false, message: 'Invalid email address format.' };
+      return { valid: false, message: StringResources.getStrings().support.invalidEmailFormatError };
     }
     return { valid: true };
   }
@@ -22,13 +22,13 @@ export class FormValidator {
   public static validateMessage(message: string): IValidationResult {
     const trimmed = message.trim();
     if (!trimmed) {
-      return { valid: false, message: 'Support message cannot be empty.' };
+      return { valid: false, message: StringResources.getStrings().support.emptyMessageError };
     }
     if (trimmed.length < 5) {
-      return { valid: false, message: 'Support message must be at least 5 characters long.' };
+      return { valid: false, message: StringResources.getStrings().support.messageTooShortError };
     }
     if (trimmed.length > 3000) {
-      return { valid: false, message: 'Support message exceeds maximum length of 3000 characters.' };
+      return { valid: false, message: StringResources.getStrings().support.messageTooLongError };
     }
     return { valid: true };
   }
@@ -42,3 +42,4 @@ export class FormValidator {
       .replace(/'/g, '&#x27;');
   }
 }
+import { StringResources } from '../store/StringResources';

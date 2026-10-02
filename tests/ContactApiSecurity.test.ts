@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { onRequestPost, onRequestOptions } from '../functions/api/contact';
+import { onRequest, onRequestPost, onRequestOptions } from '../functions/api/contact';
 import {
   contactRateLimiter,
   stripCrlf,
@@ -58,9 +58,41 @@ describe('Contact API Security Integration Tests', () => {
   });
 
   it('rejects untrusted origin by not returning Access-Control-Allow-Origin header', async () => {
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const ctx = createMockContext('POST', { email: 'user@example.com', message: 'Hello AI-Borne' }, 'https://malicious-site.com');
     const response = await onRequestOptions(ctx);
     expect(response.headers.get('Access-Control-Allow-Origin')).toBeNull();
+    expect(consoleSpy).toHaveBeenCalledWith(
+      JSON.stringify({ event: 'cors_denied', outcome: 'blocked', status: 403 })
+    );
+  });
+
+  it('rejects cross-origin preflight and POST before parsing or delivering attacker input', async () => {
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const fetchSpy = vi.spyOn(global, 'fetch');
+    const ctx = createMockContext('POST', { email: 'private@example.com', message: 'do not deliver' }, 'https://evil.example');
+
+    const preflight = await onRequestOptions(ctx);
+    const response = await onRequestPost(ctx);
+
+    expect(preflight.status).toBe(403);
+    expect(response.status).toBe(403);
+    expect(response.headers.get('Access-Control-Allow-Origin')).toBeNull();
+    expect(await response.text()).not.toContain('private@example.com');
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(consoleSpy.mock.calls.flat().join('\n')).not.toContain('private@example.com');
+    fetchSpy.mockRestore();
+  });
+
+  it('returns an opaque, cache-safe 405 response for unexpected methods', async () => {
+    const ctx = createMockContext('PUT', {}, 'https://ai-borne.in');
+    const response = await onRequest(ctx);
+    const payload = await response.json();
+
+    expect(response.status).toBe(405);
+    expect(response.headers.get('Allow')).toBe('POST, OPTIONS');
+    expect(response.headers.get('Cache-Control')).toContain('no-store');
+    expect(payload).toEqual({ success: false, error: 'Method Not Allowed' });
   });
 
   it('enforces enterprise zero-trust security headers on API responses', async () => {
@@ -178,7 +210,7 @@ describe('Contact API Security Integration Tests', () => {
 
   it('masks upstream third-party Resend error details and prevents information leakage', async () => {
     const originalFetch = global.fetch;
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     global.fetch = vi.fn().mockResolvedValue({
       ok: false,
@@ -197,12 +229,42 @@ describe('Contact API Security Integration Tests', () => {
       expect(body.error).not.toContain('domain not verified');
       expect(body.error).toBe('Failed to deliver support email. Please email founder@ai-borne.in directly.');
 
-      // But logged securely on the server
-      expect(consoleSpy).toHaveBeenCalled();
+      // Operational telemetry remains structured and contains no provider response or request data.
+      expect(consoleSpy).toHaveBeenCalledWith(
+        JSON.stringify({ event: 'upstream_delivery_failure', outcome: 'failed', status: 502 })
+      );
+      expect(consoleSpy.mock.calls.flat().join('')).not.toContain('key_sec_12345');
+      expect(consoleSpy.mock.calls.flat().join('')).not.toContain('domain not verified');
     } finally {
       global.fetch = originalFetch;
       consoleSpy.mockRestore();
     }
+  });
+
+  it('emits redacted observability events for rate limiting and Turnstile rejection', async () => {
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const rateLimitedIp = '198.51.100.97';
+    contactRateLimiter.isAllowed(rateLimitedIp);
+    contactRateLimiter.isAllowed(rateLimitedIp);
+    contactRateLimiter.isAllowed(rateLimitedIp);
+    contactRateLimiter.isAllowed(rateLimitedIp);
+    contactRateLimiter.isAllowed(rateLimitedIp);
+    const rateLimited = await onRequestPost(
+      createMockContext('POST', { email: 'private@example.com', message: 'Private request message' }, 'https://ai-borne.in', 'application/json', undefined, rateLimitedIp)
+    );
+    expect(rateLimited.status).toBe(429);
+
+    const turnstileContext = createMockContext('POST', { email: 'private@example.com', message: 'Private request message', turnstileToken: 'secret-turnstile-token' });
+    turnstileContext.env.CF_TURNSTILE_SECRET_KEY = 'turnstile-secret';
+    const turnstileRejected = await onRequestPost(turnstileContext);
+    expect(turnstileRejected.status).toBe(403);
+
+    const telemetry = consoleSpy.mock.calls.flat().join('\n');
+    expect(telemetry).toContain('api_rate_limited');
+    expect(telemetry).toContain('turnstile_failure');
+    expect(telemetry).not.toContain('private@example.com');
+    expect(telemetry).not.toContain('Private request message');
+    expect(telemetry).not.toContain('secret-turnstile-token');
   });
 
   it('rejects oversized email (> 100 chars) with 400 Bad Request', async () => {

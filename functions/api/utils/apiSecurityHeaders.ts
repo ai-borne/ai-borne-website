@@ -12,10 +12,10 @@ export function getAllowedOrigin(request: Request | string | null | undefined): 
   if (!origin) return null;
   const lower = origin.toLowerCase();
   if (ALLOWED_API_ORIGINS.includes(lower)) {
-    return origin;
+    return lower;
   }
   if (/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(lower)) {
-    return origin;
+    return lower;
   }
   return null;
 }
@@ -41,6 +41,7 @@ export function getSecureApiResponseHeaders(
 
   if (origin) {
     headers['Access-Control-Allow-Origin'] = origin;
+    headers.Vary = 'Origin';
   }
 
   return headers;

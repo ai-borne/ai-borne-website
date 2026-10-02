@@ -1,5 +1,7 @@
 import { SlidingWindowRateLimiter } from '../../src/utils/RateLimiter';
 import { getSecureApiResponseHeaders } from './utils/apiSecurityHeaders';
+import { ApiStringResources } from './ApiStringResources';
+import { emitSecurityEvent } from './utils/securityEvents';
 
 interface Env {
   GITHUB_CLIENT_ID: string;
@@ -14,7 +16,8 @@ export async function onRequestGet(context: { request: Request; env: Env }): Pro
   const rateLimit = authRateLimiter.isAllowed(clientIp);
 
   if (!rateLimit.allowed) {
-    return new Response('Too many requests. Please try again later.', {
+    emitSecurityEvent('api_rate_limited', 'blocked', 429);
+    return new Response(ApiStringResources.rateLimited, {
       status: 429,
       headers: getSecureApiResponseHeaders(null, {
         'Retry-After': Math.ceil(rateLimit.resetMs / 1000).toString(),
@@ -24,7 +27,8 @@ export async function onRequestGet(context: { request: Request; env: Env }): Pro
 
   const { GITHUB_CLIENT_ID } = env;
   if (!GITHUB_CLIENT_ID) {
-    return new Response('GITHUB_CLIENT_ID is not configured in Cloudflare environment variables.', {
+    emitSecurityEvent('auth_failure', 'failed', 500);
+    return new Response(ApiStringResources.authClientIdMissing, {
       status: 500,
       headers: getSecureApiResponseHeaders(),
     });

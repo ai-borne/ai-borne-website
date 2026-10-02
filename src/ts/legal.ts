@@ -7,6 +7,7 @@ import { LegalPolicyStore } from '../store/LegalPolicyStore';
 import { HeaderComponent } from '../views/HeaderComponent';
 import { FooterComponent } from '../views/FooterComponent';
 import { initThemeEngine } from '../services/ThemeInitializer';
+import { StringResources } from '../store/StringResources';
 
 type PolicyType = 'privacy' | 'terms' | 'refund' | 'contact' | 'deletion';
 
@@ -18,26 +19,26 @@ export function renderLegalPage(policyType: PolicyType): void {
   appEl.innerHTML = `
     ${HeaderComponent.render(policyType)}
     <main class="main-content">
-      <section class="container hero" style="padding-bottom: 1rem;">
+      <section class="container hero mb-md">
         <h1 class="hero-title">${policy.title}</h1>
-        <p class="text-muted">Last Updated: ${policy.lastUpdated} | Effective Date: ${policy.effectiveDate}</p>
+        <p class="text-muted">${StringResources.getStrings().legal.lastUpdated}: ${policy.lastUpdated} | ${StringResources.getStrings().legal.effectiveDate}: ${policy.effectiveDate}</p>
       </section>
 
       <section class="container section">
-        <div class="card" style="max-width: 800px; margin: 0 auto;">
+        <div class="card legal-card">
           ${policy.sections
             .map(
               (section) => `
-            <div style="margin-bottom: 2rem;">
-              <h2 style="font-size: 1.25rem; margin-bottom: 0.75rem; color: var(--color-accent-cyan);">${section.heading}</h2>
+            <div class="legal-section">
+              <h2 class="legal-heading">${section.heading}</h2>
               ${section.body.map((p) => `<p class="text-muted mb-md">${p}</p>`).join('')}
             </div>
           `
             )
             .join('')}
 
-          <div style="border-top: 1px solid var(--color-border-glass); padding-top: 1.5rem; margin-top: 2rem;">
-            <p class="text-muted">Contact Support: <a href="mailto:${policy.contactEmail}"><strong>${policy.contactEmail}</strong></a></p>
+          <div class="legal-contact">
+            <p class="text-muted">${StringResources.getStrings().legal.contactSupport}: <a href="mailto:${policy.contactEmail}"><strong>${policy.contactEmail}</strong></a></p>
           </div>
         </div>
       </section>

@@ -1,4 +1,5 @@
 import { SlidingWindowRateLimiter } from '../../../src/utils/RateLimiter';
+import { ApiStringResources } from '../ApiStringResources';
 
 export interface ContactValidationResult {
   valid: boolean;
@@ -28,34 +29,34 @@ export function stripCrlf(input: string): string {
  */
 export function validateContactInput(rawEmail?: string, rawMessage?: string): ContactValidationResult {
   if (!rawEmail || typeof rawEmail !== 'string') {
-    return { valid: false, error: 'Email address is required.' };
+    return { valid: false, error: ApiStringResources.emailRequired };
   }
 
   const cleanedEmail = stripCrlf(rawEmail);
   if (!cleanedEmail) {
-    return { valid: false, error: 'Email address is required.' };
+    return { valid: false, error: ApiStringResources.emailRequired };
   }
 
   if (cleanedEmail.length > 100) {
-    return { valid: false, error: 'Email address exceeds maximum length of 100 characters.' };
+    return { valid: false, error: ApiStringResources.emailTooLong };
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(cleanedEmail)) {
-    return { valid: false, error: 'Invalid email address format.' };
+    return { valid: false, error: ApiStringResources.emailInvalid };
   }
 
   if (!rawMessage || typeof rawMessage !== 'string') {
-    return { valid: false, error: 'Support message must be at least 5 characters long.' };
+    return { valid: false, error: ApiStringResources.messageTooShort };
   }
 
   const trimmedMessage = rawMessage.trim();
   if (trimmedMessage.length < 5) {
-    return { valid: false, error: 'Support message must be at least 5 characters long.' };
+    return { valid: false, error: ApiStringResources.messageTooShort };
   }
 
   if (trimmedMessage.length > 3000) {
-    return { valid: false, error: 'Support message exceeds maximum length of 3000 characters.' };
+    return { valid: false, error: ApiStringResources.messageTooLong };
   }
 
   return {

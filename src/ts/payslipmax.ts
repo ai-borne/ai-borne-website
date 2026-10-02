@@ -15,7 +15,7 @@ function renderHero(app: IAppMetadata, strings: IStringDictionary): string {
       <span class="badge mb-md">${app.category}</span>
       <h1 class="hero-title">${app.name}</h1>
       <p class="hero-tagline">${app.tagline}</p>
-      <div style="background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 8px; padding: 1rem; max-width: 600px; margin: 0 auto 2rem; color: #4ade80;">
+      <div class="privacy-banner">
         <strong>${strings.payslipmax.privacyBannerLabel}</strong> ${app.privacyGuarantee}
       </div>
     </section>
@@ -31,7 +31,7 @@ function renderFeatures(app: IAppMetadata, strings: IStringDictionary): string {
           .map(
             (feature) => `
           <div class="card">
-            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-accent-cyan);">${feature.title}</h3>
+            <h3 class="feature-title">${feature.title}</h3>
             <p class="text-muted">${feature.description}</p>
           </div>
         `
@@ -44,18 +44,18 @@ function renderFeatures(app: IAppMetadata, strings: IStringDictionary): string {
 
 function renderCompliance(cards: IComplianceCard[], strings: IStringDictionary): string {
   return `
-    <section class="container section" style="padding-top: 0;">
+    <section class="container section section-no-top">
       <h2 class="section-title text-center mb-xl">${strings.payslipmax.complianceTitle}</h2>
       <div class="grid-3">
         ${cards
           .map(
             (card) => `
-          <a href="${card.url}" class="card" style="text-decoration: none; display: flex; flex-direction: column; justify-content: space-between;">
+          <a href="${card.url}" class="card card-flex card-link">
             <div>
-              <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-accent-cyan);">${card.title}</h3>
-              <p class="text-muted" style="margin-bottom: 1.25rem;">${card.description}</p>
+              <h3 class="feature-title">${card.title}</h3>
+              <p class="text-muted mb-lg">${card.description}</p>
             </div>
-            <div style="color: var(--color-accent-cyan); font-weight: 500; font-size: 0.9rem;">
+            <div class="insights-header-link">
               <span>${strings.payslipmax.readPolicyLink}</span>
             </div>
           </a>

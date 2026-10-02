@@ -4,5 +4,5 @@ Encryption: https://ai-borne.in/.well-known/pgp-key.txt
 Acknowledgments: https://ai-borne.in/support.html
 Preferred-Languages: en
 Canonical: https://ai-borne.in/.well-known/security.txt
-Policy: https://ai-borne.in/terms.html
+Policy: https://ai-borne.in/security.md
 Hiring: https://ai-borne.in/support.html

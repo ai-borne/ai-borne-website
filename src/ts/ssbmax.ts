@@ -23,7 +23,7 @@ export function renderSSBMaxPage(): void {
         <span class="badge mb-md">${app.category}</span>
         <h1 class="hero-title">${app.name}</h1>
         <p class="hero-tagline">${app.tagline}</p>
-        <div style="background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 8px; padding: 1rem; max-width: 600px; margin: 0 auto 2rem; color: #4ade80;">
+        <div class="privacy-banner">
           <strong>${strings.ssbmax.privacyBannerLabel}</strong> ${app.privacyGuarantee}
         </div>
       </section>
@@ -35,7 +35,7 @@ export function renderSSBMaxPage(): void {
             .map(
               (feature) => `
             <div class="card">
-              <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-accent-cyan);">${feature.title}</h3>
+              <h3 class="feature-title">${feature.title}</h3>
               <p class="text-muted">${feature.description}</p>
             </div>
           `

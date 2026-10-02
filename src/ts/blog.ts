@@ -7,37 +7,40 @@ import { StringResources } from '../store/StringResources';
 import { HeaderComponent } from '../views/HeaderComponent';
 import { FooterComponent } from '../views/FooterComponent';
 import { initThemeEngine } from '../services/ThemeInitializer';
+import { HtmlSafety } from '../services/HtmlSafety';
 
 function renderCardsHtml(posts: ReturnType<BlogViewModel['getPosts']>, strings: ReturnType<typeof StringResources.getStrings>): string {
+  const text = HtmlSafety.escapeText;
+  const postUrl = (slug: string) => HtmlSafety.safeInternalUrl(`/blog/post.html?slug=${encodeURIComponent(slug)}`);
   return posts
     .map(
       (post) => `
-      <article class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+      <article class="card card-flex">
         <div>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm); gap: var(--spacing-xs); flex-wrap: wrap;">
-            <div style="display: flex; gap: var(--spacing-xs); align-items: center; flex-wrap: wrap;">
-              <span class="badge">${post.category}</span>
-              ${post.difficulty ? `<span class="badge" style="background: var(--color-bg-surface);">${post.difficulty}</span>` : ''}
+          <div class="card-header-row">
+            <div class="content-row">
+              <span class="badge">${text(post.category)}</span>
+              ${post.difficulty ? `<span class="badge badge-surface">${text(post.difficulty)}</span>` : ''}
             </div>
-            ${post.metricBadge ? `<span class="card-metric-badge">${post.metricBadge}</span>` : ''}
+            ${post.metricBadge ? `<span class="card-metric-badge">${text(post.metricBadge)}</span>` : ''}
           </div>
-          <h2 style="font-size: 1.4rem; margin-bottom: 0.5rem; line-height: 1.3;">
-            <a href="/blog/post.html?slug=${post.slug}" style="color: inherit; text-decoration: none;">${post.title}</a>
+          <h2 class="card-title-sm">
+            <a href="${postUrl(post.slug)}" class="card-link">${text(post.title)}</a>
           </h2>
-          <p class="text-muted mb-md">${post.summary}</p>
+          <p class="text-muted mb-md">${text(post.summary)}</p>
           ${
             post.tags && post.tags.length > 0
               ? `
-            <div style="display: flex; gap: var(--spacing-xs); flex-wrap: wrap; margin-bottom: var(--spacing-md);">
-              ${post.tags.map((t) => `<span class="badge" style="font-size: 0.7rem; padding: 0.15rem 0.5rem; border-color: var(--color-border-glass);">${t}</span>`).join('')}
+            <div class="tag-list">
+              ${post.tags.map((t) => `<span class="badge tag-badge">${text(t)}</span>`).join('')}
             </div>
           `
               : ''
           }
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--color-border-glass); padding-top: var(--spacing-md);" class="text-muted">
-          <small>By <strong>${post.author}</strong> &bull; ${post.publishedDate}</small>
-          <small>${post.readTimeMinutes} ${strings.home.minRead} &bull; <a href="/blog/post.html?slug=${post.slug}" style="color: var(--color-accent-cyan); font-weight: 600; text-decoration: none;">${strings.blog.readArticle}</a></small>
+        <div class="card-footer-row text-muted">
+          <small>${text(strings.blog.byAuthor)} <strong>${text(post.author)}</strong> &bull; ${text(post.publishedDate)}</small>
+          <small>${text(post.readTimeMinutes)} ${text(strings.home.minRead)} &bull; <a href="${postUrl(post.slug)}" class="article-link">${text(strings.blog.readArticle)}</a></small>
         </div>
       </article>
     `
@@ -49,6 +52,7 @@ export function renderBlogPage(): void {
   const viewModel = new BlogViewModel();
   const strings = StringResources.getStrings();
   const categories = viewModel.getCategories();
+  const text = HtmlSafety.escapeText;
 
   const appEl = document.getElementById('app');
   if (!appEl) return;
@@ -57,8 +61,8 @@ export function renderBlogPage(): void {
     ${HeaderComponent.render('blog')}
     <main class="main-content">
       <section class="container hero">
-        <h1 class="hero-title">${strings.blog.title}</h1>
-        <p class="hero-tagline">${strings.blog.subtitle}</p>
+        <h1 class="hero-title">${text(strings.blog.title)}</h1>
+        <p class="hero-tagline">${text(strings.blog.subtitle)}</p>
 
         <div class="search-wrapper">
           <span class="search-icon" aria-hidden="true">
@@ -71,21 +75,21 @@ export function renderBlogPage(): void {
             type="search"
             id="blog-search-box"
             class="search-input"
-            placeholder="${strings.blog.searchPlaceholder}"
-            aria-label="Search engineering playbooks"
+            placeholder="${text(strings.blog.searchPlaceholder)}"
+            aria-label="${text(strings.blog.searchLabel)}"
             autocomplete="off"
           />
         </div>
 
-        <div class="filter-pills" id="category-pills-container" role="toolbar" aria-label="Category filters">
+        <div class="filter-pills" id="category-pills-container" role="toolbar" aria-label="${text(strings.blog.categoryFiltersLabel)}">
           <button type="button" class="filter-pill active" data-category="">
-            ${strings.blog.filterAll}
+            ${text(strings.blog.filterAll)}
           </button>
           ${categories
             .map(
               (cat) => `
-            <button type="button" class="filter-pill" data-category="${cat}">
-              ${cat}
+            <button type="button" class="filter-pill" data-category="${text(cat)}">
+              ${text(cat)}
             </button>
           `
             )
@@ -93,13 +97,13 @@ export function renderBlogPage(): void {
         </div>
       </section>
 
-      <section class="container section" style="padding-top: 0;">
+      <section class="container section section-no-top">
         <span id="blog-count-display" class="post-count-badge"></span>
         <div id="blog-posts-grid" class="grid-2"></div>
-        <div id="blog-empty-state" class="card text-center" style="display: none; padding: var(--spacing-2xl);">
-          <h3 style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-sm);">${strings.blog.emptyTitle}</h3>
-          <p class="text-muted mb-lg">${strings.blog.emptyDescription}</p>
-          <button type="button" id="reset-filter-action" class="btn btn-primary">${strings.blog.backToAllArticles}</button>
+        <div id="blog-empty-state" class="card text-center empty-state">
+          <h3 class="feature-title">${text(strings.blog.emptyTitle)}</h3>
+          <p class="text-muted mb-lg">${text(strings.blog.emptyDescription)}</p>
+          <button type="button" id="reset-filter-action" class="btn btn-primary">${text(strings.blog.backToAllArticles)}</button>
         </div>
       </section>
     </main>
@@ -130,6 +134,7 @@ export function renderBlogPage(): void {
       } else {
         gridContainer.style.display = 'grid';
         emptyState.style.display = 'none';
+        // renderCardsHtml escapes every data-store value before this trusted template boundary.
         gridContainer.innerHTML = renderCardsHtml(matchedPosts, strings);
       }
     }

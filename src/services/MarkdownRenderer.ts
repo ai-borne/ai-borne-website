@@ -17,6 +17,9 @@ export class MarkdownRenderer {
   private static readonly EVENT_ATTR_REGEX =
     /(?:[\s/]+)on[a-zA-Z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi;
 
+  private static readonly STYLE_OR_SRCSET_ATTR_REGEX =
+    /(?:[\s/]+)(?:style|srcset)\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi;
+
   private static readonly URL_ATTR_REGEX =
     /\b(href|src|action|formaction)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi;
 
@@ -58,6 +61,9 @@ export class MarkdownRenderer {
         attrs = attrs.replace(this.EVENT_ATTR_REGEX, '');
       }
 
+      // Article markup has no styling contract: remove CSS and multi-source URL injection surfaces.
+      attrs = attrs.replace(this.STYLE_OR_SRCSET_ATTR_REGEX, '');
+
       // Pass 3: Enforce strict URL protocol allowlist on navigation and source attributes
       attrs = attrs.replace(
         this.URL_ATTR_REGEX,
@@ -69,6 +75,12 @@ export class MarkdownRenderer {
           return `${attr}="#"`;
         }
       );
+
+      // Markdown may intentionally contain links, but a new tab must never retain opener access.
+      if (tagName.toLowerCase() === 'a' && /\btarget\s*=\s*(["'])?_blank\1?/i.test(attrs)) {
+        attrs = attrs.replace(/\srel\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+        attrs += ' rel="noopener noreferrer"';
+      }
 
       return `<${tagName}${attrs}>`;
     });
@@ -90,6 +102,9 @@ export class MarkdownRenderer {
     ) {
       return false;
     }
+
+    // Network-path references inherit the current scheme and can silently leave the site.
+    if (normalized.startsWith('//')) return false;
 
     // Allow safe absolute protocols, localhost/dev URLs, anchors, and relative paths
     if (
