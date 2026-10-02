@@ -26,6 +26,8 @@
 - [Building Infinite Canvas Workspaces: Integrating ReactFlow, TipTap & Atomic Cloud Transactions in ActionStation](https://ai-borne.in/blog/post.html?slug=building-infinite-canvas-spatial-workspaces): Node-graph rendering, rich-text blocks, Firestore chunked transactions, and spatial viewport culling.
 - [Enterprise Physical Threat Audits: Implementing ASIS CPP Seven Precis & Vector RAG in SecureMax](https://ai-borne.in/blog/post.html?slug=enterprise-physical-security-threat-intelligence): Codifying ASIS CPP Seven Precis domains and ISO 27001 Annex A.11 standards into adaptive AI audit flowcharts and vector search.
 
+- [Sub-Millisecond SQLite on Mobile: Optimizing WAL Mode & Custom Pragmas in PayslipMax](https://ai-borne.in/blog/post.html?slug=sqlite-wal-concurrency-on-device): How we tuned SQLite WAL journaling, memory-mapped I/O, and custom pragmas for zero-jank on-device indexing.
+
 ## Full Documentation & Sitemaps
 - [Full LLM Knowledge Index](https://ai-borne.in/llms-full.txt): Comprehensive deep-dive documentation with architecture diagrams, code recipes, and full technical specifications.
 - [XML Sitemap](https://ai-borne.in/sitemap.xml): Complete machine-readable URL index.
