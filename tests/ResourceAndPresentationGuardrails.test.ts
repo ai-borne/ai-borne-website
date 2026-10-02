@@ -54,6 +54,17 @@ describe('Phase 2 resource and presentation guardrails', () => {
     }
   });
 
+  it('keeps header and footer logo dimensions in semantic CSS', () => {
+    const css = fs.readFileSync(path.join(rootDir, 'src/styles/components.css'), 'utf8');
+    const header = fs.readFileSync(path.join(rootDir, 'src/views/HeaderComponent.ts'), 'utf8');
+    const footer = fs.readFileSync(path.join(rootDir, 'src/views/FooterComponent.ts'), 'utf8');
+
+    expect(header).toContain('class="logo-img logo-img-dark"');
+    expect(footer).toContain('class="logo-img logo-img-dark"');
+    expect(css).toMatch(/\.logo-img\s*\{[^}]*height:\s*36px;[^}]*width:\s*auto;/s);
+    expect(css).toMatch(/\.footer \.logo-img\s*\{[^}]*height:\s*32px;/s);
+  });
+
   it('keeps literal rendered text in StringResources', () => {
     const templateFiles = ['src/ts/blog.ts', 'src/ts/blogpost.ts', 'src/ts/main.ts', 'src/ts/support.ts', 'src/views/HeaderComponent.ts', 'src/views/FooterComponent.ts'];
     for (const relativePath of templateFiles) {
