@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   generate-and-publish:
@@ -26,31 +27,38 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Execute Autonomous Daily Insight Engine
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: npx tsx scripts/generate-daily-insight.ts
+        run: npx --no-install tsx scripts/generate-daily-insight.ts
 
-      - name: Verify TypeScript Type Check
-        run: npx tsc --noEmit
+      - name: Install Playwright Browser
+        run: npx --no-install playwright install --with-deps chromium
 
-      - name: Verify Vitest Unit Test Suite
-        run: npx vitest run
+      - name: Run Complete Quality Gate
+        run: npm run quality
 
-      - name: Verify Static Production Build
-        run: npm run build
+      - name: Validate Generated Changes
+        run: git diff --check
 
-      - name: Commit and Push Daily Playbook to Main
+      - name: Commit and Open Daily Playbook Pull Request
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "AI-Borne Publishing Engine"
           if [ -n "$(git status --porcelain)" ]; then
             TODAY=$(date +'%Y-%m-%d')
+            BRANCH="automation/daily-playbook-${TODAY}"
+            git switch -c "${BRANCH}"
             git add content/blog/ public/sitemap.xml public/llms.txt
             git commit -m "feat(insights): publish daily engineering playbook [${TODAY}]"
-            git push origin main
+            git push origin "${BRANCH}"
+            gh pr create \
+              --base main \
+              --head "${BRANCH}" \
+              --title "feat(insights): publish daily engineering playbook [${TODAY}]" \
+              --body "Automated daily insight. The workflow completed npm run quality before opening this pull request."
           else
             echo "No new playbook generated; repository is up-to-date."
           fi
