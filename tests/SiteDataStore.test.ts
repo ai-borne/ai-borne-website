@@ -39,10 +39,8 @@ describe('SiteDataStore & LegalPolicyStore (SSOT)', () => {
     expect(secureMax?.name).toBe('SecureMax');
   });
 
-  it('returns published blog posts with complete metadata across all 8 playbooks', () => {
+  it('returns published blog posts with complete metadata', () => {
     const posts = SiteDataStore.getPosts();
-    expect(posts.length).toBe(8);
-
     const expectedSlugs = [
       'privacy-first-local-pdf-parsing',
       'kotlin-multiplatform-automation-patterns',
@@ -54,9 +52,14 @@ describe('SiteDataStore & LegalPolicyStore (SSOT)', () => {
       'enterprise-physical-security-threat-intelligence'
     ];
 
+    expect(posts.length).toBeGreaterThanOrEqual(expectedSlugs.length);
+
     for (const slug of expectedSlugs) {
       const post = SiteDataStore.getPostBySlug(slug);
       expect(post, `Post ${slug} should exist`).toBeDefined();
+    }
+
+    for (const post of posts) {
       expect(post?.title.length).toBeGreaterThan(10);
       expect(post?.summary.length).toBeGreaterThan(20);
       expect(post?.metricBadge).toBeDefined();
