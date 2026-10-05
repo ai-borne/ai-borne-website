@@ -28,6 +28,8 @@
 
 - [Sub-Millisecond SQLite on Mobile: Optimizing WAL Mode & Custom Pragmas in PayslipMax](https://ai-borne.in/blog/post.html?slug=sqlite-wal-concurrency-on-device): How we tuned SQLite WAL journaling, memory-mapped I/O, and custom pragmas for zero-jank on-device indexing.
 
+- [Killing Non-Determinism in Multi-Agent Evaluators: Rubric Calibration at SSBMax](https://ai-borne.in/blog/post.html?slug=deterministic-eval-harness-llm-agents): Architecting deterministic rubric anchors and multi-pass referee arbitration to eliminate evaluation drift in AI scoring pipelines.
+
 ## Full Documentation & Sitemaps
 - [Full LLM Knowledge Index](https://ai-borne.in/llms-full.txt): Comprehensive deep-dive documentation with architecture diagrams, code recipes, and full technical specifications.
 - [XML Sitemap](https://ai-borne.in/sitemap.xml): Complete machine-readable URL index.
