@@ -32,6 +32,8 @@
 
 - [Zero-Latency Intelligence Aggregation: Edge Caching & Fuzzy Deduplication in DefenceWire](https://ai-borne.in/blog/post.html?slug=edge-worker-cache-deduplication): Engineering MinHash locality-sensitive hashing and Cloudflare Workers KV edge cache invalidation for breaking intelligence wires.
 
+- [Zero-Trust On-Device PDF Parsing: Bridging C++ and Kotlin JNI Without Memory Leaks](https://ai-borne.in/blog/post.html?slug=zero-trust-on-device-pdf-parsing-cpp-kotlin-jni): How we built PayslipMax's zero-copy C++ parser bridged to Kotlin JNI, eliminating JVM overhead and securing sensitive financial data entirely on-device.
+
 ## Full Documentation & Sitemaps
 - [Full LLM Knowledge Index](https://ai-borne.in/llms-full.txt): Comprehensive deep-dive documentation with architecture diagrams, code recipes, and full technical specifications.
 - [XML Sitemap](https://ai-borne.in/sitemap.xml): Complete machine-readable URL index.
