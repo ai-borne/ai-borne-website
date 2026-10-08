@@ -21,4 +21,14 @@ describe('Daily publisher workflow', () => {
     expect(workflow).toContain('npm ci --ignore-scripts');
     expect(workflow).toContain('npx --no-install tsx');
   });
+
+  // Why: PRs opened with GITHUB_TOKEN do not trigger pull_request workflows, so the
+  // required quality gate would never run and the daily PR could not be merged.
+  it('opens the pull request with a least-privilege GitHub App token, pinned by SHA', () => {
+    expect(workflow).toMatch(/actions\/create-github-app-token@[0-9a-f]{40}/);
+    expect(workflow).toContain('permission-pull-requests: write');
+    expect(workflow).toContain('permission-contents: read');
+    expect(workflow).toContain('GH_TOKEN: ${{ steps.app-token.outputs.token }}');
+    expect(workflow).not.toContain('GH_TOKEN: ${{ github.token }}');
+  });
 });
