@@ -48,8 +48,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "AI-Borne Publishing Engine"
+          # Use the real bot identity: the main ruleset blocks merging commits whose author is not
+          # attributed to a GitHub account (an arbitrary email counts as unattributed).
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
           if [ -n "$(git status --porcelain)" ]; then
             TODAY=$(date +'%Y-%m-%d')
             BRANCH="automation/daily-playbook-${TODAY}"

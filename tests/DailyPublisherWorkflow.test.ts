@@ -38,4 +38,10 @@ describe('Daily publisher workflow', () => {
     expect(watch).toBeLessThan(merge);
     expect(merge).toBeLessThan(deploy);
   });
+
+  // Why: the main ruleset blocks merging commits that are not attributed to a GitHub account.
+  it('commits as the attributed github-actions bot identity', () => {
+    expect(workflow).toContain('41898282+github-actions[bot]@users.noreply.github.com');
+    expect(workflow).not.toContain('action@github.com');
+  });
 });
