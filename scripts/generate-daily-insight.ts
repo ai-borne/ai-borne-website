@@ -100,6 +100,8 @@ export function selectFromBacklog(existingSlugs: Set<string>): IBlogPost | null 
   };
 }
 
+const AI_GENERATED_BADGE = '⚡ Engineered';
+
 export async function fetchFromGemini(apiKey: string, existingSlugs: Set<string>): Promise<IBlogPost | null> {
   const prompt = `You are the Principal Systems Architect at AI-Borne Studio (ai-borne.in), founded by Sunil Pawar.
 AI-Borne builds on-device, zero-trust platforms: PayslipMax (C++/Kotlin PDF parser), SSBMax (multi-agent OLQ evaluation), DefenceWire (edge caching & crawler), ActionStation (infinite canvas, ReactFlow, TipTap), and SecureMax (ASIS CPP physical security RAG).
@@ -109,13 +111,13 @@ Rules:
 2. DO NOT use the word "Multiplatform" in title or summary.
 3. Must include 5 hooks: Provocative problem, "## In 30 Seconds" bullets, "## Architecture Blueprint" ASCII diagram, Comparison table with | syntax, Code snippet recipe with \`\`\` syntax, "## Battle Scars & Hard Lessons Learned".
 4. Ensure all markdown bold ** and __ are properly closed.
-5. Return ONLY a valid JSON object matching:
+5. Never state specific benchmark figures, percentages, or latencies as measured facts about AI-Borne products. Use qualitative language, or label any number as illustrative.
+6. Return ONLY a valid JSON object matching:
 {
   "slug": "unique-kebab-slug",
   "title": "Clear Technical Title",
   "summary": "Crisp punchy summary under 160 characters",
   "category": "App Engineering",
-  "metricBadge": "⚡ 12ms Latency",
   "difficulty": "Advanced",
   "tags": ["Tag1", "Tag2"],
   "contentMarkdown": "Full article markdown body starting after frontmatter"
@@ -147,7 +149,8 @@ Rules:
       publishedDate: today,
       author: 'AI-Borne Engineering',
       readTimeMinutes: computeReadTime(parsed.contentMarkdown || ''),
-      metricBadge: parsed.metricBadge || '⚡ Engineered',
+      // Model-invented metrics would publish unverified claims, so AI posts get a neutral badge.
+      metricBadge: AI_GENERATED_BADGE,
       difficulty: parsed.difficulty || 'Advanced',
       tags: parsed.tags || ['Engineering'],
       contentMarkdown: parsed.contentMarkdown || '',
