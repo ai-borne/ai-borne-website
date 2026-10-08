@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
 import {
@@ -9,6 +9,7 @@ import {
   selectFromBacklog,
   updateDiscoveryFiles,
   runDailyEngine,
+  fetchFromGemini,
 } from '../scripts/generate-daily-insight';
 import { IBlogPost } from '../src/models/BlogPost';
 import { MarkdownPostLoader } from '../src/services/MarkdownPostLoader';
@@ -168,6 +169,22 @@ fun configureProductionDatabase(connection: SQLiteConnection) {
       expect(parsed?.difficulty).toBe(sampleValidPost.difficulty);
       expect(parsed?.metricBadge).toBe(sampleValidPost.metricBadge);
       expect(parsed?.tags).toContain('SQLite');
+    });
+  });
+
+  // Why: with no human review before publishing, a model-invented figure would go live as a
+  // claim about AI-Borne products. The badge for AI-generated posts must be model-independent.
+  describe('AI-generated post claims', () => {
+    afterEach(() => vi.unstubAllGlobals());
+
+    it('ignores a model-supplied metricBadge and uses a neutral one', async () => {
+      const body = { slug: 'fresh-ai-post', title: 'T', summary: 'S', category: 'AI', metricBadge: '🎯 99.9% Accuracy', contentMarkdown: 'body' };
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ candidates: [{ content: { parts: [{ text: JSON.stringify(body) }] } }] }),
+      }));
+      const post = await fetchFromGemini('key', new Set());
+      expect(post?.metricBadge).toBe('⚡ Engineered');
     });
   });
 
