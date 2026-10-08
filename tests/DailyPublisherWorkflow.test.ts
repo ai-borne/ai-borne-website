@@ -21,4 +21,21 @@ describe('Daily publisher workflow', () => {
     expect(workflow).toContain('npm ci --ignore-scripts');
     expect(workflow).toContain('npx --no-install tsx');
   });
+
+  // Why: PRs and merges made with GITHUB_TOKEN start no push/pull_request runs, so the
+  // required gate and the production deploy must be dispatched explicitly, in this order.
+  it('merges only after dispatching and passing the CI gate, then deploys main', () => {
+    const ci = fs.readFileSync(path.resolve(__dirname, '../.github/workflows/ci.yml'), 'utf-8');
+    expect(ci).toMatch(/^\s*workflow_dispatch:/m);
+    expect(ci).toContain("github.event_name == 'workflow_dispatch'");
+    expect(workflow).toMatch(/^\s*actions:\s*write\s*$/m);
+    const gate = workflow.indexOf('gh workflow run ci.yml --ref "${BRANCH}"');
+    const watch = workflow.indexOf('gh run watch "${RUN_ID}" --exit-status');
+    const merge = workflow.indexOf('gh pr merge "${BRANCH}"');
+    const deploy = workflow.indexOf('gh workflow run ci.yml --ref main');
+    expect(gate).toBeGreaterThan(-1);
+    expect(gate).toBeLessThan(watch);
+    expect(watch).toBeLessThan(merge);
+    expect(merge).toBeLessThan(deploy);
+  });
 });

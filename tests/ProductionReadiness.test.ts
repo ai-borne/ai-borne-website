@@ -35,7 +35,8 @@ describe('Phase 6 production-readiness guardrails', () => {
     const packageJson = read('package.json');
 
     expect(ci).toContain('needs: validate-and-build');
-    expect(ci).toContain("github.event_name == 'push' && github.ref == 'refs/heads/main'");
+    // Deploys are limited to main, started by a push or by the daily publisher's dispatch.
+    expect(ci).toContain("(github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'");
     expect(ci).toContain('environment: production');
     expect(ci).toContain('cloudflare-pages-production');
     expect(ci).toContain('include-hidden-files: true');
