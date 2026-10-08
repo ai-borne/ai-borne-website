@@ -100,6 +100,8 @@ export function selectFromBacklog(existingSlugs: Set<string>): IBlogPost | null 
   };
 }
 
+// 2.5 models are restricted to existing users and 404 for this project; use the current stable Flash.
+export const GEMINI_MODEL = 'gemini-3.8-flash';
 const AI_GENERATED_BADGE = '⚡ Engineered';
 
 export async function fetchFromGemini(apiKey: string, existingSlugs: Set<string>): Promise<IBlogPost | null> {
@@ -124,7 +126,7 @@ Rules:
 }`;
 
   try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

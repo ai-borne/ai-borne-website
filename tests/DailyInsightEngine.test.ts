@@ -11,6 +11,7 @@ import {
   updateDiscoveryFiles,
   runDailyEngine,
   fetchFromGemini,
+  GEMINI_MODEL,
 } from '../scripts/generate-daily-insight';
 import { IBlogPost } from '../src/models/BlogPost';
 import { MarkdownPostLoader } from '../src/services/MarkdownPostLoader';
@@ -186,6 +187,8 @@ fun configureProductionDatabase(connection: SQLiteConnection) {
       }));
       const post = await fetchFromGemini('key', new Set());
       expect(post?.metricBadge).toBe('⚡ Engineered');
+      expect(vi.mocked(fetch).mock.calls[0][0]).toContain(`models/${GEMINI_MODEL}:`);
+      expect(GEMINI_MODEL).not.toContain('2.5');
     });
   });
 
