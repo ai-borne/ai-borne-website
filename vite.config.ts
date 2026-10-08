@@ -37,6 +37,9 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
         // The authenticated CMS must never be retained by the public offline cache.
         globIgnores: ['admin/**'],
+        // Unknown URLs must reach the network so the edge can answer with a real 404
+        // instead of the service worker masking them with the home page.
+        navigateFallback: null,
         // Authentication, CMS, and API routes must always reach the network.
         navigateFallbackDenylist: [/^\/(?:api|admin)(?:\/|$)/],
       }
@@ -64,6 +67,7 @@ export default defineConfig({
         refund: resolve(import.meta.dirname, 'refund-policy.html'),
         contact: resolve(import.meta.dirname, 'contact.html'),
         datadeletion: resolve(import.meta.dirname, 'data-deletion.html'),
+        notfound: resolve(import.meta.dirname, '404.html'),
       },
     },
   },
