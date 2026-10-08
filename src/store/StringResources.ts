@@ -99,6 +99,11 @@ export interface IStringDictionary {
     keyFeaturesTitle: string;
     launchButton: string;
   };
+  notFound: {
+    title: string;
+    tagline: string;
+    homeButton: string;
+  };
   support: {
     title: string;
     tagline: string;
@@ -254,6 +259,11 @@ export class StringResources {
       privacyBannerLabel: 'Compliance Guarantee:',
       keyFeaturesTitle: 'Key Capabilities & Security Architecture',
       launchButton: 'Explore Security Platform →',
+    },
+    notFound: {
+      title: 'Page not found',
+      tagline: 'The page you requested does not exist or has moved.',
+      homeButton: 'Back to home',
     },
     support: {
       title: 'Developer Support Center',

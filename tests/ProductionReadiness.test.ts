@@ -93,7 +93,9 @@ describe('Phase 6 production-readiness guardrails', () => {
     expect(headers).toContain('Strict-Transport-Security: max-age=31536000; includeSubDomains; preload');
     expect(headers).toContain("Content-Security-Policy: default-src 'self'");
     expect(headers).toContain('/sw.js\n  Cache-Control: no-cache, no-store, must-revalidate');
-    expect(serviceWorker).toContain('/^\\/(?:api|admin)(?:\\/|$)/');
+    // No NavigationRoute means no catch-all: API/admin navigations always reach the network
+    // and unknown URLs get a real 404 from the edge instead of the cached home page.
+    expect(serviceWorker).not.toContain('NavigationRoute');
     expect(serviceWorker).not.toContain('admin/index.html');
     expect(serviceWorker).not.toMatch(/url:"api\//);
   });
