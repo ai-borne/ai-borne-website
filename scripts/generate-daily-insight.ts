@@ -100,8 +100,9 @@ export function selectFromBacklog(existingSlugs: Set<string>): IBlogPost | null 
   };
 }
 
-// 2.5 models are restricted to existing users and 404 for this project; use the current stable Flash.
-export const GEMINI_MODEL = 'gemini-3.8-flash';
+// 2.5 models are restricted to existing users and 404 for this project. Use current stable Flash
+// models, newest first; a later one is tried only when the earlier is persistently unavailable.
+export const GEMINI_MODELS = ['gemini-3.8-flash', 'gemini-3.5-flash'];
 const AI_GENERATED_BADGE = '⚡ Engineered';
 
 // Gemini answers 429/5xx during capacity spikes; a few spaced retries recover most of them.
@@ -140,17 +141,22 @@ Rules:
 }`;
 
   try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
-    const res = await fetchWithRetry(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { responseMimeType: 'application/json', temperature: 0.2 },
-      }),
-    });
-    if (!res.ok) {
-      console.error(`[Autonomous Daily Engine] Gemini request failed with HTTP ${res.status}; falling back to backlog.`);
+    let res: Response | null = null;
+    for (const model of GEMINI_MODELS) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      res = await fetchWithRetry(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseMimeType: 'application/json', temperature: 0.2 },
+        }),
+      });
+      if (res.ok) break;
+      console.error(`[Autonomous Daily Engine] Gemini model ${model} failed with HTTP ${res.status}.`);
+    }
+    if (!res || !res.ok) {
+      console.error('[Autonomous Daily Engine] All Gemini models failed; falling back to backlog.');
       return null;
     }
     const data = await res.json();

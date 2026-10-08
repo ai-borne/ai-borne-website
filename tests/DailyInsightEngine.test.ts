@@ -11,7 +11,7 @@ import {
   updateDiscoveryFiles,
   runDailyEngine,
   fetchFromGemini,
-  GEMINI_MODEL,
+  GEMINI_MODELS,
   GEMINI_RETRY_DELAYS_MS,
 } from '../scripts/generate-daily-insight';
 import { IBlogPost } from '../src/models/BlogPost';
@@ -188,8 +188,8 @@ fun configureProductionDatabase(connection: SQLiteConnection) {
       }));
       const post = await fetchFromGemini('key', new Set());
       expect(post?.metricBadge).toBe('⚡ Engineered');
-      expect(vi.mocked(fetch).mock.calls[0][0]).toContain(`models/${GEMINI_MODEL}:`);
-      expect(GEMINI_MODEL).not.toContain('2.5');
+      expect(vi.mocked(fetch).mock.calls[0][0]).toContain(`models/${GEMINI_MODELS[0]}:`);
+      expect(GEMINI_MODELS.some((m) => m.includes('2.5'))).toBe(false);
     });
   });
 
@@ -220,11 +220,27 @@ fun configureProductionDatabase(connection: SQLiteConnection) {
       expect(post?.slug).toBe('retry-ok-post');
     });
 
-    it('does not retry a non-transient 404', async () => {
+    it('does not retry a non-transient 404 on the same model', async () => {
       const fetchMock = vi.fn().mockResolvedValue({ ok: false, status: 404 });
       vi.stubGlobal('fetch', fetchMock);
       expect(await fetchFromGemini('key', new Set())).toBeNull();
-      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledTimes(GEMINI_MODELS.length);
+    });
+
+    it('falls back to the next model when the first is unavailable', async () => {
+      const body = { slug: 'fallback-model-post', title: 'T', summary: 'S', category: 'AI', contentMarkdown: 'body' };
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValueOnce({ ok: false, status: 404 })
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => ({ candidates: [{ content: { parts: [{ text: JSON.stringify(body) }] } }] }),
+        });
+      vi.stubGlobal('fetch', fetchMock);
+      const post = await fetchFromGemini('key', new Set());
+      expect(post?.slug).toBe('fallback-model-post');
+      expect(String(fetchMock.mock.calls[1][0])).toContain(`models/${GEMINI_MODELS[1]}:`);
     });
   });
 
