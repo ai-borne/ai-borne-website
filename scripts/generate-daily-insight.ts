@@ -133,7 +133,10 @@ Rules:
         generationConfig: { responseMimeType: 'application/json', temperature: 0.2 },
       }),
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error(`[Autonomous Daily Engine] Gemini request failed with HTTP ${res.status}; falling back to backlog.`);
+      return null;
+    }
     const data = await res.json();
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!text) return null;
