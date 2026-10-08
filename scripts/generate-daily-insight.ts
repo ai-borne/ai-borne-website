@@ -104,6 +104,20 @@ export function selectFromBacklog(existingSlugs: Set<string>): IBlogPost | null 
 export const GEMINI_MODEL = 'gemini-3.8-flash';
 const AI_GENERATED_BADGE = '⚡ Engineered';
 
+// Gemini answers 429/5xx during capacity spikes; a few spaced retries recover most of them.
+export const GEMINI_RETRY_DELAYS_MS = [10_000, 30_000, 60_000];
+
+async function fetchWithRetry(url: string, init: RequestInit): Promise<Response> {
+  let res = await fetch(url, init);
+  for (const delay of GEMINI_RETRY_DELAYS_MS) {
+    if (res.ok || (res.status !== 429 && res.status < 500)) break;
+    console.error(`[Autonomous Daily Engine] Gemini returned HTTP ${res.status}; retrying in ${delay / 1000}s.`);
+    await new Promise((resolve) => setTimeout(resolve, delay));
+    res = await fetch(url, init);
+  }
+  return res;
+}
+
 export async function fetchFromGemini(apiKey: string, existingSlugs: Set<string>): Promise<IBlogPost | null> {
   const prompt = `You are the Principal Systems Architect at AI-Borne Studio (ai-borne.in), founded by Sunil Pawar.
 AI-Borne builds on-device, zero-trust platforms: PayslipMax (C++/Kotlin PDF parser), SSBMax (multi-agent OLQ evaluation), DefenceWire (edge caching & crawler), ActionStation (infinite canvas, ReactFlow, TipTap), and SecureMax (ASIS CPP physical security RAG).
@@ -127,7 +141,7 @@ Rules:
 
   try {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
-    const res = await fetch(url, {
+    const res = await fetchWithRetry(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -236,8 +250,16 @@ export async function runDailyEngine(opts: { dryRun?: boolean; rootDir?: string;
 // Auto-run if executed directly
 if (process.argv[1] && process.argv[1].endsWith('generate-daily-insight.ts')) {
   const isDryRun = process.argv.includes('--dry-run');
-  runDailyEngine({ dryRun: isDryRun }).catch((err) => {
-    console.error('Fatal engine error:', err);
-    process.exit(1);
-  });
+  runDailyEngine({ dryRun: isDryRun })
+    .then((result) => {
+      // Fail loudly so a silent no-op (no backlog left and Gemini down) is noticed, not hidden.
+      if (!result.success) {
+        console.error('[Autonomous Daily Engine] No playbook was produced; failing the run.');
+        process.exit(1);
+      }
+    })
+    .catch((err) => {
+      console.error('Fatal engine error:', err);
+      process.exit(1);
+    });
 }

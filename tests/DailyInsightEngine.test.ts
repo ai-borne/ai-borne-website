@@ -12,6 +12,7 @@ import {
   runDailyEngine,
   fetchFromGemini,
   GEMINI_MODEL,
+  GEMINI_RETRY_DELAYS_MS,
 } from '../scripts/generate-daily-insight';
 import { IBlogPost } from '../src/models/BlogPost';
 import { MarkdownPostLoader } from '../src/services/MarkdownPostLoader';
@@ -189,6 +190,41 @@ fun configureProductionDatabase(connection: SQLiteConnection) {
       expect(post?.metricBadge).toBe('⚡ Engineered');
       expect(vi.mocked(fetch).mock.calls[0][0]).toContain(`models/${GEMINI_MODEL}:`);
       expect(GEMINI_MODEL).not.toContain('2.5');
+    });
+  });
+
+  // Why: Gemini capacity spikes (503/429) are transient; without retries one spike silently
+  // ends the daily post once the curated backlog is exhausted.
+  describe('Gemini transient failure handling', () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      vi.useRealTimers();
+    });
+
+    it('retries a 503 and then succeeds', async () => {
+      vi.useFakeTimers();
+      const body = { slug: 'retry-ok-post', title: 'T', summary: 'S', category: 'AI', contentMarkdown: 'body' };
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValueOnce({ ok: false, status: 503 })
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => ({ candidates: [{ content: { parts: [{ text: JSON.stringify(body) }] } }] }),
+        });
+      vi.stubGlobal('fetch', fetchMock);
+      const pending = fetchFromGemini('key', new Set());
+      await vi.advanceTimersByTimeAsync(GEMINI_RETRY_DELAYS_MS[0]);
+      const post = await pending;
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(post?.slug).toBe('retry-ok-post');
+    });
+
+    it('does not retry a non-transient 404', async () => {
+      const fetchMock = vi.fn().mockResolvedValue({ ok: false, status: 404 });
+      vi.stubGlobal('fetch', fetchMock);
+      expect(await fetchFromGemini('key', new Set())).toBeNull();
+      expect(fetchMock).toHaveBeenCalledTimes(1);
     });
   });
 
