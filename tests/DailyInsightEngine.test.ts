@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import {
   sanitizeSlug,
@@ -221,7 +222,11 @@ fun configureProductionDatabase(connection: SQLiteConnection) {
 
   describe('Discovery Files Updater & Dry Run Engine', () => {
     it('dry-run execution successfully validates without writing to disk', async () => {
-      const result = await runDailyEngine({ dryRun: true });
+      // Why: must not depend on live repo content or the network. Against the real blog folder
+      // this fails every time the curated backlog is exhausted, blocking the daily gate.
+      const emptyRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'daily-engine-'));
+      const result = await runDailyEngine({ dryRun: true, rootDir: emptyRoot, apiKey: '' });
+      fs.rmSync(emptyRoot, { recursive: true, force: true });
       expect(result.success).toBe(true);
       expect(result.dryRun).toBe(true);
       expect(result.post).toBeDefined();
