@@ -7,6 +7,9 @@ on:
   pull_request:
     branches:
       - main
+  # Lets the daily publisher run the gate on its own branch and deploy after merge:
+  # events from GITHUB_TOKEN never start push/pull_request runs, but dispatch is allowed.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -47,7 +50,7 @@ jobs:
   deploy-cloudflare:
     name: Deploy to Cloudflare Pages
     needs: validate-and-build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: production

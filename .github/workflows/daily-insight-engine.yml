@@ -8,6 +8,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 jobs:
   generate-and-publish:
@@ -61,6 +62,19 @@ jobs:
               --head "${BRANCH}" \
               --title "feat(insights): publish daily engineering playbook [${TODAY}]" \
               --body "Automated daily insight. The workflow completed npm run quality before opening this pull request."
+
+            # Run the required gate on the PR head, merge only if it passes, then deploy main.
+            gh workflow run ci.yml --ref "${BRANCH}"
+            RUN_ID=""
+            for _ in $(seq 1 30); do
+              RUN_ID=$(gh run list --workflow ci.yml --branch "${BRANCH}" --event workflow_dispatch --limit 1 --json databaseId --jq '.[0].databaseId // empty')
+              [ -n "${RUN_ID}" ] && break
+              sleep 5
+            done
+            [ -n "${RUN_ID}" ] || { echo "CI run did not start"; exit 1; }
+            gh run watch "${RUN_ID}" --exit-status
+            gh pr merge "${BRANCH}" --squash --delete-branch
+            gh workflow run ci.yml --ref main
           else
             echo "No new playbook generated; repository is up-to-date."
           fi
