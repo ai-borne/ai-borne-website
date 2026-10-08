@@ -44,6 +44,8 @@ jobs:
         run: git diff --check
 
       - name: Commit and Open Daily Playbook Pull Request
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "AI-Borne Publishing Engine"
