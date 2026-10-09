@@ -32,6 +32,8 @@
 
 - [Zero-Latency Intelligence Aggregation: Edge Caching & Fuzzy Deduplication in DefenceWire](https://ai-borne.in/blog/post.html?slug=edge-worker-cache-deduplication): Engineering MinHash locality-sensitive hashing and Cloudflare Workers KV edge cache invalidation for breaking intelligence wires.
 
+- [Zero-Allocation Native PDF Stream Parsing: Hardening JNI and C++ Memory Arenas](https://ai-borne.in/blog/post.html?slug=zero-allocation-native-pdf-parsing-jni-arenas): A deep dive into building an in-memory, zero-copy PDF parser using C++ arenas and JNI primitives for zero-trust document processing.
+
 ## Full Documentation & Sitemaps
 - [Full LLM Knowledge Index](https://ai-borne.in/llms-full.txt): Comprehensive deep-dive documentation with architecture diagrams, code recipes, and full technical specifications.
 - [XML Sitemap](https://ai-borne.in/sitemap.xml): Complete machine-readable URL index.
