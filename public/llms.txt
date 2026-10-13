@@ -32,6 +32,8 @@
 
 - [Zero-Latency Intelligence Aggregation: Edge Caching & Fuzzy Deduplication in DefenceWire](https://ai-borne.in/blog/post.html?slug=edge-worker-cache-deduplication): Engineering MinHash locality-sensitive hashing and Cloudflare Workers KV edge cache invalidation for breaking intelligence wires.
 
+- [Zero-Copy ByteStream Parsing: Bridging Native C++ Core to Kotlin via Direct Buffers](https://ai-borne.in/blog/post.html?slug=zero-copy-bytestream-parsing-jni-direct-buffers): Eliminate memory churn and GC stalls when processing encrypted payroll PDFs by streaming direct off-heap byte buffers between C++ and Kotlin via JNI.
+
 ## Full Documentation & Sitemaps
 - [Full LLM Knowledge Index](https://ai-borne.in/llms-full.txt): Comprehensive deep-dive documentation with architecture diagrams, code recipes, and full technical specifications.
 - [XML Sitemap](https://ai-borne.in/sitemap.xml): Complete machine-readable URL index.
