@@ -32,6 +32,8 @@
 
 - [Zero-Latency Intelligence Aggregation: Edge Caching & Fuzzy Deduplication in DefenceWire](https://ai-borne.in/blog/post.html?slug=edge-worker-cache-deduplication): Engineering MinHash locality-sensitive hashing and Cloudflare Workers KV edge cache invalidation for breaking intelligence wires.
 
+- [Zero-Trust Tabular Parsing: Building an Air-Gapped C++ Engine for Android Financial Documents](https://ai-borne.in/blog/post.html?slug=zero-trust-tabular-parsing-airgapped-cpp-engine): Architecting a zero-network C++ stream tokenizer bound to Kotlin via JNI to extract complex financial tables directly on user silicon.
+
 ## Full Documentation & Sitemaps
 - [Full LLM Knowledge Index](https://ai-borne.in/llms-full.txt): Comprehensive deep-dive documentation with architecture diagrams, code recipes, and full technical specifications.
 - [XML Sitemap](https://ai-borne.in/sitemap.xml): Complete machine-readable URL index.
